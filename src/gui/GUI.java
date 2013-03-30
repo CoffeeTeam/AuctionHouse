@@ -23,6 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import util.Image;
 import verifier.JTextFieldVerifier;
 
 import constants.ComponentNames;
@@ -133,6 +134,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		setSize(new Dimension(Sizes.frameWidth, Sizes.frameHeight));
 		this.setVisible(true);
 		
+		// Show first "page" (the log in screen)
 		cardLayout.show(panelCards, Page.Page1.getName());
 
 	}
@@ -209,6 +211,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				username = userText.getText();
 				password = passText.getText();
 				
+				// Show second "page" (the users services screen)
 				cardLayout.show(panelCards, Page.Page2.getName());
 			}
 			
@@ -221,7 +224,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		sellerButton = new JRadioButton(ComponentNames.sellerRadioButton);
 		buyerButton = new JRadioButton(ComponentNames.buyerRadioButton);
-		pictureUsr = new JLabel(createImageIcon(ComponentNames.logInPicPath));
+		pictureUsr = new JLabel(Image.createImageIcon(ComponentNames.logInPicPath));
 		
 		sellerButton.addActionListener(new ActionListener() {
 			
@@ -263,18 +266,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 	}
 	
-	 /** Returns an ImageIcon, or null if the path was invalid. */
-    protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = GUI.class.getResource(path);
-        
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-
     public void logInUser() {
     	List<String> serviceList;
     	
