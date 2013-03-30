@@ -56,6 +56,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	private JPanel panelCards, logInPanel, servicesPanel, logOutPanel;
 	private CardLayout cardLayout;
 
+	/**
+	 * Associations between page number (in order of appearance) and page name
+	 * @author tom
+	 *
+	 */
 	private enum Page {
 		Page1("logIn"),
 		Page2("servicesPanel"),
@@ -91,20 +96,29 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		constraints.anchor = GridBagConstraints.NORTHWEST;
 		gbl.layoutContainer(this);
 		
+		// Initialize the layout
 		cardLayout = new CardLayout();
 		
 		panelCards = new JPanel(cardLayout);
 		getContentPane().add(panelCards);
 		
+		// Init. the first screen (log in)
 		logInPanel = new JPanel(new GridBagLayout());
 		gbl.setConstraints(logInPanel, constraints);
 		logInPanel.setLayout(gbl);
 		panelCards.add(logInPanel, Page.Page1.getName());
 		
+		// Init. the second screen (displaying user services)
 		servicesPanel = new JPanel(new GridBagLayout());
 		gbl.setConstraints(servicesPanel, constraints);
 		servicesPanel.setLayout(gbl);
 		panelCards.add(servicesPanel, Page.Page2.getName());
+		
+		// Init. last screen (log out)
+		logOutPanel = new JPanel(new GridBagLayout());
+		gbl.setConstraints(logOutPanel, constraints);
+		logOutPanel.setLayout(gbl);
+		panelCards.add(logOutPanel, Page.Page3.getName());
 		
 		med = new Mediator();
 		initGuiObjects(constraints);
