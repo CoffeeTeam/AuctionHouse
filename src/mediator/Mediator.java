@@ -8,17 +8,23 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		IMediatorWSClient {
 
 	StateManager stateMgr;
+	
+	public Mediator() {
+		stateMgr = new StateManager(this, this, this);
+	}
 
 	@Override
 	public List<String> logInBuyer(String name, String passwd) {
 		// TODO Auto-generated method stub
-		return null;
+		stateMgr.setBuyerState();
+		return stateMgr.getServiceList();
 	}
 
 	@Override
 	public List<String> logInSeller(String name, String passwd) {
 		// TODO Auto-generated method stub
-		return null;
+		stateMgr.setSellerState();
+		return stateMgr.getServiceList();
 	}
 
 	@Override
