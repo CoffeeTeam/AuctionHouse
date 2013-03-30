@@ -54,7 +54,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	
 	private IMediatorGUI med;
 	
-	private JPanel panelCards, logInPanel, servicesPanel, logOutPanel;
+	private JPanel panelCards;
 	private CardLayout cardLayout;
 
 	/**
@@ -68,6 +68,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page3("logOut");
 		
 		private String name;
+		private JPanel panel;
 		
 		private Page(String name) {
 			this.name = name;
@@ -75,6 +76,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		public String getName() {
 			return name;
+		}
+		
+		public JPanel getPanel() {
+			return panel;
+		}
+		
+		public void setPanel(JPanel panel) {
+			this.panel = panel;
 		}
 	}
 	
@@ -104,28 +113,33 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		getContentPane().add(panelCards);
 		
 		// Init. the first screen (log in)
-		logInPanel = new JPanel(new GridBagLayout());
+		JPanel logInPanel = new JPanel(new GridBagLayout());
 		gbl.setConstraints(logInPanel, constraints);
 		logInPanel.setLayout(gbl);
-		panelCards.add(logInPanel, Page.Page1.getName());
+		Page.Page1.setPanel(logInPanel);
+		panelCards.add(Page.Page1.getPanel(), Page.Page1.getName());
 		
 		// Init. the second screen (displaying user services)
-		servicesPanel = new JPanel(new GridBagLayout());
+		JPanel servicesPanel = new JPanel(new GridBagLayout());
 		gbl.setConstraints(servicesPanel, constraints);
 		servicesPanel.setLayout(gbl);
-		panelCards.add(servicesPanel, Page.Page2.getName());
+		Page.Page2.setPanel(servicesPanel);
+		panelCards.add(Page.Page2.getPanel(), Page.Page2.getName());
 		
 		// Init. last screen (log out)
-		logOutPanel = new JPanel(new GridBagLayout());
+		JPanel logOutPanel = new JPanel(new GridBagLayout());
 		gbl.setConstraints(logOutPanel, constraints);
 		logOutPanel.setLayout(gbl);
-		panelCards.add(logOutPanel, Page.Page3.getName());
+		Page.Page3.setPanel(logOutPanel);
+		panelCards.add(Page.Page3.getPanel(), Page.Page3.getName());
 		
 		med = new Mediator();
 		initGuiObjects(constraints);
 	}
 
 	private void initGuiObjects(GridBagConstraints constraints) {
+		JPanel logInPanel = Page.Page1.getPanel(); 
+				
 		putUsernameInFrame(constraints, logInPanel);
 		putPasswordInFrame(constraints, logInPanel);
 		putRadioButtons(constraints, logInPanel);
@@ -213,6 +227,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				
 				// Show second "page" (the users services screen)
 				cardLayout.show(panelCards, Page.Page2.getName());
+				logInUser();
 			}
 			
 		});
