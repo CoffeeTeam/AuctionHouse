@@ -1,17 +1,18 @@
 package gui;
 
-import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,15 +23,18 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import verifier.JTextFieldVerifier;
+
+import constants.ComponentNames;
+import constants.Sizes;
+import constants.UserTypes;
+
 import mediator.IMediatorGUI;
 import mediator.Mediator;
 
 public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	private final int maxFieldLen = 20;
-	private final String buyer = "buyer";
-	private final String seller = "seller";
 	
 	private JButton logInButton;
 	private JRadioButton sellerButton;
@@ -46,8 +50,28 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	private String username;
 	private String password;
 	private String userType;
+	
 	private IMediatorGUI med;
+	
+	private JPanel panelCards, logInPanel, servicesPanel, logOutPanel;
+	private CardLayout cardLayout;
 
+	private enum Page {
+		Page1("logIn"),
+		Page2("servicesPanel"),
+		Page3("logOut");
+		
+		private String name;
+		
+		private Page(String name) {
+			this.name = name;
+		}
+		
+		public String getName() {
+			return name;
+		}
+	}
+	
 	public GUI() {
 		super("Auction House");
 		
@@ -57,31 +81,45 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		});
 		
-		med = new Mediator();
-		initGuiObjects();
-	}
-
-	private void initGuiObjects() {
-		JPanel jp = new JPanel(new GridBagLayout());
+		// Center the window on startup
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation((dim.width - Sizes.frameWidth)/2, (dim.height - Sizes.frameHeight)/2);
+		
+		// Initialize panels
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
-		
-		jp.setSize(400, 100);
-		getContentPane().add(jp);
-
 		constraints.anchor = GridBagConstraints.NORTHWEST;
-		
 		gbl.layoutContainer(this);
-		gbl.setConstraints(jp, constraints);
-		jp.setLayout(gbl);
-
-		putUsernameInFrame(constraints, jp);
-		putPasswordInFrame(constraints, jp);
-		putRadioButtons(constraints, jp);
-		loginButtonActions(constraints, jp);
 		
-		setSize(new Dimension(500, 400));
+		cardLayout = new CardLayout();
+		
+		panelCards = new JPanel(cardLayout);
+		getContentPane().add(panelCards);
+		
+		logInPanel = new JPanel(new GridBagLayout());
+		gbl.setConstraints(logInPanel, constraints);
+		logInPanel.setLayout(gbl);
+		panelCards.add(logInPanel, Page.Page1.getName());
+		
+		servicesPanel = new JPanel(new GridBagLayout());
+		gbl.setConstraints(servicesPanel, constraints);
+		servicesPanel.setLayout(gbl);
+		panelCards.add(servicesPanel, Page.Page2.getName());
+		
+		med = new Mediator();
+		initGuiObjects(constraints);
+	}
+
+	private void initGuiObjects(GridBagConstraints constraints) {
+		putUsernameInFrame(constraints, logInPanel);
+		putPasswordInFrame(constraints, logInPanel);
+		putRadioButtons(constraints, logInPanel);
+		loginButtonActions(constraints, logInPanel);
+		
+		setSize(new Dimension(Sizes.frameWidth, Sizes.frameHeight));
 		this.setVisible(true);
+		
+		cardLayout.show(panelCards, Page.Page1.getName());
 
 	}
 
@@ -95,16 +133,23 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	 *            the panel used to put the elements in
 	 */
 	private void putUsernameInFrame(GridBagConstraints constraints, JPanel jp) {
-		userText = new JTextField(maxFieldLen);
-		userLabel = new JLabel("Username: ");
+		userText = new JTextField(Sizes.maxTextFieldLen);
+		userLabel = new JLabel(ComponentNames.username);
+		
 		/* set username field in page */
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		jp.add(userLabel, constraints);
 
+		// set border for some space around it
+		userLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+		
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		jp.add(userText, constraints);
+		
+		// set input verifier
+		userText.setInputVerifier(new JTextFieldVerifier());
 	}
 
 	/**
@@ -116,8 +161,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	 *            the panel used to put the elements in
 	 */
 	private void putPasswordInFrame(GridBagConstraints constraints, JPanel jp) {
-		passText = new JPasswordField(maxFieldLen);
-		passLabel = new JLabel("Password: ");
+		passText = new JPasswordField(Sizes.maxTextFieldLen);
+		passLabel = new JLabel(ComponentNames.passw);
 
 		/* set username field in page */
 		constraints.gridx = 0;
@@ -127,10 +172,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		constraints.gridx = 1;
 		constraints.gridy = 2;
 		jp.add(passText, constraints);
+		
+		// set input verifier
+		passText.setInputVerifier(new JTextFieldVerifier());
 	}
 	
+	
 	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {		
-		logInButton = new JButton("Log In");
+		logInButton = new JButton(ComponentNames.logInButton);
 		
 		constraints.gridx = 1;
 		constraints.gridy = 4;
@@ -138,35 +187,35 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		jp.add(logInButton, constraints);
 		
-		
 		logInButton.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				String userT = userText.getText();
-				String passT = passText.getText();
+				username = userText.getText();
+				password = passText.getText();
 				
-				username = userT;
-				password = passT;
+				cardLayout.show(panelCards, Page.Page2.getName());
 			}
 			
 		});
 	}
 	
 	private void putRadioButtons(GridBagConstraints constraints,JPanel jp){
-		
+		ButtonGroup group = new ButtonGroup();
 		JPanel radioPanel = new JPanel(new GridLayout(0, 1));
-		sellerButton = new JRadioButton("Seller");
-		buyerButton = new JRadioButton("Buyer");
-		pictureUsr = new JLabel(createImageIcon("images/SellerOrBuyer.png"));
+		
+		sellerButton = new JRadioButton(ComponentNames.sellerRadioButton);
+		buyerButton = new JRadioButton(ComponentNames.buyerRadioButton);
+		pictureUsr = new JLabel(createImageIcon(ComponentNames.logInPicPath));
 		
 		sellerButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				userType = "seller";
+				userType = UserTypes.seller;
+					
 			}
 		});
 		
@@ -175,7 +224,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				userType = "buyer";
+				userType = UserTypes.buyer;
+				
 			}
 		});
 		
@@ -183,6 +233,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		radioPanel.add(buyerButton);
 		radioPanel.add(sellerButton);
+		
+		// Logically group radio buttons
+		group.add(buyerButton);
+		group.add(sellerButton);
 		
 		constraints.gridx = 1;
 		constraints.gridy = 3;
@@ -198,6 +252,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	 /** Returns an ImageIcon, or null if the path was invalid. */
     protected static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = GUI.class.getResource(path);
+        
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
@@ -209,15 +264,16 @@ public class GUI extends JFrame implements IGUI, ActionListener {
     public void logInUser() {
     	List<String> serviceList;
     	
-    	if(userType.equals(buyer)){
+    	if(userType.equals(UserTypes.buyer)){
     		serviceList = med.logInBuyer(username, password);
-    	} else 
-    		if(userType.equals(seller))
+    	} else {
+    		if(userType.equals(UserTypes.seller)) {
     			serviceList = med.logInSeller(username, password);
-    		else {
+    		} else {
     			System.err.println("User type undefined");
     			System.exit(1);
     		}
+    	}
     }
     
 	@Override
