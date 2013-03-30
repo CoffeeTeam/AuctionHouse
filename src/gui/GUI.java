@@ -16,8 +16,10 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -27,6 +29,7 @@ import util.Image;
 import verifier.JTextFieldVerifier;
 
 import constants.ComponentNames;
+import constants.ErrorMessages;
 import constants.Sizes;
 import constants.UserTypes;
 
@@ -208,7 +211,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 	
 	
-	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {		
+	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {	
+		final GUI owner = this;
+		
 		logInButton = new JButton(ComponentNames.logInButton);
 		
 		constraints.gridx = 1;
@@ -224,6 +229,13 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// TODO Auto-generated method stub
 				username = userText.getText();
 				password = passText.getText();
+				
+				// Validate given input
+				if (username.isEmpty() || 
+						!(sellerButton.isSelected() || buyerButton.isSelected())) {
+					JOptionPane.showMessageDialog(owner, ErrorMessages.logInErrMsg);
+					return;
+				}
 				
 				// Show second "page" (the users services screen)
 				cardLayout.show(panelCards, Page.Page2.getName());
