@@ -29,14 +29,20 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private final int maxFieldLen = 20;
+	private final String buyer = "buyer";
+	private final String seller = "seller";
+	
 	private JButton logInButton;
+	private JRadioButton sellerButton;
+	private JRadioButton buyerButton;
+	
 	private JTextField userText;
 	private JPasswordField passText;
+	
 	private JLabel userLabel;
 	private JLabel passLabel;
 	private JLabel pictureUsr;
-	private JRadioButton sellerButton;
-	private JRadioButton buyerButton;
+	
 	private String username;
 	private String password;
 	private String userType;
@@ -200,7 +206,20 @@ public class GUI extends JFrame implements IGUI, ActionListener {
         }
     }
 
-
+    public void logInUser() {
+    	List<String> serviceList;
+    	
+    	if(userType.equals(buyer)){
+    		serviceList = med.logInBuyer(username, password);
+    	} else 
+    		if(userType.equals(seller))
+    			serviceList = med.logInSeller(username, password);
+    		else {
+    			System.err.println("User type undefined");
+    			System.exit(1);
+    		}
+    }
+    
 	@Override
 	public void updateServices(List<String> offers) {
 		// TODO Auto-generated method stub
