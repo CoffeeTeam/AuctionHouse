@@ -1,6 +1,7 @@
 package components;
 
 import java.awt.Component;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -14,7 +15,9 @@ public class JPanelRenderer extends JPanel implements TableCellRenderer{
 							JTable table, Object value,
 				            boolean isSelected, boolean hasFocus,
 				            int row, int column) {
-        // TODO
+
+		this.setLayout(new GridLayout(0, 1));
+		
 		return this;
 	}
 
