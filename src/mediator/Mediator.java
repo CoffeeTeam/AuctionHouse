@@ -92,9 +92,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public List<String> getServiceList(String userName) {
+	public List<String> getServiceList(String userName, String userType) {
 		// TODO Auto-generated method stub
-		return wsClient.getServiceList(userName);
+		return wsClient.getServiceList(userName, userType);
 	}
 
 	@Override

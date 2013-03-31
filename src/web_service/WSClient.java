@@ -23,9 +23,9 @@ public class WSClient extends IWSClient{
 	}
 
 	@Override
-	public List<String> getServiceList(String userName) {
+	public List<String> getServiceList(String userName, String userType) {
 		// TODO Auto-generated method stub
-		return infoRetriever.userService(userName);
+		return infoRetriever.userService(userName, userType);
 	}
 
 }

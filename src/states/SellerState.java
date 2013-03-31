@@ -20,7 +20,7 @@ public class SellerState extends State {
 	@Override
 	public List<String> getServiceList(String userName) {
 		// TODO Auto-generated method stub
-		return medWS.getServiceList(userName);
+		return medWS.getServiceList(userName, UserTypes.seller);
 	}
 
 	@Override

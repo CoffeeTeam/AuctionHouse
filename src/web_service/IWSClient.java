@@ -9,5 +9,5 @@ public abstract class IWSClient {
 	public IMediatorWSClient med;
 	
 	public abstract List<String> getCurrentUsers(String serviceName, String userType);
-	public abstract List<String> getServiceList(String userName);
+	public abstract List<String> getServiceList(String userName, String userType);
 }

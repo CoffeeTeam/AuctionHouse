@@ -44,7 +44,7 @@ public class FileInfoRetriever {
 	 *            the name of the user
 	 * @return list of services for the user received as parameter
 	 */
-	public List<String> userService(String userName) {
+	public List<String> userService(String userName, String userType) {
 		List<String> serviceList = new Vector<String>();
 		String currentLine;
 		StringTokenizer strTk;
@@ -58,11 +58,15 @@ public class FileInfoRetriever {
 		try {
 			//Read until the end of file
 			while ((currentLine = br.readLine()) != null) {
+				if(currentLine.isEmpty())
+					break;
 				strTk = new StringTokenizer(currentLine);
 				
 				//read services only for the received user
 				if (strTk.nextElement().equals(userName)) {
-					strTk.nextElement();
+					if(!strTk.nextElement().equals(userType)) {
+						break;
+					}
 					while (strTk.hasMoreTokens()) {
 						serviceList.add(strTk.nextToken());
 					}
