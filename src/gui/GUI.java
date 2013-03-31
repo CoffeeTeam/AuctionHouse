@@ -400,10 +400,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				JTable source = (JTable) e.getSource();
 				int column = source.columnAtPoint(e.getPoint());
-				
-				//initialize context menu
+				int row = source.rowAtPoint(e.getPoint());
+
+				// initialize context menu
 				JPopupMenu contextMenu = new JPopupMenu();
-				if(createPopUpMenu(contextMenu, column))
+				if (createPopUpMenu(contextMenu, source, row, column))
 					contextMenu.show(e.getComponent(), e.getX(), e.getY());
 			}
 
@@ -413,35 +414,38 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	/**
 	 * Create a popup menu on right click on a cell
+	 * 
 	 * @param contextMenu
 	 * @param column
 	 * @return boolean indicating if a popup menu should be displayed or not
 	 */
-	public boolean createPopUpMenu(JPopupMenu contextMenu, int column) {
+	public boolean createPopUpMenu(JPopupMenu contextMenu, JTable table,
+			int row, int column) {
 		JMenuItem item;
 		boolean toDisplayMenu = false;
-		ActionListener actionListener = new PopupActionListener();
-		
+		ActionListener actionListener = new PopupActionListener(table, row,
+				column, this);
+
 		switch (column) {
 		case 0:
-			//add service menu with different entries for buyer and for seller 
+			// add service menu with different entries for buyer and for seller
 			if (userType.equals(UserTypes.buyer)) {
-				//Launch Offer Request option
+				// Launch Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[0]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
-				
-				//Drop Offer Request option
+
+				// Drop Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[1]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 			} else {
-				//Make offer
+				// Make offer
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
-				
-				//Drop auction
+
+				// Drop auction
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
@@ -449,25 +453,25 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			toDisplayMenu = true;
 			break;
 		case 1:
-			//add menu for those who will sell products for buyers
+			// add menu for those who will sell products for buyers
 			if (userType.equals(UserTypes.buyer)) {
-				//Accept offer
-				item  = new JMenuItem(ComponentNames.buyerUserMenu[0]);
+				// Accept offer
+				item = new JMenuItem(ComponentNames.buyerUserMenu[0]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
-				
-				//Refuse offer
-				item  = new JMenuItem(ComponentNames.buyerUserMenu[0]);
+
+				// Refuse offer
+				item = new JMenuItem(ComponentNames.buyerUserMenu[0]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 				toDisplayMenu = true;
 			}
 			break;
 		}
-		
+
 		return toDisplayMenu;
 	}
-	
+
 	public void resetUserData() {
 		List<String> emptyList = new Vector<String>();
 		this.user.setUsername("");
