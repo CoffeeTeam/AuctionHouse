@@ -46,6 +46,7 @@ import verifier.JTextFieldVerifier;
 import constants.ComponentNames;
 import constants.ErrorMessages;
 import constants.Sizes;
+import constants.Symbols;
 import constants.UserTypes;
 
 import mediator.IMediatorGUI;
@@ -67,10 +68,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	private JLabel userLabel;
 	private JLabel passLabel;
 	private JLabel pictureUsr;
-
-	private String username;
-	private String password;
-	private String userType;
 
 	private IMediatorGUI med;
 
@@ -244,7 +241,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				userType = UserTypes.seller;
+				user.setUserType(UserTypes.seller);
 
 			}
 		});
@@ -254,8 +251,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				userType = UserTypes.buyer;
-
+				user.setUserType(UserTypes.buyer);
 			}
 		});
 
@@ -298,13 +294,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				username = userText.getText();
-				password = passText.getText();
-				user.setUsername(username);
-				user.setPassword(password);
+				user.setUsername(userText.getText());
+				user.setPassword(passText.getPassword().toString());
 
 				// Validate given input
-				if (username.isEmpty()
+				if (user.getUsername().isEmpty()
 						|| !(sellerButton.isSelected() || buyerButton
 								.isSelected())) {
 					JOptionPane.showMessageDialog(owner,
@@ -320,7 +314,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				// Add user message
 				JLabel userLabel = new JLabel(ComponentNames.welcomeUserMsg
-						+ username);
+						+ user.getUsername());
 				userLabel.setForeground(Color.RED);
 				userLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10,
 						5));
@@ -378,7 +372,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// TODO Auto-generated method stub
 				// show the Log In page again
 				cardLayout.show(panelCards, Page.Page1.getName());
-				invisibleButton.doClick();
+				
 				resetUserData();
 				Page.Page2.panel.removeAll();
 			}
@@ -435,7 +429,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		switch (column) {
 		case 0:
 			// add service menu with different entries for buyer and for seller
-			if (userType.equals(UserTypes.buyer)) {
+			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Launch Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[0]);
 				item.addActionListener(actionListener);
@@ -460,7 +454,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			break;
 		case 1:
 			// add menu for those who will sell products for buyers
-			if (userType.equals(UserTypes.buyer)) {
+			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Accept offer
 				item = new JMenuItem(ComponentNames.buyerUserMenu[0]);
 				item.addActionListener(actionListener);
@@ -480,24 +474,27 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	public void resetUserData() {
 		List<String> emptyList = new Vector<String>();
-		this.user.setUsername("");
-		this.user.setPassword("");
+		this.user.setUsername(Symbols.emptyString);
+		this.user.setPassword(Symbols.emptyString);
 		this.user.setUserServiceList(emptyList);
 
-		this.userType = "";
-		this.username = "";
-		this.password = "";
+		// Reset buyer/seller selection
+		invisibleButton.doClick();
+		
+		// Reset textfields
+		userText.setText(Symbols.emptyString);
+		passText.setText(Symbols.emptyString);
 	}
 
 	public List<String> logInUser() {
 		List<String> serviceList = null;
 
 		// Get user's service list
-		if (userType.equals(UserTypes.buyer)) {
-			serviceList = med.logInBuyer(username, password);
+		if (user.getUserType().equals(UserTypes.buyer)) {
+			serviceList = med.logInBuyer(user.getUsername(), user.getPassword());
 		} else {
-			if (userType.equals(UserTypes.seller)) {
-				serviceList = med.logInSeller(username, password);
+			if (user.getUserType().equals(UserTypes.seller)) {
+				serviceList = med.logInSeller(user.getUsername(), user.getPassword());
 			} else {
 				System.err.println("User type undefined");
 				System.exit(1);

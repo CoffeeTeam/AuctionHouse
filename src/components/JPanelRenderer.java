@@ -16,7 +16,7 @@ public class JPanelRenderer extends JPanel implements TableCellRenderer{
 				            boolean isSelected, boolean hasFocus,
 				            int row, int column) {
 
-		this.setLayout(new GridLayout(0, 1));
+		//this.setLayout(new GridLayout(0, 1));
 		
 		return this;
 	}
