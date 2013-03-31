@@ -57,6 +57,7 @@ public class User {
 	public void setUserServiceList(List<String> userServiceList) {
 		this.userServiceList = userServiceList;
 	}
+
 }
 
 

@@ -26,11 +26,11 @@ public class MyTableCellEditor extends DefaultCellEditor{
 		combo.removeAllItems();
 		
 		//get elements to be put in the combobox
-		String serviceType = (String)table.getValueAt(row, column - 1);
+		/*String serviceType = (String)table.getValueAt(row, column - 1);
 		List<String> userList = instance.getMatchingUsers(serviceType);
 		for(String user : userList) {
 			combo.addItem(user);
-		}
+		}*/
 		
 		
 		return combo;
