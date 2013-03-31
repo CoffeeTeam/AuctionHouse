@@ -305,6 +305,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 					return;
 				}
 
+				// Add services table
+				List<String> serviceList = logInUser();
+				if (serviceList.isEmpty()) {
+					JOptionPane.showMessageDialog(owner,
+							ErrorMessages.logInInvalidOpt);
+					return;
+				}
+
 				// Show second "page" (the users services screen)
 				cardLayout.show(panelCards, Page.Page2.getName());
 
@@ -318,9 +326,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				userLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10,
 						5));
 				servicesPanel.add(userLabel, BorderLayout.PAGE_START);
-
-				// Add services table
-				List<String> serviceList = logInUser();
 
 				int noServices = serviceList.size();
 				Object[][] data = new Object[noServices][2];
@@ -370,12 +375,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// TODO Auto-generated method stub
 				// show the Log In page again
 				cardLayout.show(panelCards, Page.Page1.getName());
-				
+
 				resetUserData();
 				Page.Page2.panel.removeAll();
 			}
 		});
-
 	}
 
 	/**
@@ -392,8 +396,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				JTable source = (JTable) e.getSource();
 				int row = source.rowAtPoint(e.getPoint());
 
-				/*show menu only on right click and if the click
-				 * was made inside the table area
+				/*
+				 * show menu only on right click and if the click was made
+				 * inside the table area
 				 */
 				if (e.isPopupTrigger()
 						&& (row >= 0 && row < source.getRowCount())) {
@@ -478,7 +483,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		// Reset buyer/seller selection
 		invisibleButton.doClick();
-		
+
 		// Reset textfields
 		userText.setText(Symbols.emptyString);
 		passText.setText(Symbols.emptyString);
@@ -489,10 +494,12 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		// Get user's service list
 		if (user.getUserType().equals(UserTypes.buyer)) {
-			serviceList = med.logInBuyer(user.getUsername(), user.getPassword());
+			serviceList = med
+					.logInBuyer(user.getUsername(), user.getPassword());
 		} else {
 			if (user.getUserType().equals(UserTypes.seller)) {
-				serviceList = med.logInSeller(user.getUsername(), user.getPassword());
+				serviceList = med.logInSeller(user.getUsername(),
+						user.getPassword());
 			} else {
 				System.err.println("User type undefined");
 				System.exit(1);

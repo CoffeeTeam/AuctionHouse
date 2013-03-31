@@ -9,22 +9,23 @@ public class User {
 	private String username;
 	private String password;
 	private String userType;
+
+	//associate a list of users to each service
+	private HashMap<String,HashMap<String,String>> matchingUsers;
+	
+	//list of services associated with a user
+	private List<String> userServiceList;
 	
 	/**
-	 * Mantain an association between user and auction status with that user 
+	 * Maintain an association between user and auction status with that user 
 	 * @author mozzie
 	 *
 	 */
 	private class UserStatusAssoc {
 		public String userName;
 		public String status;
+		
 	}
-	
-	//associate a list of users to each service
-	private HashMap<String,ArrayList<UserStatusAssoc>> matchingUsers;
-	
-	//list of services associated with a user
-	private List<String> userServiceList;
 
 	public String getUsername() {
 		return username;
@@ -55,7 +56,15 @@ public class User {
 	}
 
 	public void setUserServiceList(List<String> userServiceList) {
+		HashMap<String, String> tmpHash;
 		this.userServiceList = userServiceList;
+		this.matchingUsers = new HashMap<String, HashMap<String,String>>();
+		
+		for(String serviceName : this.userServiceList) {
+			tmpHash = new HashMap<String, String>();
+			this.matchingUsers.put(serviceName, tmpHash);
+		}
+
 	}
 
 }
