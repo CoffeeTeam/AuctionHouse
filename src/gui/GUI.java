@@ -14,14 +14,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -33,9 +31,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import components.JPanelRenderer;
 import components.MyTableCellEditor;
 import components.PopupActionListener;
 
@@ -46,6 +44,7 @@ import verifier.JTextFieldVerifier;
 import constants.ComponentNames;
 import constants.ErrorMessages;
 import constants.Sizes;
+import constants.StatusMessages;
 import constants.Symbols;
 import constants.UserTypes;
 
@@ -329,25 +328,25 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				for (; i < noServices; i++) {
 					data[i][0] = serviceList.get(i);
-					data[i][1] = new JPanel();
+					data[i][1] = StatusMessages.inactive;
 				}
 
 				JTable table = new JTable(data,
 						ComponentNames.servicesColumnNames);
-				// table.setDefaultRenderer(JPanel.class, new JPanelRenderer());
-				table.setDefaultRenderer(JPanelRenderer.class,
-						new JPanelRenderer());
 
 				JScrollPane scrollPane = new JScrollPane(table);
 				table.setFillsViewportHeight(true);
 
-				TableColumn userColumn;
 				// set the cells to be combo boxes
+				TableColumn userColumn;
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+				
 				userColumn = table.getColumnModel().getColumn(1);
-				table.setCellEditor(new MyTableCellEditor(owner));
-
 				userColumn.setPreferredWidth(500);
 				userColumn.setCellEditor(new MyTableCellEditor(owner));
+				userColumn.setCellRenderer(centerRenderer);
+				
 				servicesPanel.add(scrollPane);
 
 				// add logout button to the panel
@@ -360,7 +359,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 
 	public void logOutButtonAction(JPanel servicesPanel) {
-
 		logOutButton = new JButton(ComponentNames.logOutButton);
 
 		servicesPanel.add(logOutButton, BorderLayout.PAGE_END);
