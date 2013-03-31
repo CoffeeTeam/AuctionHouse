@@ -1,30 +1,40 @@
 package mediator;
 
+import gui.IGUI;
+
 import java.util.List;
 
+import network.INetwork;
+
 import states.StateManager;
+import web_service.IWSClient;
+import web_service.WSClient;
 
 public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		IMediatorWSClient {
 
 	StateManager stateMgr;
+	private IWSClient wsClient;
+	private INetwork network;
+	private IGUI gui;
 	
 	public Mediator() {
 		stateMgr = new StateManager(this, this, this);
+		wsClient = new WSClient(this);
 	}
 
 	@Override
 	public List<String> logInBuyer(String name, String passwd) {
 		// TODO Auto-generated method stub
 		stateMgr.setBuyerState();
-		return stateMgr.getServiceList();
+		return stateMgr.getServiceList(name);
 	}
 
 	@Override
 	public List<String> logInSeller(String name, String passwd) {
 		// TODO Auto-generated method stub
 		stateMgr.setSellerState();
-		return stateMgr.getServiceList();
+		return stateMgr.getServiceList(name);
 	}
 
 	@Override
@@ -79,6 +89,12 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public void refuseOfferGui(String seller, String offer) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<String> getServiceList(String userName) {
+		// TODO Auto-generated method stub
+		return wsClient.getServiceList(userName);
 	}
 
 }

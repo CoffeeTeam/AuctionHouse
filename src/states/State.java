@@ -17,7 +17,7 @@ public abstract class State {
 	 * 
 	 * @return the list of services
 	 */
-	public abstract List<String> getServiceList();
+	public abstract List<String> getServiceList(String userName);
 
 	/**
 	 * Invoked when the buyer wants to take an offer or when a seller makes an

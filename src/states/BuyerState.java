@@ -17,9 +17,9 @@ public class BuyerState extends State {
 	}
 
 	@Override
-	public List<String> getServiceList() {
+	public List<String> getServiceList(String userName) {
 		// TODO Auto-generated method stub
-		return null;
+		return this.medWS.getServiceList(userName);
 	}
 
 	@Override

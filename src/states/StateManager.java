@@ -26,8 +26,8 @@ public class StateManager {
 		this.currentState = buyerState;
 	}
 	
-	public List<String> getServiceList() {
-		return currentState.getServiceList();
+	public List<String> getServiceList(String userName) {
+		return currentState.getServiceList(userName);
 	}
 	
 	public void launchService(String serviceName) {
