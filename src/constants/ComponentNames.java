@@ -15,4 +15,10 @@ public class ComponentNames {
 	
 	// Log In button label
 	public static final String logInButton			= "Log In";
+	
+	// Use hello message
+	public static final String  welcomeUserMsg		= "Hello, ";
+	
+	// Table columns names
+	public static final String servicesColumnNames[] = {"Requested Services", "Offers"};
 }

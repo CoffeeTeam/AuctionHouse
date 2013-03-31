@@ -1,6 +1,8 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,20 +12,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.TableColumn;
+
+import components.JPanelRenderer;
 
 import util.Image;
 import verifier.JTextFieldVerifier;
@@ -124,8 +130,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		// Init. the second screen (displaying user services)
 		JPanel servicesPanel = new JPanel(new GridBagLayout());
-		gbl.setConstraints(servicesPanel, constraints);
-		servicesPanel.setLayout(gbl);
+		servicesPanel.setLayout(new BorderLayout());
 		Page.Page2.setPanel(servicesPanel);
 		panelCards.add(Page.Page2.getPanel(), Page.Page2.getName());
 		
@@ -210,41 +215,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		passText.setInputVerifier(new JTextFieldVerifier());
 	}
 	
-	
-	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {	
-		final GUI owner = this;
-		
-		logInButton = new JButton(ComponentNames.logInButton);
-		
-		constraints.gridx = 1;
-		constraints.gridy = 4;
-		constraints.anchor = GridBagConstraints.CENTER;
-		
-		jp.add(logInButton, constraints);
-		
-		logInButton.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				username = userText.getText();
-				password = passText.getText();
-				
-				// Validate given input
-				if (username.isEmpty() || 
-						!(sellerButton.isSelected() || buyerButton.isSelected())) {
-					JOptionPane.showMessageDialog(owner, ErrorMessages.logInErrMsg);
-					return;
-				}
-				
-				// Show second "page" (the users services screen)
-				cardLayout.show(panelCards, Page.Page2.getName());
-				logInUser();
-			}
-			
-		});
-	}
-	
 	private void putRadioButtons(GridBagConstraints constraints,JPanel jp){
 		ButtonGroup group = new ButtonGroup();
 		JPanel radioPanel = new JPanel(new GridLayout(0, 1));
@@ -293,9 +263,84 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 	}
 	
-    public void logInUser() {
-    	List<String> serviceList;
+	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {	
+		final GUI owner = this;
+		final GridBagConstraints constr = constraints;
+		
+		logInButton = new JButton(ComponentNames.logInButton);
+		
+		constraints.gridx = 1;
+		constraints.gridy = 4;
+		constraints.anchor = GridBagConstraints.CENTER;
+		
+		jp.add(logInButton, constraints);
+		
+		logInButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				username = userText.getText();
+				password = passText.getText();
+				
+				// Validate given input
+				if (username.isEmpty() || 
+						!(sellerButton.isSelected() || buyerButton.isSelected())) {
+					JOptionPane.showMessageDialog(owner, ErrorMessages.logInErrMsg);
+					return;
+				}
+				
+				// Show second "page" (the users services screen)
+				cardLayout.show(panelCards, Page.Page2.getName());
+				
+				// Add the table containing services info
+		    	JPanel servicesPanel = Page.Page2.getPanel();
+		    	
+		    	// Add user message
+		    	JLabel userLabel = new JLabel(ComponentNames.welcomeUserMsg + username);
+		    	userLabel.setForeground(Color.RED);
+		    	userLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10, 5));
+		    	servicesPanel.add(userLabel, BorderLayout.PAGE_START);
+		    	
+		    	// Add services table
+		    	List<String> serviceList = logInUser(); 
+		    	
+		    	// TODO => dupa implementare tb sa dispara zona asta
+		    	serviceList = new LinkedList<>();
+		    	serviceList.add("s1");
+		    	serviceList.add("s2");
+		    	serviceList.add("s3");
+		    	// end of TODO
+		    	
+		    	int noServices = serviceList.size();
+		    	Object[][] data = new Object[noServices][2];
+		    	int i = 0;
+		    	
+		    	for (; i<noServices; i++) {
+		    		data[i][0] = serviceList.get(i);
+		    		data[i][1] = new JPanel();
+		    	}
+		    	
+		    	JTable table = new JTable(data, ComponentNames.servicesColumnNames);
+		    	TableColumn column;
+		    	
+		    	column = table.getColumnModel().getColumn(1);
+	            column.setPreferredWidth(500);
+		        
+		    	table.setDefaultRenderer(JPanel.class, new JPanelRenderer());
+		    	JScrollPane scrollPane = new JScrollPane(table);
+		    
+		    	servicesPanel.add(scrollPane);
+			}
+			
+		});
+	}
+	
+	
+    public List<String> logInUser() {
+    	List<String> serviceList = null;
     	
+    	// Get user's service list
     	if(userType.equals(UserTypes.buyer)){
     		serviceList = med.logInBuyer(username, password);
     	} else {
@@ -306,6 +351,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
     			System.exit(1);
     		}
     	}
+    	 
+    	return serviceList;
     }
     
 	@Override
