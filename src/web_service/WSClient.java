@@ -17,9 +17,9 @@ public class WSClient extends IWSClient{
 	}
 	
 	@Override
-	public List<String> getCurrentUsers(String serviceName) {
+	public List<String> getCurrentUsers(String serviceName, String userType) {
 		// TODO Auto-generated method stub
-		return null;
+		return infoRetriever.getUserList(serviceName, userType);
 	}
 
 	@Override

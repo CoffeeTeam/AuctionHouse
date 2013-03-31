@@ -80,7 +80,12 @@ public class FileInfoRetriever {
 		return serviceList;
 	}
 	
-	public List<String> getUserList(String service) {
+	/**
+	 * Get the list of users that provide a service
+	 * @param service the name of the service
+	 * @return the list of sellers
+	 */
+	public List<String> getUserList(String service, String userType) {
 		List<String> users = new Vector<String>();
 		BufferedReader br = getFileReader();
 		String currentLine, user, tmpService;
@@ -94,17 +99,17 @@ public class FileInfoRetriever {
 		try {
 			//Read until the end of file
 			while ((currentLine = br.readLine()) != null) {
+				System.out.println("Read line " + currentLine);
 				strTk = new StringTokenizer(currentLine);
 				user = strTk.nextToken();
 
 				//reads services for all users
-				if (strTk.nextElement().equals("seller")) {
+				if (!strTk.nextElement().equals(userType)) {
 					while (strTk.hasMoreTokens()) {
 						tmpService = strTk.nextToken();
 						if(tmpService.equals(service))
 							users.add(user);
 					}
-					break;
 				}
 
 			}
