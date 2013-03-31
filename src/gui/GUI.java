@@ -396,16 +396,22 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseReleased(MouseEvent e) {
-
+			public void mousePressed(MouseEvent e) {
 				JTable source = (JTable) e.getSource();
-				int column = source.columnAtPoint(e.getPoint());
 				int row = source.rowAtPoint(e.getPoint());
 
-				// initialize context menu
-				JPopupMenu contextMenu = new JPopupMenu();
-				if (createPopUpMenu(contextMenu, source, row, column))
-					contextMenu.show(e.getComponent(), e.getX(), e.getY());
+				/*show menu only on right click and if the click
+				 * was made inside the table area
+				 */
+				if (e.isPopupTrigger()
+						&& (row >= 0 && row < source.getRowCount())) {
+					int column = source.columnAtPoint(e.getPoint());
+
+					// initialize context menu
+					JPopupMenu contextMenu = new JPopupMenu();
+					if (createPopUpMenu(contextMenu, source, row, column))
+						contextMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 
 		});
@@ -527,6 +533,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	public static void main(String args[]) {
 		GUI gui = new GUI();
+	}
+
+	public IMediatorGUI getMed() {
+		return med;
+	}
+
+	public void setMed(IMediatorGUI med) {
+		this.med = med;
 	}
 
 }
