@@ -6,5 +6,5 @@ public abstract class Command {
 	
 	public IMediatorNetwork medNetwork;
 
-	public abstract void execute();
+	public abstract void execute(String serviceName, String user);
 }
