@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -19,11 +21,14 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,6 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
 
 import components.JPanelRenderer;
+import components.MyTableCellEditor;
+import components.PopupActionListener;
 
 import user.User;
 import util.Image;
@@ -49,8 +56,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private JButton logInButton;
+	private JButton logOutButton;
 	private JRadioButton sellerButton;
 	private JRadioButton buyerButton;
+	private JRadioButton invisibleButton;
 
 	private JTextField userText;
 	private JPasswordField passText;
@@ -67,7 +76,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private JPanel panelCards;
 	private CardLayout cardLayout;
-	
+
 	private User user;
 
 	/**
@@ -225,6 +234,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		sellerButton = new JRadioButton(ComponentNames.sellerRadioButton);
 		buyerButton = new JRadioButton(ComponentNames.buyerRadioButton);
+		invisibleButton = new JRadioButton();
+
 		pictureUsr = new JLabel(
 				Image.createImageIcon(ComponentNames.logInPicPath));
 
@@ -250,12 +261,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		pictureUsr.setPreferredSize(new Dimension(177, 122));
 
+		invisibleButton.setVisible(false);
 		radioPanel.add(buyerButton);
 		radioPanel.add(sellerButton);
+		radioPanel.add(invisibleButton);
 
 		// Logically group radio buttons
 		group.add(buyerButton);
 		group.add(sellerButton);
+		group.add(invisibleButton);
 
 		constraints.gridx = 1;
 		constraints.gridy = 3;
@@ -267,97 +281,227 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	}
 
-	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {	
+	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {
 		final GUI owner = this;
 		final GridBagConstraints constr = constraints;
-		
+
 		logInButton = new JButton(ComponentNames.logInButton);
-		
+
 		constraints.gridx = 1;
 		constraints.gridy = 4;
 		constraints.anchor = GridBagConstraints.CENTER;
-		
+
 		jp.add(logInButton, constraints);
-		
-		logInButton.addActionListener(new ActionListener(){
+
+		logInButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				username = userText.getText();
 				password = passText.getText();
-				
+				user.setUsername(username);
+				user.setPassword(password);
+
 				// Validate given input
-				if (username.isEmpty() || 
-						!(sellerButton.isSelected() || buyerButton.isSelected())) {
-					JOptionPane.showMessageDialog(owner, ErrorMessages.logInErrMsg);
+				if (username.isEmpty()
+						|| !(sellerButton.isSelected() || buyerButton
+								.isSelected())) {
+					JOptionPane.showMessageDialog(owner,
+							ErrorMessages.logInErrMsg);
 					return;
 				}
-				
+
 				// Show second "page" (the users services screen)
 				cardLayout.show(panelCards, Page.Page2.getName());
-				
+
 				// Add the table containing services info
-		    	JPanel servicesPanel = Page.Page2.getPanel();
-		    	
-		    	// Add user message
-		    	JLabel userLabel = new JLabel(ComponentNames.welcomeUserMsg + username);
-		    	userLabel.setForeground(Color.RED);
-		    	userLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10, 5));
-		    	servicesPanel.add(userLabel, BorderLayout.PAGE_START);
-		    	
-		    	// Add services table
-		    	List<String> serviceList = logInUser(); 
-		    	
-		    	// TODO => dupa implementare tb sa dispara zona asta
-		    	serviceList = new LinkedList<>();
-		    	serviceList.add("s1");
-		    	serviceList.add("s2");
-		    	serviceList.add("s3");
-		    	// end of TODO
-		    	
-		    	int noServices = serviceList.size();
-		    	Object[][] data = new Object[noServices][2];
-		    	int i = 0;
-		    	
-		    	for (; i<noServices; i++) {
-		    		data[i][0] = serviceList.get(i);
-		    		data[i][1] = new JPanel();
-		    	}
-		    	
-		    	JTable table = new JTable(data, ComponentNames.servicesColumnNames);
-		    	TableColumn column;
-		    	
-		    	column = table.getColumnModel().getColumn(1);
-	            column.setPreferredWidth(500);
-		        
-		    	table.setDefaultRenderer(JPanel.class, new JPanelRenderer());
-		    	JScrollPane scrollPane = new JScrollPane(table);
-		    
-		    	servicesPanel.add(scrollPane);
+				JPanel servicesPanel = Page.Page2.getPanel();
+
+				// Add user message
+				JLabel userLabel = new JLabel(ComponentNames.welcomeUserMsg
+						+ username);
+				userLabel.setForeground(Color.RED);
+				userLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 10,
+						5));
+				servicesPanel.add(userLabel, BorderLayout.PAGE_START);
+
+				// Add services table
+				List<String> serviceList = logInUser();
+
+				int noServices = serviceList.size();
+				Object[][] data = new Object[noServices][2];
+				int i = 0;
+
+				for (; i < noServices; i++) {
+					data[i][0] = serviceList.get(i);
+					data[i][1] = new JPanel();
+				}
+
+				JTable table = new JTable(data,
+						ComponentNames.servicesColumnNames);
+				// table.setDefaultRenderer(JPanel.class, new JPanelRenderer());
+				table.setDefaultRenderer(JPanelRenderer.class,
+						new JPanelRenderer());
+
+				JScrollPane scrollPane = new JScrollPane(table);
+				table.setFillsViewportHeight(true);
+
+				TableColumn userColumn;
+				// set the cells to be combo boxes
+				userColumn = table.getColumnModel().getColumn(1);
+				table.setCellEditor(new MyTableCellEditor(owner));
+
+				userColumn.setPreferredWidth(500);
+				userColumn.setCellEditor(new MyTableCellEditor(owner));
+				servicesPanel.add(scrollPane);
+
+				// add logout button to the panel
+				logOutButtonAction(servicesPanel);
+
+				addTableListener(table);
 			}
-			
+
 		});
 	}
+
+	public void logOutButtonAction(JPanel servicesPanel) {
+
+		logOutButton = new JButton(ComponentNames.logOutButton);
+
+		servicesPanel.add(logOutButton, BorderLayout.PAGE_END);
+
+		logOutButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				// show the Log In page again
+				cardLayout.show(panelCards, Page.Page1.getName());
+				invisibleButton.doClick();
+				resetUserData();
+				Page.Page2.panel.removeAll();
+			}
+		});
+
+	}
+
+	/**
+	 * Add a pop-up menu on right click
+	 * 
+	 * @param table
+	 *            JTable on which the listener is added
+	 */
+	public void addTableListener(JTable table) {
+
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+				JTable source = (JTable) e.getSource();
+				int column = source.columnAtPoint(e.getPoint());
+				
+				//initialize context menu
+				JPopupMenu contextMenu = new JPopupMenu();
+				if(createPopUpMenu(contextMenu, column))
+					contextMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
+
+		});
+
+	}
+
+	/**
+	 * Create a popup menu on right click on a cell
+	 * @param contextMenu
+	 * @param column
+	 * @return boolean indicating if a popup menu should be displayed or not
+	 */
+	public boolean createPopUpMenu(JPopupMenu contextMenu, int column) {
+		JMenuItem item;
+		boolean toDisplayMenu = false;
+		ActionListener actionListener = new PopupActionListener();
+		
+		switch (column) {
+		case 0:
+			//add service menu with different entries for buyer and for seller 
+			if (userType.equals(UserTypes.buyer)) {
+				//Launch Offer Request option
+				item = new JMenuItem(ComponentNames.buyerServiceMenu[0]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+				
+				//Drop Offer Request option
+				item = new JMenuItem(ComponentNames.buyerServiceMenu[1]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+			} else {
+				//Make offer
+				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+				
+				//Drop auction
+				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+			}
+			toDisplayMenu = true;
+			break;
+		case 1:
+			//add menu for those who will sell products for buyers
+			if (userType.equals(UserTypes.buyer)) {
+				//Accept offer
+				item  = new JMenuItem(ComponentNames.buyerUserMenu[0]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+				
+				//Refuse offer
+				item  = new JMenuItem(ComponentNames.buyerUserMenu[0]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+				toDisplayMenu = true;
+			}
+			break;
+		}
+		
+		return toDisplayMenu;
+	}
 	
-	
-    public List<String> logInUser() {
-    	List<String> serviceList = null;
-    	
-    	// Get user's service list
-    	if(userType.equals(UserTypes.buyer)){
-    		serviceList = med.logInBuyer(username, password);
-    	} else {
-    		if(userType.equals(UserTypes.seller)) {
-    			serviceList = med.logInSeller(username, password);
-    		} else {
-    			System.err.println("User type undefined");
-    			System.exit(1);
-    		}
-    	}
-    	 
-    	return serviceList;
-    }
+	public void resetUserData() {
+		List<String> emptyList = new Vector<String>();
+		this.user.setUsername("");
+		this.user.setPassword("");
+		this.user.setUserServiceList(emptyList);
+
+		this.userType = "";
+		this.username = "";
+		this.password = "";
+	}
+
+	public List<String> logInUser() {
+		List<String> serviceList = null;
+
+		// Get user's service list
+		if (userType.equals(UserTypes.buyer)) {
+			serviceList = med.logInBuyer(username, password);
+		} else {
+			if (userType.equals(UserTypes.seller)) {
+				serviceList = med.logInSeller(username, password);
+			} else {
+				System.err.println("User type undefined");
+				System.exit(1);
+			}
+		}
+		user.setUserServiceList(serviceList);
+		return serviceList;
+	}
+
+	public List<String> getMatchingUsers(String serviceName) {
+		List<String> userList = med.getUsers(serviceName);
+
+		return userList;
+	}
 
 	@Override
 	public void updateServices(List<String> offers) {

@@ -40,7 +40,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void launchService(String serviceName) {
 		// TODO Auto-generated method stub
-		
+		stateMgr.launchService(serviceName);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void launchOfferRequest(String serviceName) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -64,13 +64,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void acceptOfferNet(String seller, String offer) {
 		// TODO Auto-generated method stub
-		
+		network.acceptOffer(seller, offer);
 	}
 
 	@Override
 	public void refuseOfferNet(String seller, String offer) {
 		// TODO Auto-generated method stub
-		
+		network.refuseOffer(seller, offer);
 	}
 
 	@Override
@@ -82,19 +82,31 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void acceptOfferGui(String seller, String offer) {
 		// TODO Auto-generated method stub
-		
+		stateMgr.acceptOffer(seller, offer);
 	}
 
 	@Override
 	public void refuseOfferGui(String seller, String offer) {
 		// TODO Auto-generated method stub
-		
+		stateMgr.refuseOffer(seller, offer);
 	}
 
 	@Override
 	public List<String> getServiceList(String userName) {
 		// TODO Auto-generated method stub
 		return wsClient.getServiceList(userName);
+	}
+
+	@Override
+	public List<String> getUsers(String serviceName) {
+		// TODO Auto-generated method stub
+		return stateMgr.getCurrentUsers(serviceName);
+	}
+
+	@Override
+	public List<String> getUserList(String serviceName, String userType) {
+		// TODO Auto-generated method stub
+		return wsClient.getCurrentUsers(serviceName, userType);
 	}
 
 }

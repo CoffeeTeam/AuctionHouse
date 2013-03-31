@@ -14,6 +14,9 @@ public interface IMediatorGUI {
 	public List<String> logInBuyer(String name, String passwd);
 	
 	public List<String> logInSeller(String name, String passwd);
+	
+	public List<String> getUsers(String serviceName);
+	
 	public void launchService(String serviceName);
 	public void dropService(String serviceName);
 	public void acceptOfferGui(String seller, String offer);

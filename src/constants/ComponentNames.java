@@ -16,9 +16,19 @@ public class ComponentNames {
 	// Log In button label
 	public static final String logInButton			= "Log In";
 	
+	//Log Out button label
+	public static final String logOutButton			= "Log Out";
+	
 	// Use hello message
 	public static final String  welcomeUserMsg		= "Hello, ";
 	
 	// Table columns names
 	public static final String servicesColumnNames[] = {"Requested Services", "Offers"};
+	
+	//Entries in the contextual pop-up menus
+	public static final String buyerServiceMenu[]	= {"Launch Offer Request", "Drop Offer request"};
+	
+	public static final String buyerUserMenu[]		= {"Accept Offer", "Refuse offer"};
+	
+	public static final String sellerServiceMenu[]	= {"Make offer", "Drop auction"};
 }
