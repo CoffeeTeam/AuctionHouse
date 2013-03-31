@@ -30,6 +30,10 @@ public class StateManager {
 		return currentState.getServiceList(userName);
 	}
 	
+	public List<String> getCurrentUsers(String serviceName){
+		return currentState.getCurrentUsers(serviceName);
+	}
+	
 	public void launchService(String serviceName) {
 		this.currentState.launchService(serviceName);
 	}

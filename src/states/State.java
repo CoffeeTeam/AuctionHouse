@@ -18,6 +18,13 @@ public abstract class State {
 	 * @return the list of services
 	 */
 	public abstract List<String> getServiceList(String userName);
+	
+	/**
+	 * Get the list of users which provide/or wish a certain service
+	 * @param serviceName 
+	 * @return list of users
+	 */
+	public abstract List<String> getCurrentUsers(String serviceName);
 
 	/**
 	 * Invoked when the buyer wants to take an offer or when a seller makes an
@@ -45,9 +52,7 @@ public abstract class State {
 	 * @param seller
 	 *            the name of the person who provides the service
 	 */
-	public void acceptOffer(String seller, String serviceName) {
-
-	}
+	public abstract void acceptOffer(String seller, String serviceName);
 
 	/**
 	 * The buyer drops the offer of a seller
@@ -57,7 +62,5 @@ public abstract class State {
 	 * @param seller
 	 *            the person which provides the service
 	 */
-	public void refuseOffer(String seller, String serviceName) {
-
-	}
+	public abstract void refuseOffer(String seller, String serviceName);
 }

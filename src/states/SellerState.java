@@ -2,6 +2,8 @@ package states;
 
 import java.util.List;
 
+import constants.UserTypes;
+
 import mediator.IMediatorGUI;
 import mediator.IMediatorNetwork;
 import mediator.IMediatorWSClient;
@@ -18,13 +20,13 @@ public class SellerState extends State {
 	@Override
 	public List<String> getServiceList(String userName) {
 		// TODO Auto-generated method stub
-		return null;
+		return medWS.getServiceList(userName);
 	}
 
 	@Override
 	public void launchService(String serviceName) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -34,11 +36,18 @@ public class SellerState extends State {
 	}
 
 	public void acceptOffer(String seller, String serviceName) {
-
+		
 	}
 
 	public void refuseOffer(String seller, String serviceName) {
 
 	}
 
+	@Override
+	public List<String> getCurrentUsers(String serviceName) {
+		// TODO Auto-generated method stub
+		return this.medWS.getUserList(serviceName, UserTypes.seller);
+	}
+
+	
 }
