@@ -38,8 +38,8 @@ public class StateManager {
 		this.currentState.launchService(serviceName, userName);
 	}
 
-	public void dropService(String serviceName) {
-		this.currentState.dropService(serviceName);
+	public void dropService(String serviceName, String userName) {
+		this.currentState.dropService(serviceName, userName);
 	}
 
 	public void acceptOffer(String seller, String serviceName) {

@@ -30,7 +30,7 @@ public class SellerState extends State {
 	}
 
 	@Override
-	public void dropService(String serviceName) {
+	public void dropService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
 
 	}

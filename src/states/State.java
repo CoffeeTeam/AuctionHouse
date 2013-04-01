@@ -42,7 +42,7 @@ public abstract class State {
 	 * @param serviceName
 	 *            the name of the service for which the actions are made
 	 */
-	public abstract void dropService(String serviceName);
+	public abstract void dropService(String serviceName, String userName);
 
 	/**
 	 * Used by the buyer to accept an offer

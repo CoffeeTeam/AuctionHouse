@@ -79,6 +79,8 @@ public class Network extends INetwork {
 			if (!status.equals(StatusMessages.offerAccepted))
 				refuseOffer(user, serviceName);
 		}
+		
+		System.out.println("I dropped offers");
 
 	}
 }
