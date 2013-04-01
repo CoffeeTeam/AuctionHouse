@@ -20,6 +20,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -32,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import components.MyTableCellEditor;
@@ -509,10 +511,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		return serviceList;
 	}
 
-	public List<String> getMatchingUsers(String serviceName) {
+	public void launchOffer(String serviceName, JTable table){
 		List<String> userList = med.getUsers(serviceName);
+		this.user.setUserListForService(serviceName, userList);
+		table.repaint();
+//		Page.Page2.panel.repaint();
+	}
 
-		return userList;
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import constants.StatusMessages;
+
 public class User {
 
 	private String username;
@@ -16,17 +18,10 @@ public class User {
 	//list of services associated with a user
 	private List<String> userServiceList;
 	
-	/**
-	 * Maintain an association between user and auction status with that user 
-	 * @author mozzie
-	 *
-	 */
-	private class UserStatusAssoc {
-		public String userName;
-		public String status;
-		
+	public User() {
+		this.matchingUsers = new HashMap<String, HashMap<String,String>>();
 	}
-
+	
 	public String getUsername() {
 		return username;
 	}
@@ -58,13 +53,42 @@ public class User {
 	public void setUserServiceList(List<String> userServiceList) {
 		HashMap<String, String> tmpHash;
 		this.userServiceList = userServiceList;
-		this.matchingUsers = new HashMap<String, HashMap<String,String>>();
+		
 		
 		for(String serviceName : this.userServiceList) {
 			tmpHash = new HashMap<String, String>();
 			this.matchingUsers.put(serviceName, tmpHash);
 		}
-
+	}
+	
+	public void setUserListForService(String serviceName, List<String> users) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		
+		for(String user : users) {
+			serviceHashMap.put(user, StatusMessages.noOffer);
+		}
+		
+		this.matchingUsers.put(serviceName, serviceHashMap);
+	}
+	
+	public boolean isEmptyService(String serviceName) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		if(serviceHashMap.isEmpty())
+			return true;
+		return false;
+	}
+	
+	public boolean isEmptyServiceList() {
+		return this.matchingUsers.isEmpty();
+	}
+	
+	/**
+	 * get the association between an user and it's status for a certain service
+	 * @param serviceName
+	 * @return hash map containing the associations
+	 */
+	public HashMap<String,String> getUserStatus(String serviceName) {
+		return this.matchingUsers.get(serviceName);
 	}
 
 }

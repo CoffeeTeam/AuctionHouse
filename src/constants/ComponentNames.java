@@ -23,7 +23,7 @@ public class ComponentNames {
 	public static final String  welcomeUserMsg		= "Hello, ";
 	
 	// Table columns names
-	public static final String servicesColumnNames[] = {"Requested Services", "Offers"};
+	public static final String servicesColumnNames[] = {"Requested Services", "Offers and status"};
 	
 	//Entries in the contextual pop-up menus
 	public static final String buyerServiceMenu[]	= {"Launch Offer Request", "Drop Offer request"};
