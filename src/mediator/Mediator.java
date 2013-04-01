@@ -79,8 +79,20 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void acceptOfferNet(String seller, String offer) {
-		// TODO Auto-generated method stub
-		network.acceptOffer(seller, offer);
+		// TODO
+
+		// Refuse other offers
+		List<String> otherOffers = stateMgr.getCurrentUsers(offer);
+		for (String otherOff:otherOffers) {
+			if (otherOff.equals(offer))
+				continue;
+			
+			// TODO change status of offer to "Offer Refused"
+			
+		}
+		
+		// Accept selected offer and start the transfer
+		// TODO mark offer as accepted
 	}
 
 	@Override
