@@ -3,6 +3,7 @@ package states;
 import java.util.List;
 
 import commands.Command;
+import commands.DropOfferReq;
 import commands.LaunchOfferReq;
 
 import constants.UserTypes;
@@ -14,6 +15,7 @@ import mediator.IMediatorWSClient;
 public class BuyerState extends State {
 
 	Command launchOfferReq;
+	Command dropOfferReq;
 	public BuyerState(IMediatorGUI medGUI, IMediatorWSClient medWS,
 			IMediatorNetwork medNetwork) {
 		this.medGUI = medGUI;
@@ -21,7 +23,7 @@ public class BuyerState extends State {
 		this.medWS = medWS;
 		
 		launchOfferReq = new LaunchOfferReq(medNetwork);
-
+		dropOfferReq = new DropOfferReq(medNetwork);
 	}
 
 	@Override
@@ -39,7 +41,7 @@ public class BuyerState extends State {
 	@Override
 	public void dropService(String serviceName) {
 		// TODO Auto-generated method stub
-
+		dropOfferReq.execute(serviceName, null);
 	}
 
 	@Override

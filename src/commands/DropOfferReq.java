@@ -11,7 +11,6 @@ public class DropOfferReq extends Command {
 	@Override
 	public void execute(String serviceName, String user) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -21,7 +21,7 @@ public class PopupActionListener implements ActionListener {
 		this.column = column;
 		this.gui = gui;
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
@@ -46,7 +46,8 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Drop offer
 		if (actionName.equals(ComponentNames.buyerServiceMenu[1])) {
-			gui.getMed().dropService(serviceName);
+			gui.getMed().dropService(serviceName, gui.getUser().getUserStatus(serviceName));
+			gui.dropOffer(serviceName, table);
 		} else
 		// Accept offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[0])) {
@@ -62,7 +63,7 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Drop auction
 		if (actionName.equals(ComponentNames.sellerServiceMenu[1])) {
-			gui.getMed().dropService(serviceName);
+			gui.getMed().dropService(serviceName, gui.getUser().getUserStatus(serviceName));
 		}
 
 	}

@@ -90,6 +90,13 @@ public class User {
 	public HashMap<String,String> getUserStatus(String serviceName) {
 		return this.matchingUsers.get(serviceName);
 	}
+	
+	public void emptyUserListForService(String serviceName) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		serviceHashMap.clear();
+		this.matchingUsers.put(serviceName, serviceHashMap);
+		
+	}
 
 }
 

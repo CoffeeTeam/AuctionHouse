@@ -433,16 +433,21 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		switch (column) {
 		case 0:
+			String serviceName = (String)table.getValueAt(row, column);
 			// add service menu with different entries for buyer and for seller
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Launch Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[0]);
 				item.addActionListener(actionListener);
+				if(!user.isEmptyService(serviceName))
+					item.setEnabled(false);
 				contextMenu.add(item);
 
 				// Drop Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[1]);
 				item.addActionListener(actionListener);
+				if(user.isEmptyService(serviceName))
+					item.setEnabled(false);
 				contextMenu.add(item);
 			} else {
 				// Make offer
@@ -515,7 +520,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		List<String> userList = med.getUsers(serviceName);
 		this.user.setUserListForService(serviceName, userList);
 		table.repaint();
-//		Page.Page2.panel.repaint();
+	}
+	
+	public void dropOffer(String serviceName, JTable table) {
+		this.user.emptyUserListForService(serviceName);
+		table.repaint();
 	}
 
 	public User getUser() {

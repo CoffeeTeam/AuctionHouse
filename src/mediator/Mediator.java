@@ -2,11 +2,18 @@ package mediator;
 
 import gui.IGUI;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import constants.StatusMessages;
 
 import network.INetwork;
+import network.Network;
 
 import states.StateManager;
+import user.User;
 import web_service.IWSClient;
 import web_service.WSClient;
 
@@ -21,6 +28,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public Mediator() {
 		stateMgr = new StateManager(this, this, this);
 		wsClient = new WSClient(this);
+		network = new Network();
 	}
 
 	@Override
@@ -44,8 +52,16 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void dropService(String serviceName) {
+	public void dropService(String serviceName, HashMap<String, String> userStatus) {
 		// TODO Auto-generated method stub
+		//stateMgr.dropService(serviceName);
+		Set<String> users = userStatus.keySet();
+		Iterator<String> usersStatus = users.iterator();
+		while(usersStatus.hasNext()) {
+			String userName = usersStatus.next();
+			if(!userStatus.get(userName).equals(StatusMessages.noOffer))
+				refuseOfferNet(userName, serviceName);
+		}
 		
 	}
 
