@@ -5,9 +5,14 @@ import gui.GUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JProgressBar;
 import javax.swing.JTable;
 
 import constants.ComponentNames;
+import constants.StatusMessages;
 
 public class PopupActionListener implements ActionListener {
 	private JTable table;
@@ -24,7 +29,6 @@ public class PopupActionListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 		String actionName = arg0.getActionCommand();
 		String serviceName = null;
 		String user = null;
@@ -51,11 +55,20 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Accept offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[0])) {
-			gui.getMed().acceptOfferGui(user, serviceName);
+			// Accepta oferta doar daca statusul nu e inactiv
+			if (/*!*/user.equalsIgnoreCase(StatusMessages.inactive)) {
+				//gui.getMed().acceptOfferGui(user, serviceName);
+
+				// TODO afiseaza progress bar-ul
+				//table.setValueAt(new JComboBox<>(), row, column);
+				
+			}
 		} else
 		// refuse offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[1])) {
-			gui.getMed().refuseOfferGui(user, serviceName);
+			// Accepta oferta doar daca statusul nu e inactiv
+			if (!user.equalsIgnoreCase(StatusMessages.inactive))
+				gui.getMed().refuseOfferGui(user, serviceName);
 		} else
 		// Make offer
 		if (actionName.equals(ComponentNames.sellerServiceMenu[0])) {
