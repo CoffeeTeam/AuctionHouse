@@ -97,6 +97,12 @@ public class User {
 		this.matchingUsers.put(serviceName, serviceHashMap);
 		
 	}
+	
+	public void addUserToService(String serviceName, String user) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		serviceHashMap.put(user, StatusMessages.noOffer);
+		this.matchingUsers.put(serviceName, serviceHashMap);
+	}
 
 }
 

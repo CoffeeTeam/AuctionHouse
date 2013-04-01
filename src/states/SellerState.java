@@ -26,7 +26,7 @@ public class SellerState extends State {
 	@Override
 	public void launchService(String serviceName) {
 		// TODO Auto-generated method stub
-		
+		medNetwork.launchOfferRequest(serviceName);
 	}
 
 	@Override

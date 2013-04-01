@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Set;
 
 import constants.StatusMessages;
+import constants.UserTypes;
 
 import network.INetwork;
 import network.Network;
 
 import states.StateManager;
-import user.User;
 import web_service.IWSClient;
 import web_service.WSClient;
 
@@ -24,7 +24,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	private IWSClient wsClient;
 	private INetwork network;
 	private IGUI gui;
-	
+
 	public Mediator() {
 		stateMgr = new StateManager(this, this, this);
 		wsClient = new WSClient(this);
@@ -34,15 +34,28 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public List<String> logInBuyer(String name, String passwd) {
 		// TODO Auto-generated method stub
+		List<String> serviceList;
 		stateMgr.setBuyerState();
-		return stateMgr.getServiceList(name);
+		serviceList = stateMgr.getServiceList(name);
+
+		if (!serviceList.isEmpty())
+			registerUser(name, passwd, UserTypes.buyer, serviceList);
+
+		return serviceList;
 	}
 
 	@Override
 	public List<String> logInSeller(String name, String passwd) {
 		// TODO Auto-generated method stub
+		List<String> serviceList;
+
 		stateMgr.setSellerState();
-		return stateMgr.getServiceList(name);
+		serviceList = stateMgr.getServiceList(name);
+
+		if (!serviceList.isEmpty())
+			registerUser(name, passwd, UserTypes.seller, serviceList);
+
+		return serviceList;
 	}
 
 	@Override
@@ -52,29 +65,16 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void dropService(String serviceName, HashMap<String, String> userStatus) {
+	public void dropService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		//stateMgr.dropService(serviceName);
-		Set<String> users = userStatus.keySet();
-		Iterator<String> usersStatus = users.iterator();
-		while(usersStatus.hasNext()) {
-			String userName = usersStatus.next();
-			if(!userStatus.get(userName).equals(StatusMessages.noOffer))
-				refuseOfferNet(userName, serviceName);
-		}
-		
+		// stateMgr.dropService(serviceName);
+		network.dropOffer(userName, serviceName);
+
 	}
 
 	@Override
 	public void launchOfferRequest(String serviceName) {
-		
-		
-	}
 
-	@Override
-	public void updateUser(List<String> offerList) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void interruptTransfer(String seller, String serviceName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -123,6 +123,19 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public List<String> getUserList(String serviceName, String userType) {
 		// TODO Auto-generated method stub
 		return wsClient.getCurrentUsers(serviceName, userType);
+	}
+
+	@Override
+	public void updateUser(String serviceName, String userName) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void registerUser(String username, String password, String userType,
+			List<String> services) {
+		// TODO Auto-generated method stub
+		network.logInUser(username, password, userType, services);
 	}
 
 }

@@ -345,15 +345,20 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				table.setFillsViewportHeight(true);
 
 				// set the cells to be combo boxes
-				TableColumn userColumn;
+				TableColumn userColumn0, userColumn1;
+				
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-				centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 				
-				userColumn = table.getColumnModel().getColumn(1);
-				userColumn.setPreferredWidth(500);
-				userColumn.setCellEditor(new MyTableCellEditor(owner));
-				userColumn.setCellRenderer(centerRenderer);
-				
+				userColumn0 = table.getColumnModel().getColumn(0);
+				userColumn0.setPreferredWidth(100);
+				userColumn0.setCellRenderer(centerRenderer);
+
+				userColumn1 = table.getColumnModel().getColumn(1);
+				userColumn1.setPreferredWidth(300);
+				userColumn1.setCellEditor(new MyTableCellEditor(owner));
+				userColumn1.setCellRenderer(centerRenderer);
+
 				servicesPanel.add(scrollPane);
 
 				// add logout button to the panel
@@ -433,34 +438,25 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		switch (column) {
 		case 0:
-			String serviceName = (String)table.getValueAt(row, column);
+			String serviceName = (String) table.getValueAt(row, column);
 			// add service menu with different entries for buyer and for seller
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Launch Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[0]);
 				item.addActionListener(actionListener);
-				if(!user.isEmptyService(serviceName))
+				if (!user.isEmptyService(serviceName))
 					item.setEnabled(false);
 				contextMenu.add(item);
 
 				// Drop Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[1]);
 				item.addActionListener(actionListener);
-				if(user.isEmptyService(serviceName))
+				if (user.isEmptyService(serviceName))
 					item.setEnabled(false);
 				contextMenu.add(item);
-			} else {
-				// Make offer
-				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
-				item.addActionListener(actionListener);
-				contextMenu.add(item);
-
-				// Drop auction
-				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
-				item.addActionListener(actionListener);
-				contextMenu.add(item);
+				toDisplayMenu = true;
 			}
-			toDisplayMenu = true;
+
 			break;
 		case 1:
 			// add menu for those who will sell products for buyers
@@ -474,8 +470,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				item = new JMenuItem(ComponentNames.buyerUserMenu[1]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
-				toDisplayMenu = true;
+
+			} else {
+				// Make offer
+				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
+
+				// Drop auction
+				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
+				item.addActionListener(actionListener);
+				contextMenu.add(item);
 			}
+			toDisplayMenu = true;
 			break;
 		}
 
@@ -513,18 +520,23 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		}
 		user.setUserServiceList(serviceList);
+		if(user.getUserType().equals(UserTypes.seller)) {
+			for(String service : serviceList) {
+				this.launchOffer(service);
+			}
+		}
 		return serviceList;
 	}
 
-	public void launchOffer(String serviceName, JTable table){
+	public void launchOffer(String serviceName) {
 		List<String> userList = med.getUsers(serviceName);
 		this.user.setUserListForService(serviceName, userList);
-		table.repaint();
+		Page.Page2.panel.repaint();
 	}
-	
-	public void dropOffer(String serviceName, JTable table) {
+
+	public void dropOffer(String serviceName) {
 		this.user.emptyUserListForService(serviceName);
-		table.repaint();
+		Page.Page2.panel.repaint();
 	}
 
 	public User getUser() {
@@ -533,12 +545,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	public void setUser(User user) {
 		this.user = user;
-	}
-
-	@Override
-	public void updateServices(List<String> offers) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -552,11 +558,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		// TODO Auto-generated method stub
 
 	}
-
-	public static void main(String args[]) {
-		GUI gui = new GUI();
-	}
-
+	
 	public IMediatorGUI getMed() {
 		return med;
 	}
@@ -564,5 +566,18 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	public void setMed(IMediatorGUI med) {
 		this.med = med;
 	}
+
+	@Override
+	public void updateServices(String serviceName, String userName) {
+		// TODO Auto-generated method stub
+		user.addUserToService(serviceName, userName);
+		Page.Page2.panel.repaint();
+	}
+
+	public static void main(String args[]) {
+		GUI gui = new GUI();
+	}
+
+	
 
 }
