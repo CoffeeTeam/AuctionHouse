@@ -112,6 +112,12 @@ public class User {
 		}
 		this.matchingUsers.put(serviceName, serviceHashMap);
 	}
+	
+	public void removeUserFromService(String userName, String serviceName) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		serviceHashMap.remove(userName);
+		this.matchingUsers.put(serviceName, serviceHashMap);
+	}
 
 	/**
 	 * Update status to offer made for a buyer user
@@ -136,6 +142,14 @@ public class User {
 		}
 		
 		this.matchingUsers.put(serviceName, tmpHash);
+	}
+	
+	public boolean hasStatus(String serviceName, String status) {
+		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
+		if(serviceUsers.containsValue(status))
+			return true;
+		
+		return false;
 	}
 }
 

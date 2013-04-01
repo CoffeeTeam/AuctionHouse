@@ -433,12 +433,13 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			int row, int column) {
 		JMenuItem item;
 		boolean toDisplayMenu = false;
+		String serviceName;
 		ActionListener actionListener = new PopupActionListener(table, row,
 				column, this);
 
 		switch (column) {
 		case 0:
-			String serviceName = (String) table.getValueAt(row, column);
+			serviceName = (String) table.getValueAt(row, column);
 			// add service menu with different entries for buyer and for seller
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Launch Offer Request option
@@ -459,6 +460,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			break;
 		case 1:
+			serviceName = (String) table.getValueAt(row, column - 1);
 			// add menu for those who will sell products for buyers
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Accept offer
@@ -474,11 +476,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			} else {
 				// Make offer
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
+				if (!user.hasStatus(serviceName, StatusMessages.noOffer))
+					item.setEnabled(false);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 
 				// Drop auction
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
+				if (!user.hasStatus(serviceName, StatusMessages.offerExceeded))
+					item.setEnabled(false);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 			}
@@ -573,21 +579,25 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		user.addUserToService(serviceName, userName);
 		Page.Page2.panel.repaint();
 	}
-	
+
 	public void updateBuyersStatus(String serviceName) {
 		user.updateStatusForService(serviceName);
 	}
-	
+
 	@Override
 	public void makeOfferToBuyer(String serviceName, String seller) {
 		// TODO Auto-generated method stub
 		user.updateStatusForSeller(serviceName, seller);
 	}
 
+	@Override
+	public void dropAuctionSeller(String userName, String serviceName) {
+		// TODO Auto-generated method stub
+		user.removeUserFromService(userName, serviceName);
+	}
+
 	public static void main(String args[]) {
 		new GUI();
 	}
-
-	
 
 }

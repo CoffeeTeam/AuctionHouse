@@ -13,7 +13,11 @@ public interface IMediatorNetwork {
 	
 	public void updateUser(String serviceName, String userName);
 	public void makeOfferToBuyer(String serviceName, String seller);
+	
 	public void acceptOfferNet(String seller, String offer);
 	public void refuseOfferNet(String seller, String offer);
+	
 	public void interruptTransfer(String seller, String serviceName);
+	
+	public void dropAuctionSeller(String userName, String serviceName);
 }

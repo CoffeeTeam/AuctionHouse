@@ -40,7 +40,7 @@ public class SellerState extends State {
 	@Override
 	public void dropService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-
+		dropAuction.execute(serviceName, userName);
 	}
 
 	public void acceptOffer(String seller, String serviceName) {

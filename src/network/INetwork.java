@@ -23,5 +23,5 @@ public abstract class INetwork {
 	
 	public abstract void acceptOffer(String seller, String offer);
 	public abstract void refuseOffer(String seller, String offer);
-
+	
 }

@@ -68,8 +68,6 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public void dropService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
 		stateMgr.dropService(serviceName, userName);
-		//network.dropOffer(userName, serviceName);
-
 	}
 
 	@Override
@@ -165,13 +163,19 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void dropAuction(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		
+		network.dropAuction(userName, serviceName);
 	}
 
 	@Override
 	public void makeOfferToBuyer(String serviceName,
 			String seller) {
 		gui.makeOfferToBuyer(serviceName, seller);
+	}
+
+	@Override
+	public void dropAuctionSeller(String userName, String serviceName) {
+		// TODO Auto-generated method stub
+		gui.dropAuctionSeller(userName, serviceName);
 	}
 
 }

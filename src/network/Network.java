@@ -101,7 +101,13 @@ public class Network extends INetwork {
 
 	@Override
 	public void dropAuction(String userName, String serviceName) {
-		// TODO Auto-generated method stub
-		
+		HashMap<String, String> tmpOffers;
+		//every user that had contact with the user will be informed
+		for(User user : users) {
+			tmpOffers = user.getUserStatus(serviceName);
+			if(tmpOffers.containsKey(userName))
+				med.dropAuctionSeller(userName, serviceName);
+		}
+		System.out.println("I dropped the auction");
 	}
 }
