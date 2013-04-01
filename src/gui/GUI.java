@@ -346,10 +346,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				// set the cells to be combo boxes
 				TableColumn userColumn0, userColumn1;
-				
+
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-				
+
 				userColumn0 = table.getColumnModel().getColumn(0);
 				userColumn0.setPreferredWidth(100);
 				userColumn0.setCellRenderer(centerRenderer);
@@ -520,8 +520,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		}
 		user.setUserServiceList(serviceList);
-		if(user.getUserType().equals(UserTypes.seller)) {
-			for(String service : serviceList) {
+		if (user.getUserType().equals(UserTypes.seller)) {
+			for (String service : serviceList) {
 				this.launchOffer(service);
 			}
 		}
@@ -558,7 +558,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public IMediatorGUI getMed() {
 		return med;
 	}
@@ -573,9 +573,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		user.addUserToService(serviceName, userName);
 		Page.Page2.panel.repaint();
 	}
+	
+	public void updateBuyersStatus(String serviceName) {
+		user.updateStatusForService(serviceName);
+	}
+	
+	@Override
+	public void makeOfferToBuyer(String serviceName, String seller) {
+		// TODO Auto-generated method stub
+		user.updateStatusForSeller(serviceName, seller);
+	}
 
 	public static void main(String args[]) {
-		GUI gui = new GUI();
+		new GUI();
 	}
 
 	

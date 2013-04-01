@@ -8,4 +8,5 @@ public interface IGUI {
 	
 	public void updateServices(String serviceName, String userName);
 	public void interruptTransfer(String seller, String serviceName);
+	public void makeOfferToBuyer(String serviceName, String seller);
 }

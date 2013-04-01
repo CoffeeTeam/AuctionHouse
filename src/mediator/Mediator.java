@@ -139,8 +139,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void updateUser(String serviceName, String userName) {
-		// TODO Auto-generated method stub
-
+		//add user to the corresponding service list with the appropriate status
+		gui.updateServices(serviceName, userName);
 	}
 
 	@Override
@@ -153,7 +153,25 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void dropOfferRequest(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		network.dropOffer(userName, serviceName);
+		network.dropOfferReq(userName, serviceName);
+	}
+
+	@Override
+	public void makeOffer(String serviceName, String userName) {
+		// TODO Auto-generated method stub
+		network.makeOffer(userName, serviceName);
+	}
+
+	@Override
+	public void dropAuction(String serviceName, String userName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void makeOfferToBuyer(String serviceName,
+			String seller) {
+		gui.makeOfferToBuyer(serviceName, seller);
 	}
 
 }

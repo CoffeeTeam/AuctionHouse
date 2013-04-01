@@ -2,7 +2,9 @@ package user;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import constants.StatusMessages;
 
@@ -98,12 +100,43 @@ public class User {
 		
 	}
 	
+	//this method is used for seller users
 	public void addUserToService(String serviceName, String user) {
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
-		serviceHashMap.put(user, StatusMessages.noOffer);
+		//find the status with which the user should be added
+		if(serviceHashMap.isEmpty())
+			serviceHashMap.put(user, StatusMessages.noOffer);
+		else {
+			String status = ((ArrayList<String>) serviceHashMap.values()).get(0);
+			serviceHashMap.put(user, status);
+		}
 		this.matchingUsers.put(serviceName, serviceHashMap);
 	}
 
+	/**
+	 * Update status to offer made for a buyer user
+	 * @param serviceName the server for which the offer was made
+	 * @param seller the name of the seller of the service
+	 */
+	public void updateStatusForSeller(String serviceName, String seller) {
+		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
+		serviceUsers.put(seller, StatusMessages.offerMade);
+		this.matchingUsers.put(serviceName, serviceUsers);
+	}
+	
+	public void updateStatusForService(String serviceName) {
+		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
+		HashMap<String, String> tmpHash = new HashMap<String, String>();
+		Set<String> users = serviceUsers.keySet();
+		Iterator<String> it = users.iterator();
+		
+		while(it.hasNext()) {
+			String user = it.next();
+			tmpHash.put(user, StatusMessages.offerMade);
+		}
+		
+		this.matchingUsers.put(serviceName, tmpHash);
+	}
 }
 
 

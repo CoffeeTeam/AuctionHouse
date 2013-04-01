@@ -16,12 +16,12 @@ public abstract class INetwork {
 			String userType, List<String> services);
 
 	public abstract void launchOfferReq(String userName, String serviceName);
-
-	public abstract void dropOffer(String userName, String serviceName);
+	public abstract void dropOfferReq(String userName, String serviceName);
 	
-	public abstract void dropOfferReq(String serviceName);
+	public abstract void makeOffer(String userName, String serviceName);
+	public abstract void dropAuction(String userName, String serviceName);
+	
 	public abstract void acceptOffer(String seller, String offer);
-
 	public abstract void refuseOffer(String seller, String offer);
 
 }
