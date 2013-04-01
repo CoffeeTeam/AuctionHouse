@@ -32,17 +32,6 @@ public class MyTableCellEditor extends DefaultCellEditor{
 		combo.removeAllItems();
 		
 		combo.addItem(StatusMessages.inactive.toUpperCase());
-		//get elements to be put in the combobox
-		//String serviceType = (String)table.getValueAt(row, column - 1);
-		/*List<String> userList = instance.getMatchingUsers(serviceType);
-
-		if (userList.isEmpty()) {
-			combo.addItem(StatusMessages.inactive.toUpperCase());
-		} else {
-			for(String user : userList) {
-				combo.addItem(user);
-			}
-		}*/
 		
 		return combo;
 	}
