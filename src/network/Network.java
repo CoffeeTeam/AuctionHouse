@@ -19,13 +19,14 @@ public class Network extends INetwork {
 	@Override
 	public void launchOfferReq(String userName, String serviceName) {
 		// TODO Auto-generated method stub
-		// pairServiceStatus.put(serviceName, StatusMessages.noOffer);
+		User usr = findUser(userName);
 		for (int i = 0; i < users.size(); ++i) {
 			if (!users.get(i).getUsername().equals(userName)
-					&& !users.get(i).getUserType().equals(userName)) {
+					&& !users.get(i).getUserType().equals(usr.getUserType())) {
 				this.med.updateUser(serviceName, userName);
 			}
 		}
+		System.out.println("Inform the other users");
 	}
 
 	@Override

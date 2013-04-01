@@ -59,9 +59,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void launchService(String serviceName) {
+	public void launchService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		stateMgr.launchService(serviceName);
+		stateMgr.launchService(serviceName, userName);
 	}
 
 	@Override
@@ -73,8 +73,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void launchOfferRequest(String serviceName) {
-
+	public void launchOfferRequest(String serviceName, String userName) {
+		network.launchOfferReq(userName, serviceName);
 	}
 
 	@Override

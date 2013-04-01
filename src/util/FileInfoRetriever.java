@@ -103,7 +103,6 @@ public class FileInfoRetriever {
 		try {
 			//Read until the end of file
 			while ((currentLine = br.readLine()) != null) {
-				System.out.println("Read line " + currentLine);
 				strTk = new StringTokenizer(currentLine);
 				user = strTk.nextToken();
 

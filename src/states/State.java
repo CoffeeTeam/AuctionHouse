@@ -33,7 +33,7 @@ public abstract class State {
 	 * @param serviceName
 	 *            the name of the offered service
 	 */
-	public abstract void launchService(String serviceName);
+	public abstract void launchService(String serviceName, String userName);
 
 	/**
 	 * Invoked when the buyer wants to drop an offer that he received or when a

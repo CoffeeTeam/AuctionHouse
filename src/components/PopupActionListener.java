@@ -41,7 +41,7 @@ public class PopupActionListener implements ActionListener {
 
 		// Launch Offer Request
 		if (actionName.equals(ComponentNames.buyerServiceMenu[0])) {
-			gui.getMed().launchService(serviceName);
+			gui.getMed().launchService(serviceName, gui.getUser().getUsername());
 			gui.launchOffer(serviceName);
 		} else
 		// Drop offer
@@ -59,8 +59,8 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Make offer
 		if (actionName.equals(ComponentNames.sellerServiceMenu[0])) {
-			gui.getMed().launchService(serviceName);
-			//gui.launchOffer(serviceName, table);
+			gui.getMed().launchService(serviceName, gui.getUser().getUsername());
+			gui.launchOffer(serviceName);
 		} else
 		// Drop auction
 		if (actionName.equals(ComponentNames.sellerServiceMenu[1])) {

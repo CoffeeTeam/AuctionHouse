@@ -33,9 +33,9 @@ public class BuyerState extends State {
 	}
 
 	@Override
-	public void launchService(String serviceName) {
+	public void launchService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		launchOfferReq.execute(serviceName, null);
+		launchOfferReq.execute(serviceName, userName);
 	}
 
 	@Override
