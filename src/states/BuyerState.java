@@ -39,9 +39,9 @@ public class BuyerState extends State {
 	}
 
 	@Override
-	public void dropService(String serviceName) {
+	public void dropService(String serviceName, String userName) {
 		// TODO Auto-generated method stub
-		dropOfferReq.execute(serviceName, null);
+		dropOfferReq.execute(serviceName, userName);
 	}
 
 	@Override
