@@ -7,7 +7,12 @@ import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+
+import constants.StatusMessages;
+import constants.Symbols;
 
 public class MyTableCellEditor extends DefaultCellEditor{
 	private static final long serialVersionUID = 1L;
@@ -23,15 +28,20 @@ public class MyTableCellEditor extends DefaultCellEditor{
 		DefaultCellEditor cellEdit = new DefaultCellEditor(new JComboBox());
 
 		JComboBox combo = (JComboBox)super.getTableCellEditorComponent(table, value, isSelected, row, column);
+		((JLabel)combo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 		combo.removeAllItems();
 		
 		//get elements to be put in the combobox
 		String serviceType = (String)table.getValueAt(row, column - 1);
 		List<String> userList = instance.getMatchingUsers(serviceType);
-		for(String user : userList) {
-			combo.addItem(user);
+
+		if (userList.isEmpty()) {
+			combo.addItem(StatusMessages.inactive.toUpperCase());
+		} else {
+			for(String user : userList) {
+				combo.addItem(user);
+			}
 		}
-		
 		
 		return combo;
 	}

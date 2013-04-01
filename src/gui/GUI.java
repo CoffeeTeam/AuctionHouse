@@ -328,7 +328,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				for (; i < noServices; i++) {
 					data[i][0] = serviceList.get(i);
-					data[i][1] = StatusMessages.inactive;
+					data[i][1] = StatusMessages.inactive.toUpperCase();
 				}
 
 				JTable table = new JTable(data,
