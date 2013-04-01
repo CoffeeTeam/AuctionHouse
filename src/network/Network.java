@@ -28,6 +28,12 @@ public class Network extends INetwork {
 		}
 		System.out.println("Inform the other users");
 	}
+	
+	@Override
+	public void dropOfferReq(String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void acceptOffer(String seller, String offer) {
@@ -37,7 +43,7 @@ public class Network extends INetwork {
 
 	@Override
 	public void refuseOffer(String seller, String offer) {
-		// TODO Auto-generated method stub
+		// TODO 1 => refuza
 
 	}
 
