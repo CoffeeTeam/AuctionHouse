@@ -42,6 +42,7 @@ public class PopupActionListener implements ActionListener {
 		// Launch Offer Request
 		if (actionName.equals(ComponentNames.buyerServiceMenu[0])) {
 			gui.getMed().launchService(serviceName);
+			//table.setValueAt("NO OFFER", row, column + 1);
 		} else
 		// Drop offer
 		if (actionName.equals(ComponentNames.buyerServiceMenu[1])) {
@@ -63,6 +64,7 @@ public class PopupActionListener implements ActionListener {
 		if (actionName.equals(ComponentNames.sellerServiceMenu[1])) {
 			gui.getMed().dropService(serviceName);
 		}
+
 	}
 
 }

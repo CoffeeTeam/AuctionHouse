@@ -31,9 +31,10 @@ public class MyTableCellEditor extends DefaultCellEditor{
 		((JLabel)combo.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 		combo.removeAllItems();
 		
+		combo.addItem(StatusMessages.inactive.toUpperCase());
 		//get elements to be put in the combobox
-		String serviceType = (String)table.getValueAt(row, column - 1);
-		List<String> userList = instance.getMatchingUsers(serviceType);
+		//String serviceType = (String)table.getValueAt(row, column - 1);
+		/*List<String> userList = instance.getMatchingUsers(serviceType);
 
 		if (userList.isEmpty()) {
 			combo.addItem(StatusMessages.inactive.toUpperCase());
@@ -41,7 +42,7 @@ public class MyTableCellEditor extends DefaultCellEditor{
 			for(String user : userList) {
 				combo.addItem(user);
 			}
-		}
+		}*/
 		
 		return combo;
 	}

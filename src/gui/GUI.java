@@ -464,7 +464,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				contextMenu.add(item);
 
 				// Refuse offer
-				item = new JMenuItem(ComponentNames.buyerUserMenu[0]);
+				item = new JMenuItem(ComponentNames.buyerUserMenu[1]);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 				toDisplayMenu = true;
