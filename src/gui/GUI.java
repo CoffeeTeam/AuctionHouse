@@ -14,7 +14,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -380,11 +384,22 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				// show the Log In page again
-				cardLayout.show(panelCards, Page.Page1.getName());
+				boolean canLogout = true;
+				if (user.getUserType().equals(UserTypes.seller)) {
+					canLogout = verifySellerLogOut();
+				} else {
+					doBuyerLogoutActions();
+				}
 
-				resetUserData();
-				Page.Page2.panel.removeAll();
+				if (canLogout) {
+					// show the Log In page again
+					cardLayout.show(panelCards, Page.Page1.getName());
+					resetUserData();
+					Page.Page2.panel.removeAll();
+				} else {
+					JOptionPane.showMessageDialog(Page.Page2.panel,
+							ErrorMessages.logOutDenied);
+				}
 			}
 		});
 	}
@@ -532,6 +547,45 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		}
 		return serviceList;
+	}
+
+	public boolean verifySellerLogOut() {
+
+		// verify if all offers are exceeded
+		boolean allOffersExceeded = user
+				.allOffersHaveStatus(StatusMessages.offerExceeded);
+
+		// verify if the seller isn't part of an auction
+		boolean hasActiveAuctions = user
+				.allOffersHaveStatus(StatusMessages.noOffer);
+		return allOffersExceeded || hasActiveAuctions;
+	}
+
+	public void doBuyerLogoutActions() {
+		List<String> services = user.getUserServiceList();
+
+		for (String service : services) {
+			HashMap<String, String> userStatus = user.getUserStatus(service);
+			Set<Map.Entry<String, String>> pairs = userStatus.entrySet();
+			Iterator<Map.Entry<String, String>> values = pairs.iterator();
+			Map.Entry<String, String> item;
+			while (values.hasNext()) {
+				item = values.next();
+				if (item.getValue().equals(StatusMessages.offerAccepted))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(
+						StatusMessages.transferInProgress))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(StatusMessages.startTransfer))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(
+						StatusMessages.transferCompleted))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(StatusMessages.noOffer))
+					med.dropService(service, item.getKey());
+			}
+
+		}
 	}
 
 	public void launchOffer(String serviceName) {

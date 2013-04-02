@@ -151,6 +151,18 @@ public class User {
 		
 		return false;
 	}
+	
+	public boolean allOffersHaveStatus(String status) {
+		List<String> services = this.getUserServiceList();
+		
+		for(String service : services){
+			if(!hasStatus(service, status))
+				return false;
+		}
+		
+		return true;
+	}
+	
 }
 
 
