@@ -14,7 +14,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -347,10 +351,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				// set the cells to be combo boxes
 				TableColumn userColumn0, userColumn1;
-				
+
 				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-				
+
 				userColumn0 = table.getColumnModel().getColumn(0);
 				userColumn0.setPreferredWidth(100);
 				userColumn0.setCellRenderer(centerRenderer);
@@ -381,11 +385,22 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				// show the Log In page again
-				cardLayout.show(panelCards, Page.Page1.getName());
+				boolean canLogout = true;
+				if (user.getUserType().equals(UserTypes.seller)) {
+					canLogout = verifySellerLogOut();
+				} else {
+					doBuyerLogoutActions();
+				}
 
-				resetUserData();
-				Page.Page2.panel.removeAll();
+				if (canLogout) {
+					// show the Log In page again
+					cardLayout.show(panelCards, Page.Page1.getName());
+					resetUserData();
+					Page.Page2.panel.removeAll();
+				} else {
+					JOptionPane.showMessageDialog(Page.Page2.panel,
+							ErrorMessages.logOutDenied);
+				}
 			}
 		});
 	}
@@ -434,9 +449,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			int row, int column) {
 		JMenuItem item;
 		boolean toDisplayMenu = false;
+		String serviceName;
 		ActionListener actionListener = new PopupActionListener(table, row,
 				column, this);
-		String serviceName;
 
 		switch (column) {
 		case 0:
@@ -486,11 +501,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			} else {
 				// Make offer
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[0]);
+				if (!user.hasStatus(serviceName, StatusMessages.noOffer))
+					item.setEnabled(false);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 
 				// Drop auction
 				item = new JMenuItem(ComponentNames.sellerServiceMenu[1]);
+				if (!user.hasStatus(serviceName, StatusMessages.offerExceeded))
+					item.setEnabled(false);
 				item.addActionListener(actionListener);
 				contextMenu.add(item);
 			}
@@ -532,12 +551,51 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		}
 		user.setUserServiceList(serviceList);
-		if(user.getUserType().equals(UserTypes.seller)) {
-			for(String service : serviceList) {
+		if (user.getUserType().equals(UserTypes.seller)) {
+			for (String service : serviceList) {
 				this.launchOffer(service);
 			}
 		}
 		return serviceList;
+	}
+
+	public boolean verifySellerLogOut() {
+
+		// verify if all offers are exceeded
+		boolean allOffersExceeded = user
+				.allOffersHaveStatus(StatusMessages.offerExceeded);
+
+		// verify if the seller isn't part of an auction
+		boolean hasActiveAuctions = user
+				.allOffersHaveStatus(StatusMessages.noOffer);
+		return allOffersExceeded || hasActiveAuctions;
+	}
+
+	public void doBuyerLogoutActions() {
+		List<String> services = user.getUserServiceList();
+
+		for (String service : services) {
+			HashMap<String, String> userStatus = user.getUserStatus(service);
+			Set<Map.Entry<String, String>> pairs = userStatus.entrySet();
+			Iterator<Map.Entry<String, String>> values = pairs.iterator();
+			Map.Entry<String, String> item;
+			while (values.hasNext()) {
+				item = values.next();
+				if (item.getValue().equals(StatusMessages.offerAccepted))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(
+						StatusMessages.transferInProgress))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(StatusMessages.transferStarted))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(
+						StatusMessages.transferCompleted))
+					med.refuseOfferGui(item.getKey(), service);
+				else if (item.getValue().equals(StatusMessages.noOffer))
+					med.dropService(service, item.getKey());
+			}
+
+		}
 	}
 
 	@Override
@@ -578,12 +636,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		user.endTransfer(serviceName);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+
 	public IMediatorGUI getMed() {
 		return med;
 	}
@@ -603,10 +656,30 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page.Page2.panel.repaint();
 	}
 	
+	public void updateBuyersStatus(String serviceName) {
+		user.updateStatusForService(serviceName);
+	}
+
+	@Override
+	public void makeOfferToBuyer(String serviceName, String seller) {
+		// TODO Auto-generated method stub
+		user.updateStatusForSeller(serviceName, seller);
+	}
+
+	@Override
+	public void dropAuctionSeller(String userName, String serviceName) {
+		// TODO Auto-generated method stub
+		user.removeUserFromService(userName, serviceName);
+	}
+
 	public static void main(String args[]) {
 		new GUI();
 	}
 
-	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

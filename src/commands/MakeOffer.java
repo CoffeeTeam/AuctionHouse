@@ -11,7 +11,7 @@ public class MakeOffer extends Command{
 	@Override
 	public void execute(String serviceName, String user) {
 		// TODO Auto-generated method stub
-		
+		this.medNetwork.makeOffer(serviceName, user);
 	}
 
 }

@@ -66,11 +66,12 @@ public class PopupActionListener implements ActionListener {
 		// Make offer
 		if (actionName.equals(ComponentNames.sellerServiceMenu[0])) {
 			gui.getMed().launchService(serviceName, gui.getUser().getUsername());
-			gui.launchOffer(serviceName);
+			gui.updateBuyersStatus(serviceName);
 		} else
 		// Drop auction
 		if (actionName.equals(ComponentNames.sellerServiceMenu[1])) {
 			gui.getMed().dropService(serviceName, gui.getUser().getUsername());
+			gui.dropOffer(serviceName);
 		}
 
 	}

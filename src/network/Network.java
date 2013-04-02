@@ -34,7 +34,7 @@ public class Network extends INetwork {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public void acceptOffer(String seller, String offer) {
 		// TODO Auto-generated method stub
@@ -50,7 +50,7 @@ public class Network extends INetwork {
 	@Override
 	public void logInUser(String username, String password, String userType,
 			List<String> serviceList) {
-		// TODO Auto-generated method stub
+		// TODO 1 => refuza
 		User usr = new User();
 		usr.setUsername(username);
 		usr.setPassword(password);
@@ -58,6 +58,7 @@ public class Network extends INetwork {
 		usr.setUserServiceList(serviceList);
 		users.add(usr);
 	}
+	
 
 	private User findUser(String userName) {
 		for (User user : users) {
@@ -69,7 +70,7 @@ public class Network extends INetwork {
 	}
 
 	@Override
-	public void dropOffer(String userName, String serviceName) {
+	public void dropOfferReq(String userName, String serviceName) {
 		// TODO Auto-generated method stub
 		HashMap<String, String> serviceUsers = findUser(userName)
 				.getUserStatus(serviceName);
@@ -88,5 +89,31 @@ public class Network extends INetwork {
 		
 		System.out.println("I dropped offers");
 
+	}
+
+	@Override
+	public void makeOffer(String userName, String serviceName) {
+		HashMap<String, String> tmpOffers;
+		//all users interested by this service will be notified about the offer
+		for(User user : users) {
+			if(user.getUserServiceList().contains(serviceName)) {
+				tmpOffers = user.getUserStatus(serviceName);
+				if(!tmpOffers.isEmpty())
+					this.med.makeOfferToBuyer(serviceName, serviceName);
+			}
+		}
+		System.out.println("Offer was made");
+	}
+
+	@Override
+	public void dropAuction(String userName, String serviceName) {
+		HashMap<String, String> tmpOffers;
+		//every user that had contact with the user will be informed
+		for(User user : users) {
+			tmpOffers = user.getUserStatus(serviceName);
+			if(tmpOffers.containsKey(userName))
+				med.dropAuctionSeller(userName, serviceName);
+		}
+		System.out.println("I dropped the auction");
 	}
 }
