@@ -22,7 +22,8 @@ public class MyTableCellEditor extends DefaultCellEditor {
 	private GUI instanceGUI;
 
 	public MyTableCellEditor(GUI instanceGUI) {
-		super(new JComboBox<String>());
+
+		super(new JComboBox<Object>());
 		this.instanceGUI = instanceGUI;
 	}
 

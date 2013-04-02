@@ -87,8 +87,6 @@ public class Network extends INetwork {
 				refuseOffer(user, serviceName);
 		}
 		
-		System.out.println("I dropped offers");
-
 	}
 
 	@Override
@@ -102,7 +100,6 @@ public class Network extends INetwork {
 					this.med.makeOfferToBuyer(serviceName, serviceName);
 			}
 		}
-		System.out.println("Offer was made");
 	}
 
 	@Override
@@ -114,6 +111,5 @@ public class Network extends INetwork {
 			if(tmpOffers.containsKey(userName))
 				med.dropAuctionSeller(userName, serviceName);
 		}
-		System.out.println("I dropped the auction");
 	}
 }

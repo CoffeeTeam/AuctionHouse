@@ -592,7 +592,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 						StatusMessages.transferCompleted))
 					med.refuseOfferGui(item.getKey(), service);
 				else if (item.getValue().equals(StatusMessages.noOffer))
-					med.dropService(service, item.getKey());
+					med.dropService(service, user.getUsername());
 			}
 
 		}
