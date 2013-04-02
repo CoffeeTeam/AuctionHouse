@@ -37,6 +37,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import components.MyTableCellEditor;
+import components.MyTableCellRenderer;
 import components.PopupActionListener;
 
 import user.User;
@@ -357,7 +358,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				userColumn1 = table.getColumnModel().getColumn(1);
 				userColumn1.setPreferredWidth(300);
 				userColumn1.setCellEditor(new MyTableCellEditor(owner));
-				userColumn1.setCellRenderer(centerRenderer);
+				userColumn1.setCellRenderer(new MyTableCellRenderer(owner));
 
 				servicesPanel.add(scrollPane);
 
@@ -435,10 +436,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		boolean toDisplayMenu = false;
 		ActionListener actionListener = new PopupActionListener(table, row,
 				column, this);
+		String serviceName;
 
 		switch (column) {
 		case 0:
-			String serviceName = (String) table.getValueAt(row, column);
+			serviceName = (String) table.getValueAt(row, column);
 			// add service menu with different entries for buyer and for seller
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Launch Offer Request option
@@ -451,7 +453,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// Drop Offer Request option
 				item = new JMenuItem(ComponentNames.buyerServiceMenu[1]);
 				item.addActionListener(actionListener);
-				if (user.isEmptyService(serviceName))
+				if (user.isEmptyService(serviceName) ||
+						user.getServiceTransfer(serviceName) != null)
 					item.setEnabled(false);
 				contextMenu.add(item);
 				toDisplayMenu = true;
@@ -459,16 +462,25 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			break;
 		case 1:
+			serviceName = (String) table.getValueAt(row, column-1);
 			// add menu for those who will sell products for buyers
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Accept offer
 				item = new JMenuItem(ComponentNames.buyerUserMenu[0]);
 				item.addActionListener(actionListener);
+				// check that status is ACTIVE and not yet accepted
+				if (user.getServiceTransfer(serviceName) != null ||
+						user.isEmptyService(serviceName))
+					item.setEnabled(false);
 				contextMenu.add(item);
 
 				// Refuse offer
 				item = new JMenuItem(ComponentNames.buyerUserMenu[1]);
 				item.addActionListener(actionListener);
+				// check that status is ACTIVE
+				if (user.getServiceTransfer(serviceName) != null ||
+						user.isEmptyService(serviceName))
+					item.setEnabled(false);
 				contextMenu.add(item);
 
 			} else {
@@ -528,17 +540,31 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		return serviceList;
 	}
 
+	@Override
 	public void launchOffer(String serviceName) {
 		List<String> userList = med.getUsers(serviceName);
 		this.user.setUserListForService(serviceName, userList);
 		Page.Page2.panel.repaint();
 	}
 
+	@Override
 	public void dropOffer(String serviceName) {
 		this.user.emptyUserListForService(serviceName);
 		Page.Page2.panel.repaint();
 	}
+	
+	@Override
+	public void acceptOffer(String serviceName, String seller) {
+		this.user.startTransfer(serviceName, seller);
+		Page.Page2.panel.repaint();
+	}
 
+	@Override
+	public void refuseOffer(String serviceName, String seller) {
+		this.user.refuseOffer(serviceName, seller);
+		Page.Page2.panel.repaint();
+	}
+	
 	public User getUser() {
 		return user;
 	}
@@ -548,15 +574,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 
 	@Override
-	public void interruptTransfer(String seller, String serviceName) {
-		// TODO Auto-generated method stub
-
+	public void interruptTransfer(String serviceName) {
+		user.endTransfer(serviceName);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-
+		
 	}
 	
 	public IMediatorGUI getMed() {
@@ -574,8 +599,12 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page.Page2.panel.repaint();
 	}
 
+	public static void repaintUserTable() {
+		Page.Page2.panel.repaint();
+	}
+	
 	public static void main(String args[]) {
-		GUI gui = new GUI();
+		new GUI();
 	}
 
 	

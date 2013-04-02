@@ -55,20 +55,13 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Accept offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[0])) {
-			// Accepta oferta doar daca statusul nu e inactiv
-			if (/*!*/user.equalsIgnoreCase(StatusMessages.inactive)) {
-				//gui.getMed().acceptOfferGui(user, serviceName);
-
-				// TODO afiseaza progress bar-ul
-				//table.setValueAt(new JComboBox<>(), row, column);
-				
-			}
+			gui.getMed().acceptOfferGui(user, serviceName);
+			gui.acceptOffer(serviceName, user);
 		} else
 		// refuse offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[1])) {
-			// Accepta oferta doar daca statusul nu e inactiv
-			if (!user.equalsIgnoreCase(StatusMessages.inactive))
-				gui.getMed().refuseOfferGui(user, serviceName);
+			gui.getMed().refuseOfferGui(user, serviceName);
+			gui.refuseOffer(serviceName, user);
 		} else
 		// Make offer
 		if (actionName.equals(ComponentNames.sellerServiceMenu[0])) {

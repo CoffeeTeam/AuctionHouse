@@ -1,7 +1,7 @@
 package user;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import constants.StatusMessages;
@@ -14,12 +14,13 @@ public class User {
 
 	//associate a list of users to each service
 	private HashMap<String,HashMap<String,String>> matchingUsers;
-	
-	//list of services associated with a user
-	private List<String> userServiceList;
+
+	// active transfers (if any)
+	private HashMap<String, UserTransferStatus> transfersInfo;
 	
 	public User() {
 		this.matchingUsers = new HashMap<String, HashMap<String,String>>();
+		this.transfersInfo = new HashMap<String, UserTransferStatus>();
 	}
 	
 	public String getUsername() {
@@ -47,15 +48,13 @@ public class User {
 	}
 
 	public List<String> getUserServiceList() {
-		return userServiceList;
+		return new LinkedList<String>(matchingUsers.keySet());
 	}
 
 	public void setUserServiceList(List<String> userServiceList) {
 		HashMap<String, String> tmpHash;
-		this.userServiceList = userServiceList;
 		
-		
-		for(String serviceName : this.userServiceList) {
+		for(String serviceName : userServiceList) {
 			tmpHash = new HashMap<String, String>();
 			this.matchingUsers.put(serviceName, tmpHash);
 		}
@@ -71,6 +70,9 @@ public class User {
 		this.matchingUsers.put(serviceName, serviceHashMap);
 	}
 	
+	/**
+	 * Checks whether this user has any matches for the given service
+	 */
 	public boolean isEmptyService(String serviceName) {
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
 		if(serviceHashMap.isEmpty())
@@ -78,8 +80,18 @@ public class User {
 		return false;
 	}
 	
+	/**
+	 * Checks whether this user has any services launched
+	 */
 	public boolean isEmptyServiceList() {
 		return this.matchingUsers.isEmpty();
+	}
+	
+	/**
+	 * Gets the info on ths transfer for the given service if any (null otherwise)
+	 */
+	public UserTransferStatus getServiceTransfer(String serviceName) {
+		return transfersInfo.get(serviceName);
 	}
 	
 	/**
@@ -102,6 +114,38 @@ public class User {
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
 		serviceHashMap.put(user, StatusMessages.noOffer);
 		this.matchingUsers.put(serviceName, serviceHashMap);
+	}
+	
+	/**
+	 * Starts the transfer when an offer is accepted and refuses all other offers 
+	 */
+	public void startTransfer(String serviceName, String otherUser) {
+		// Refuse all other offers, then the service will start
+		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		for (String user:serviceHashMap.keySet()) {
+			if (user.equals(otherUser)) {
+				serviceHashMap.put(user, StatusMessages.offerAccepted);
+				transfersInfo.put(serviceName, new UserTransferStatus(otherUser, StatusMessages.transferStarted));
+			} else {
+				serviceHashMap.put(user, StatusMessages.offerRefused);
+			}
+		}
+	}
+	
+	/**
+	 * Called by the mediator when an user who has transfered services with the
+	 * current one exits
+	 */
+	public void endTransfer(String serviceName) {
+		UserTransferStatus info = transfersInfo.get(serviceName);
+		
+		if (info.getProgress() < 100) {
+			info.setStatus(StatusMessages.transferFailed);
+		}
+	}
+	
+	public void refuseOffer(String serviceName, String otherUser) {
+		this.matchingUsers.get(serviceName).put(otherUser, StatusMessages.offerRefused);
 	}
 
 }

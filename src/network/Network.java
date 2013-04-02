@@ -43,7 +43,7 @@ public class Network extends INetwork {
 
 	@Override
 	public void refuseOffer(String seller, String offer) {
-		// TODO 1 => refuza
+		// TODO 1
 
 	}
 
