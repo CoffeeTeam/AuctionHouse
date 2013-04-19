@@ -18,9 +18,15 @@ public class Server extends Thread {
 	private ByteBuffer rBuffer = ByteBuffer.allocate(BUF_SIZE);
 	public Selector selector;
 	private ServerSocketChannel serverSocketChannel;
+	
+	/* A list keeping associations between user name and its channel
+	 * (taken from selection key)*/
+	private Map<String, SelectionKey> registeredUsersChannels;
 
 	public Server() {
 		readBuffers = new Hashtable<SelectionKey, byte[]>();
+		registeredUsersChannels = new HashMap<>();
+
 		initServer();
 	}
 
