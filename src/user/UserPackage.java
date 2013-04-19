@@ -9,6 +9,6 @@ public class UserPackage implements Serializable{
 	public String username;
 	public String password;
 	public String userType;
-	public boolean toDelete;
+	public int toDelete;
 
 }

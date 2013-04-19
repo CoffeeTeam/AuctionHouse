@@ -12,9 +12,9 @@ import constants.StatusMessages;
 public class User extends UserPackage{
 
 	private static final long serialVersionUID = -67237845923510708L;
-	private String username;
-	private String password;
-	private String userType;
+//	private String username;
+//	private String password;
+//	private String userType;
 
 	//associate a list of users to each service
 	private HashMap<String,HashMap<String,String>> matchingUsers;
@@ -51,13 +51,14 @@ public class User extends UserPackage{
 		this.userType = userType;
 	}
 
-	public boolean isToDelete() {
+	public int isToDelete() {
 		return toDelete;
 	}
 
-	public void setToDelete(boolean toDelete) {
+	public void setToDelete(int toDelete) {
 		this.toDelete = toDelete;
 	}
+	
 	public List<String> getUserServiceList() {
 		return new LinkedList<String>(matchingUsers.keySet());
 	}

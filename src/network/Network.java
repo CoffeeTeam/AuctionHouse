@@ -1,6 +1,5 @@
 package network;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,13 +35,11 @@ public class Network extends INetwork {
 	
 	@Override
 	public void dropOfferReq(String serviceName) {
-		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
 	public void acceptOffer(String seller, String offer) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -65,14 +62,14 @@ public class Network extends INetwork {
 		
 		UserPackage usrPack = new UserPackage();
 		usrPack.username = username;
+		System.out.println("Recv pass " + password);
 		usrPack.password = password;
 		usrPack.userType = userType;
-		usrPack.toDelete = false;
+		usrPack.toDelete = 0;
 		
 		try {
-			netClient.sendData(PackInfo.serialize(usrPack));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			netClient.sendData(usrPack);
+		} catch (Exception e) {
 			System.err.println("Error serializing login object");
 			e.printStackTrace();
 		}
@@ -90,7 +87,6 @@ public class Network extends INetwork {
 
 	@Override
 	public void dropOfferReq(String userName, String serviceName) {
-		// TODO Auto-generated method stub
 		HashMap<String, String> serviceUsers = findUser(userName)
 				.getUserStatus(serviceName);
 

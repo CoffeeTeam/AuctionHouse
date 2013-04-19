@@ -117,7 +117,7 @@ public class Server extends Thread {
 		// Read the serialized object
 		if (i + length <= newBuf.length) {
 			System.out.println("[SERVER] deserialize array");
-			System.out.println("Lungime newBuf " + newBuf.length);
+			
 			Object st = NetworkPacket.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
 
