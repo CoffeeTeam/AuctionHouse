@@ -58,7 +58,7 @@ public class NetworkClient {
 	public boolean sendData(Object dataToSend) {
 		byte[]	bytesToSend;
 		byte[]	lengthPack;
-		ByteBuffer wBuff;
+		ByteBuffer wBuff = ByteBuffer.allocate(8192);
 		
 		try {
 			//serialize the result
@@ -69,11 +69,17 @@ public class NetworkClient {
 
 			
 			//send the length of the object through the channel
-			wBuff = ByteBuffer.wrap(lengthPack);
+			wBuff.clear();
+			wBuff.put(lengthPack);
+			wBuff.flip();
 			socketChannel.write(wBuff);
 			
-			//send the object through the channel			
-			wBuff = ByteBuffer.wrap(bytesToSend);
+			//send the object through the channel
+			wBuff = ByteBuffer.allocate(8192);
+			
+			wBuff.clear();
+			wBuff.put(bytesToSend);
+			wBuff.flip();
 			socketChannel.write(wBuff);
 			
 		} catch (IOException e) {

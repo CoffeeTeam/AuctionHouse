@@ -59,18 +59,12 @@ public class Server extends Thread {
 
 	public void read(SelectionKey key) throws Exception {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
-		// ByteBuffer rBuffer = (ByteBuffer)key.attachment();
-		rBuffer.clear();
+		this.rBuffer.clear();
 
-		int numRead = 0, tmpRead;
+		int numRead = 0;
 
 		try {
-
-			do {
-				tmpRead = socketChannel.read(rBuffer);
-				numRead += tmpRead;
-			} while (tmpRead > 0);
-
+				numRead = socketChannel.read(rBuffer);
 		} catch (Exception e) {
 			numRead = -1000000000;
 		}
@@ -90,7 +84,7 @@ public class Server extends Thread {
 		if (rbuf != null) {
 			rbuflen = rbuf.length;
 		}
-		rBuffer.flip();
+
 		byte[] currentBuf = rBuffer.array();
 		System.out.println("[Server] Number of read bytes " + numRead
 				+ " associated with the key " + key + " : " + currentBuf);
@@ -117,12 +111,13 @@ public class Server extends Thread {
 		length = NetworkPacket.getLength(new byte[] { newBuf[0], newBuf[1],
 				newBuf[2], newBuf[3] });
 
-		System.out.println("[Server] The received length is = " + length + ")");
+		System.out.println("[Server] The received length is = " + length);
 		i += 4;
 
 		// Read the serialized object
 		if (i + length <= newBuf.length) {
 			System.out.println("[SERVER] deserialize array");
+			System.out.println("Lungime newBuf " + newBuf.length);
 			Object st = NetworkPacket.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
 
