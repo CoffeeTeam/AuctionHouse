@@ -7,11 +7,8 @@ import constants.NetworkInfo;
 import java.nio.*;
 import java.nio.channels.*;
 import java.net.*;
-import java.util.*;
 
 import util.NetworkPacket;
-
-import constants.NetworkInfo;
 
 /**
  * Class which implements network functionalities.
