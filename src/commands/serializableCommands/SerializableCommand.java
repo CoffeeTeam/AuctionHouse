@@ -9,4 +9,6 @@ public abstract class SerializableCommand implements Serializable{
 	private static final long serialVersionUID = 612696483138661950L;
 
 	public transient IMediatorNetwork medNetwork;
+	public String username;
+	public String serviceName;
 }
