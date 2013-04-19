@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.channels.SocketChannel;
 
 import commands.serializableCommands.SerializableAcceptOffer;
 import commands.serializableCommands.SerializableDropAuction;
@@ -27,17 +28,23 @@ public class ServerUtils {
 	 * 
 	 * @param user
 	 *            object containing the information
+	 * @param channel TODO
 	 */
-	public static void addUserInfo(UserPacket user) {
-
+	private static void addUserInfo(UserPacket user, SocketChannel channel) {
 		FileWriter file = null;
+		
 		try {
+			// write data to a database (a file)
 			file = new FileWriter(loggedUsersFile, true);
 			BufferedWriter outstream = new BufferedWriter(file);
+			
 			outstream.write(user.username + "\t" + user.password + "\t"
 					+ user.userType + "\n");
 
 			outstream.close();
+			
+			// write to local list
+			Server.registeredUsersChannels.put(user.username, channel);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -120,12 +127,12 @@ public class ServerUtils {
 
 	}
 
-	public static void chooseAction(Object recvObject) {
+	public static void chooseAction(Object recvObject, SocketChannel channel) {
 		System.out.println(recvObject.getClass());
 		
 		/* Log in handler */
 		if (recvObject instanceof UserPacket) {
-			handleLogIn((UserPacket)recvObject);
+			handleLogIn((UserPacket)recvObject, channel);
 			return;
 		}
 		
@@ -166,14 +173,14 @@ public class ServerUtils {
 		}
 	}
 	
-	private static void handleLogIn(UserPacket userPack) {
+	private static void handleLogIn(UserPacket userPack, SocketChannel channel) {
 		System.out.println("[SERVER} it is a user package");
 
 		if (userPack.toDelete == 1)
 			deleteUserInfo(userPack);
 		else {
 			System.out.println("[SERVER] Add a new user");
-			addUserInfo(userPack);
+			addUserInfo(userPack, channel);
 		}
 	}
 	
@@ -229,6 +236,7 @@ public class ServerUtils {
 	 */
 	private static void handleDropOfferReq(SerializableDropOfferReq pack) {
 		// TODO
+		
 	}
 
 }

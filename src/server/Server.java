@@ -21,11 +21,11 @@ public class Server extends Thread {
 	
 	/* A list keeping associations between user name and its channel
 	 * (taken from selection key)*/
-	private Map<String, SelectionKey> registeredUsersChannels;
+	public static Map<String, SocketChannel> registeredUsersChannels
+			= new HashMap<>();
 
 	public Server() {
 		readBuffers = new Hashtable<SelectionKey, byte[]>();
-		registeredUsersChannels = new HashMap<>();
 
 		initServer();
 	}
@@ -127,7 +127,7 @@ public class Server extends Thread {
 			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
 
-			ServerUtils.chooseAction(st);
+			ServerUtils.chooseAction(st, socketChannel);
 			i += length;
 		} else
 			i -= 4;
@@ -171,8 +171,6 @@ public class Server extends Thread {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
 		try {
 			while (true) {
 				this.selector.select();
@@ -193,14 +191,12 @@ public class Server extends Thread {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
 	public static void main(String[] args) {
-
 		Server server = new Server();
 
 		server.startRunning();
