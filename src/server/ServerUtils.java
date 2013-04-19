@@ -25,7 +25,7 @@ public class ServerUtils {
 
 		FileWriter file = null;
 		try {
-			file = new FileWriter(loggedUsersFile);
+			file = new FileWriter(loggedUsersFile, true);
 			BufferedWriter outstream = new BufferedWriter(file);
 			outstream.write(user.username + "\t" + user.password + "\t"
 					+ user.userType + "\n");
