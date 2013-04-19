@@ -301,7 +301,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				user.setUsername(userText.getText());
-				user.setPassword(passText.getPassword().toString());
+				user.setPassword(new String(passText.getPassword()));
 
 				// Validate given input
 				if (user.getUsername().isEmpty()
