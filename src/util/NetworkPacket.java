@@ -17,8 +17,15 @@ public class NetworkPacket {
 	public static byte[] serialize(Object obj) throws IOException {
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		ObjectOutputStream o = new ObjectOutputStream(b);
+		byte[] serializedArray;
+		
 		o.writeObject(obj);
-		return b.toByteArray();
+		serializedArray = b.toByteArray();
+		
+		o.close();
+		b.close();
+		
+		return serializedArray;
 	}
 
 	/**
@@ -32,7 +39,14 @@ public class NetworkPacket {
 			ClassNotFoundException {
 		ByteArrayInputStream b = new ByteArrayInputStream(bytes);
 		ObjectInputStream o = new ObjectInputStream(b);
-		return o.readObject();
+		Object deserializedObj;
+		
+		deserializedObj = o.readObject();
+		
+		o.close();
+		b.close();
+		
+		return deserializedObj;
 	}
 
 	

@@ -121,7 +121,9 @@ public class ServerUtils {
 	
 	public static void chooseAction(Object recvObject) {
 		UserPackage userPack;
+		
 		System.out.println(recvObject.getClass());
+		
 		if (recvObject instanceof UserPackage) {
 			System.out.println("[SERVER} it is a user package");
 			userPack = (UserPackage)recvObject;

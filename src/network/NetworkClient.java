@@ -20,7 +20,7 @@ import util.NetworkPacket;
  */
 public class NetworkClient {
 	
-	private static NetworkClient server;
+	private static NetworkClient netClient;
 	private SocketChannel socketChannel	= null;
 	
 	private NetworkClient( ) {
@@ -38,18 +38,17 @@ public class NetworkClient {
 			}
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Error opening client channel");
 			e.printStackTrace();
 		}
 	}
 	
 	public static NetworkClient getClientObject() {
-		if (server == null) {
+		if (netClient == null) {
 			System.out.println("I created a new object");
-			server = new NetworkClient();
+			netClient = new NetworkClient();
 		}
-		return server;
+		return netClient;
 	}
 	
 	public boolean sendData(Object dataToSend) {
@@ -60,11 +59,10 @@ public class NetworkClient {
 		try {
 			//serialize the result
 			bytesToSend = NetworkPacket.serialize(dataToSend);
-			
+
 			//find the length of the packet
 			lengthPack = NetworkPacket.packetLength(bytesToSend);
 
-			
 			//send the length of the object through the channel
 			wBuff.clear();
 			wBuff.put(lengthPack);
@@ -80,7 +78,6 @@ public class NetworkClient {
 			socketChannel.write(wBuff);
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
