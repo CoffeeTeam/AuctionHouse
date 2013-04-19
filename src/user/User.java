@@ -9,8 +9,9 @@ import java.util.Set;
 
 import constants.StatusMessages;
 
-public class User {
+public class User extends UserPackage{
 
+	private static final long serialVersionUID = -67237845923510708L;
 	private String username;
 	private String password;
 	private String userType;
@@ -50,6 +51,13 @@ public class User {
 		this.userType = userType;
 	}
 
+	public boolean isToDelete() {
+		return toDelete;
+	}
+
+	public void setToDelete(boolean toDelete) {
+		this.toDelete = toDelete;
+	}
 	public List<String> getUserServiceList() {
 		return new LinkedList<String>(matchingUsers.keySet());
 	}

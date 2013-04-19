@@ -1,5 +1,6 @@
 package network;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,11 +10,15 @@ import java.util.Set;
 import constants.StatusMessages;
 
 import user.User;
+import user.UserPackage;
 
 public class Network extends INetwork {
 
+	private NetworkClient netClient; 
+	
 	public Network() {
 		users = new ArrayList<User>();
+		netClient = NetworkClient.getClientObject();
 	}
 
 	@Override
@@ -57,6 +62,20 @@ public class Network extends INetwork {
 		usr.setUserType(userType);
 		usr.setUserServiceList(serviceList);
 		users.add(usr);
+		
+		UserPackage usrPack = new UserPackage();
+		usrPack.username = username;
+		usrPack.password = password;
+		usrPack.userType = userType;
+		usrPack.toDelete = false;
+		
+		try {
+			netClient.sendData(PackInfo.serialize(usrPack));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.err.println("Error serializing login object");
+			e.printStackTrace();
+		}
 	}
 	
 
