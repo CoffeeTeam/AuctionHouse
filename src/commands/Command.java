@@ -1,10 +1,7 @@
 package commands;
 
-import mediator.IMediatorNetwork;
 
-public abstract class Command {
-	
-	public IMediatorNetwork medNetwork;
+public interface Command {
 
 	public abstract void execute(String serviceName, String user);
 }

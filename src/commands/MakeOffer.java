@@ -1,8 +1,11 @@
 package commands;
 
+import commands.serializableCommands.SerializableMakeOffer;
+
 import mediator.IMediatorNetwork;
 
-public class MakeOffer extends Command{
+@SuppressWarnings("serial")
+public class MakeOffer extends SerializableMakeOffer implements Command{
 
 	public MakeOffer(IMediatorNetwork med) {
 		this.medNetwork = med;

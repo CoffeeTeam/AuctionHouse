@@ -1,8 +1,11 @@
 package commands;
 
+import commands.serializableCommands.SerializableDropAuction;
+
 import mediator.IMediatorNetwork;
 
-public class DropAuction extends Command {
+@SuppressWarnings("serial")
+public class DropAuction extends SerializableDropAuction implements Command {
 
 	public DropAuction(IMediatorNetwork med) {
 		this.medNetwork = med;

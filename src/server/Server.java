@@ -7,7 +7,7 @@ import java.nio.channels.spi.SelectorProvider;
 import java.net.*;
 import java.util.*;
 
-import util.NetworkPacket;
+import util.NetworkPacketManager;
 
 public class Server extends Thread {
 
@@ -108,7 +108,7 @@ public class Server extends Thread {
 		if (i + 4 > newBuf.length)
 			return;
 
-		length = NetworkPacket.getLength(new byte[] { newBuf[0], newBuf[1],
+		length = NetworkPacketManager.getLength(new byte[] { newBuf[0], newBuf[1],
 				newBuf[2], newBuf[3] });
 
 		System.out.println("[Server] The received length is = " + length);
@@ -118,7 +118,7 @@ public class Server extends Thread {
 		if (i + length <= newBuf.length) {
 			System.out.println("[SERVER] deserialize array");
 			
-			Object st = NetworkPacket.deserialize(Arrays.copyOfRange(newBuf, 4,
+			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
 
 			ServerUtils.chooseAction(st);

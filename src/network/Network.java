@@ -9,7 +9,7 @@ import java.util.Set;
 import constants.StatusMessages;
 
 import user.User;
-import user.UserPackage;
+import user.UserPacket;
 
 public class Network extends INetwork {
 
@@ -22,7 +22,6 @@ public class Network extends INetwork {
 
 	@Override
 	public void launchOfferReq(String userName, String serviceName) {
-		// TODO Auto-generated method stub
 		User usr = findUser(userName);
 		for (int i = 0; i < users.size(); ++i) {
 			if (!users.get(i).getUsername().equals(userName)
@@ -60,7 +59,7 @@ public class Network extends INetwork {
 		usr.setUserServiceList(serviceList);
 		users.add(usr);
 		
-		UserPackage usrPack = new UserPackage();
+		UserPacket usrPack = new UserPacket();
 		usrPack.username = username;
 		System.out.println("Recv pass " + password);
 		usrPack.password = password;

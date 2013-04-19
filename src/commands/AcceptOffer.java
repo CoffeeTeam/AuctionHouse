@@ -1,8 +1,11 @@
 package commands;
 
+import commands.serializableCommands.SerializableAcceptOffer;
+
 import mediator.IMediatorNetwork;
 
-public class AcceptOffer extends Command {
+@SuppressWarnings("serial")
+public class AcceptOffer extends SerializableAcceptOffer implements Command {
 
 	public AcceptOffer(IMediatorNetwork med){
 		this.medNetwork = med;

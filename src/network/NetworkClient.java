@@ -6,7 +6,7 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.net.*;
 
-import util.NetworkPacket;
+import util.NetworkPacketManager;
 
 /**
  * Class which implements network functionalities. It is a singleton class
@@ -56,22 +56,22 @@ public class NetworkClient {
 
 		try {
 			// serialize the result
-			bytesToSend = NetworkPacket.serialize(dataToSend);
+			bytesToSend = NetworkPacketManager.serialize(dataToSend);
 
 			//find the length of the packet
-			lengthPack = NetworkPacket.packetLength(bytesToSend);
+			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 
 			//send the length of the object through the channel
 			try {
 				System.out.println("After serialization: " + dataToSend);
 				System.out.println("Deserialized: "
-						+ NetworkPacket.deserialize(bytesToSend));
+						+ NetworkPacketManager.deserialize(bytesToSend));
 			} catch (ClassNotFoundException ex) {
 				ex.printStackTrace();
 			}
 
 			// find the length of the packet
-			lengthPack = NetworkPacket.packetLength(bytesToSend);
+			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 
 			// send the length of the object through the channel
 			wBuff.clear();

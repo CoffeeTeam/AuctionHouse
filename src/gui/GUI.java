@@ -24,7 +24,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -37,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import components.MyTableCellEditor;
@@ -246,7 +244,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				user.setUserType(UserTypes.seller);
 
 			}
@@ -256,7 +253,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				user.setUserType(UserTypes.buyer);
 			}
 		});
@@ -285,7 +281,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private void loginButtonActions(GridBagConstraints constraints, JPanel jp) {
 		final GUI owner = this;
-		final GridBagConstraints constr = constraints;
 
 		logInButton = new JButton(ComponentNames.logInButton);
 
@@ -299,7 +294,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				user.setUsername(userText.getText());
 				user.setPassword(new String(passText.getPassword()));
 
@@ -384,7 +378,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				boolean canLogout = true;
 				if (user.getUserType().equals(UserTypes.seller)) {
 					canLogout = verifySellerLogOut();
@@ -647,7 +640,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void updateServices(String serviceName, String userName) {
-		// TODO Auto-generated method stub
 		user.addUserToService(serviceName, userName);
 		Page.Page2.panel.repaint();
 	}
@@ -662,13 +654,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void makeOfferToBuyer(String serviceName, String seller) {
-		// TODO Auto-generated method stub
 		user.updateStatusForSeller(serviceName, seller);
 	}
 
 	@Override
 	public void dropAuctionSeller(String userName, String serviceName) {
-		// TODO Auto-generated method stub
 		user.removeUserFromService(userName, serviceName);
 	}
 
@@ -678,7 +668,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+		// TODO => needs implemented for our purposes? so far it doesn't
 		
 	}
 

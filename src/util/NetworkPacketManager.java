@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class NetworkPacket {
+public class NetworkPacketManager {
 
 	/**
 	 * Write the received object into a buffer, serialized

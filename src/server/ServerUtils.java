@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import user.UserPackage;
+import user.UserPacket;
 
 public class ServerUtils {
 
@@ -21,7 +21,7 @@ public class ServerUtils {
 	 * @param user
 	 *            object containing the information
 	 */
-	public static void addUserInfo(UserPackage user) {
+	public static void addUserInfo(UserPacket user) {
 
 		FileWriter file = null;
 		try {
@@ -45,7 +45,7 @@ public class ServerUtils {
 	 * @param user
 	 *            the user that is leaving the system
 	 */
-	public static void deleteUserInfo(UserPackage user) {
+	public static void deleteUserInfo(UserPacket user) {
 		File file = new File(loggedUsersFile);
 		File tmpFile = new File(loggedUsersFile + ".tmp");
 		BufferedReader br = null;
@@ -120,13 +120,13 @@ public class ServerUtils {
 	}
 
 	public static void chooseAction(Object recvObject) {
-		UserPackage userPack;
+		UserPacket userPack;
 		
 		System.out.println(recvObject.getClass());
 		
-		if (recvObject instanceof UserPackage) {
+		if (recvObject instanceof UserPacket) {
 			System.out.println("[SERVER} it is a user package");
-			userPack = (UserPackage) recvObject;
+			userPack = (UserPacket) recvObject;
 
 			if (userPack.toDelete == 1)
 				deleteUserInfo(userPack);

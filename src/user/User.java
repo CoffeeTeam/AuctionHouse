@@ -9,7 +9,7 @@ import java.util.Set;
 
 import constants.StatusMessages;
 
-public class User extends UserPackage{
+public class User extends UserPacket{
 
 	private static final long serialVersionUID = -67237845923510708L;
 //	private String username;

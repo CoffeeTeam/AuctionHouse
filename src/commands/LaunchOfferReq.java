@@ -1,8 +1,11 @@
 package commands;
 
+import commands.serializableCommands.SerializableLaunchOfferReq;
+
 import mediator.IMediatorNetwork;
 
-public class LaunchOfferReq extends Command {
+@SuppressWarnings("serial")
+public class LaunchOfferReq extends SerializableLaunchOfferReq implements Command {
 
 	public LaunchOfferReq(IMediatorNetwork med) {
 		this.medNetwork = med;
