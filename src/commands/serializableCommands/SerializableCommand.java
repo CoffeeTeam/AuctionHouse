@@ -8,5 +8,5 @@ public abstract class SerializableCommand implements Serializable{
 
 	private static final long serialVersionUID = 612696483138661950L;
 
-	public IMediatorNetwork medNetwork;
+	public transient IMediatorNetwork medNetwork;
 }
