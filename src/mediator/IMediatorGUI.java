@@ -21,5 +21,5 @@ public interface IMediatorGUI {
 	public void launchService(String serviceName, String userName);
 	public void dropService(String serviceName, String userName);
 	public void acceptOfferGui(String seller, String offer);
-	public void refuseOfferGui(String seller, String offer);
+	public void refuseOfferGui(String seller, String offer, String buyer);
 }

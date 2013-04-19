@@ -46,7 +46,7 @@ public class StateManager {
 		this.currentState.acceptOffer(seller, serviceName);
 	}
 
-	public void refuseOffer(String seller, String serviceName) {
-		this.currentState.acceptOffer(seller, serviceName);
+	public void refuseOffer(String seller, String serviceName, String buyer) {
+		this.currentState.refuseOffer(seller, serviceName, buyer);
 	}
 }

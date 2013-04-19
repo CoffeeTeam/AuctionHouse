@@ -16,6 +16,7 @@ public class BuyerState extends State {
 
 	Command launchOfferReq;
 	Command dropOfferReq;
+
 	public BuyerState(IMediatorGUI medGUI, IMediatorWSClient medWS,
 			IMediatorNetwork medNetwork) {
 		this.medGUI = medGUI;
@@ -57,9 +58,8 @@ public class BuyerState extends State {
 	}
 
 	@Override
-	public void refuseOffer(String seller, String serviceName) {
-		// TODO Auto-generated method stub
-		this.medNetwork.refuseOfferNet(seller, serviceName);
+	public void refuseOffer(String seller, String serviceName, String buyer) {
+		this.medNetwork.refuseOfferNet(seller, serviceName, buyer);
 		
 	}
 

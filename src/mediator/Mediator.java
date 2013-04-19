@@ -82,9 +82,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void refuseOfferNet(String seller, String offer) {
-		// TODO Auto-generated method stub
-		network.refuseOffer(seller, offer);
+	public void refuseOfferNet(String seller, String offer, String buyer) {
+		network.refuseOffer(seller, offer, buyer);
 	}
 
 	@Override
@@ -100,9 +99,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void refuseOfferGui(String seller, String offer) {
-		// TODO Auto-generated method stub
-		stateMgr.refuseOffer(seller, offer);
+	public void refuseOfferGui(String seller, String offer, String buyer) {
+		stateMgr.refuseOffer(seller, offer, buyer);
 	}
 
 	@Override

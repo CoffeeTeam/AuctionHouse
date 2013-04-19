@@ -54,11 +54,12 @@ public class Network extends INetwork {
 	}
 
 	@Override
-	public void refuseOffer(String seller, String offer) {
+	public void refuseOffer(String seller, String offer, String buyer) {
 		SerializableDropOfferReq dropOffer= new SerializableDropOfferReq();
 		
 		dropOffer.userName = seller;
 		dropOffer.serviceName = offer;
+		dropOffer.commandInfo.add(buyer);
 		
 		netClient.sendData(dropOffer);
 	}

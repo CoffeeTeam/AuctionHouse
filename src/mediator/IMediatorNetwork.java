@@ -15,7 +15,7 @@ public interface IMediatorNetwork {
 	public void makeOfferToBuyer(String serviceName, String seller);
 	
 	public void acceptOfferNet(String seller, String offer);
-	public void refuseOfferNet(String seller, String offer);
+	public void refuseOfferNet(String seller, String offer, String buyer);
 	
 	public void interruptTransfer(String seller, String serviceName);
 	

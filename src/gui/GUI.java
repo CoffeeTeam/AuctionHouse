@@ -578,15 +578,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			while (values.hasNext()) {
 				item = values.next();
 				if (item.getValue().equals(StatusMessages.offerAccepted))
-					med.refuseOfferGui(item.getKey(), service);
+					med.refuseOfferGui(item.getKey(), service, null);
 				else if (item.getValue().equals(
 						StatusMessages.transferInProgress))
-					med.refuseOfferGui(item.getKey(), service);
+					med.refuseOfferGui(item.getKey(), service, null);
 				else if (item.getValue().equals(StatusMessages.transferStarted))
-					med.refuseOfferGui(item.getKey(), service);
+					med.refuseOfferGui(item.getKey(), service, null);
 				else if (item.getValue().equals(
 						StatusMessages.transferCompleted))
-					med.refuseOfferGui(item.getKey(), service);
+					med.refuseOfferGui(item.getKey(), service, null);
 				else if (item.getValue().equals(StatusMessages.noOffer))
 					med.dropService(service, user.getUsername());
 			}
@@ -615,7 +615,13 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void refuseOffer(String serviceName, String seller) {
+		// update the user
 		this.user.refuseOffer(serviceName, seller);
+		
+		// inform the refused seller
+		this.med.refuseOfferGui(this.user.username, serviceName, seller);
+		
+		// repaint GUI
 		Page.Page2.panel.repaint();
 	}
 	

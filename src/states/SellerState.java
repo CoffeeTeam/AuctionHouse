@@ -47,8 +47,9 @@ public class SellerState extends State {
 		
 	}
 
-	public void refuseOffer(String seller, String serviceName) {
-
+	public void refuseOffer(String seller, String serviceName, String buyer) {
+		// does nothing for this state
+		return;
 	}
 
 	@Override

@@ -56,11 +56,11 @@ public abstract class State {
 
 	/**
 	 * The buyer drops the offer of a seller
-	 * 
-	 * @param serviceName
-	 *            name of the service to be dropped
 	 * @param seller
 	 *            the person which provides the service
+	 * @param serviceName
+	 *            name of the service to be dropped
+	 * @param buyer TODO
 	 */
-	public abstract void refuseOffer(String seller, String serviceName);
+	public abstract void refuseOffer(String seller, String serviceName, String buyer);
 }

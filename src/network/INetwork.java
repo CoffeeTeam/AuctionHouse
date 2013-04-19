@@ -18,6 +18,6 @@ public abstract class INetwork {
 	public abstract void dropAuction(String userName, String serviceName);
 	
 	public abstract void acceptOffer(String seller, String offer);
-	public abstract void refuseOffer(String seller, String offer);
+	public abstract void refuseOffer(String seller, String offer, String buyer);
 	
 }

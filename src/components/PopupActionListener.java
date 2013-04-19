@@ -60,7 +60,7 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// refuse offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[1])) {
-			gui.getMed().refuseOfferGui(user, serviceName);
+			gui.getMed().refuseOfferGui(user, serviceName, null);
 			gui.refuseOffer(serviceName, user);
 		} else
 		// Make offer

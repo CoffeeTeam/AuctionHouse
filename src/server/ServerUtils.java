@@ -203,7 +203,8 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pakc) {
-		// TODO
+		// Send refused info to the seller TODO
+		
 	}
 
 	/**

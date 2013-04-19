@@ -12,9 +12,6 @@ import constants.StatusMessages;
 public class User extends UserPacket{
 
 	private static final long serialVersionUID = -67237845923510708L;
-//	private String username;
-//	private String password;
-//	private String userType;
 
 	//associate a list of users to each service
 	private HashMap<String,HashMap<String,String>> matchingUsers;
@@ -170,7 +167,10 @@ public class User extends UserPacket{
 	}
 	
 	public void refuseOffer(String serviceName, String otherUser) {
+		// Change status
 		this.matchingUsers.get(serviceName).put(otherUser, StatusMessages.offerRefused);
+		
+		// TODO
 	}
 
 	/**
