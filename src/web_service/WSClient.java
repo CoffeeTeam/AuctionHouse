@@ -16,6 +16,9 @@ public class WSClient extends IWSClient{
 		infoRetriever = new FileInfoRetriever(dbName);
 	}
 	
+	/**
+	 * Retrieves the users that offer/request a certain service
+	 */
 	@Override
 	public List<String> getCurrentUsers(String serviceName, String userType) {
 		// TODO Auto-generated method stub

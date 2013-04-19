@@ -61,15 +61,6 @@ public class NetworkClient {
 			//find the length of the packet
 			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 
-			//send the length of the object through the channel
-			try {
-				System.out.println("After serialization: " + dataToSend);
-				System.out.println("Deserialized: "
-						+ NetworkPacketManager.deserialize(bytesToSend));
-			} catch (ClassNotFoundException ex) {
-				ex.printStackTrace();
-			}
-
 			// find the length of the packet
 			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 

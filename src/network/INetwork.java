@@ -11,7 +11,7 @@ public abstract class INetwork {
 	public abstract void logInUser(String username, String password,
 			String userType, List<String> services);
 
-	public abstract void launchOfferReq(String userName, String serviceName);
+	public abstract void launchOfferReq(String userName, String serviceName, List<String> interestedUsers);
 	public abstract void dropOfferReq(String userName, String serviceName);
 	
 	public abstract void makeOffer(String userName, String serviceName);

@@ -8,7 +8,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+
+import java.util.List;
 
 import commands.serializableCommands.SerializableAcceptOffer;
 import commands.serializableCommands.SerializableDropAuction;
@@ -30,7 +33,7 @@ public class ServerUtils {
 	 *            object containing the information
 	 * @param channel TODO
 	 */
-	private static void addUserInfo(UserPacket user, SocketChannel channel) {
+	private static void addUserInfo(UserPacket user, SelectionKey channel) {
 		FileWriter file = null;
 		
 		try {
@@ -127,112 +130,132 @@ public class ServerUtils {
 
 	}
 
-	public static void chooseAction(Object recvObject, SocketChannel channel) {
+	public static void chooseAction(Object recvObject, SelectionKey key) {
 		System.out.println(recvObject.getClass());
-		
+
 		/* Log in handler */
 		if (recvObject instanceof UserPacket) {
-			handleLogIn((UserPacket)recvObject, channel);
+			handleLogIn((UserPacket)recvObject, key);
 			return;
 		}
-		
+
 		/* Accept offer handler */
 		if (recvObject instanceof SerializableAcceptOffer) {
-			handleAcceptOffer((SerializableAcceptOffer)recvObject);
+			handleAcceptOffer((SerializableAcceptOffer) recvObject);
 			return;
 		}
-		
+
 		/* Refuse offer handler */
 		if (recvObject instanceof SerializableRefuseOffer) {
-			handleRefuseOffer((SerializableRefuseOffer)recvObject);
+			handleRefuseOffer((SerializableRefuseOffer) recvObject);
 			return;
 		}
-		
+
 		/* Drop Auction handler */
 		if (recvObject instanceof SerializableDropAuction) {
-			handleDropAuction((SerializableDropAuction)recvObject);
+			handleDropAuction((SerializableDropAuction) recvObject);
 			return;
 		}
-		
+
 		/* Make offer handler */
 		if (recvObject instanceof SerializableMakeOffer) {
-			handleMakeOffer((SerializableMakeOffer)recvObject);
+			handleMakeOffer((SerializableMakeOffer) recvObject);
 			return;
 		}
-		
+
 		/* Launch Offer Request handler */
 		if (recvObject instanceof SerializableLaunchOfferReq) {
-			handleLaunchOfferReq((SerializableLaunchOfferReq)recvObject);
+			handleLaunchOfferReq((SerializableLaunchOfferReq) recvObject);
 			return;
 		}
-		
+
 		/* Drop Offer Request handler */
 		if (recvObject instanceof SerializableDropOfferReq) {
-			handleDropOfferReq((SerializableDropOfferReq)recvObject);
+			handleDropOfferReq((SerializableDropOfferReq) recvObject);
 			return;
 		}
 	}
-	
-	private static void handleLogIn(UserPacket userPack, SocketChannel channel) {
-		System.out.println("[SERVER} it is a user package");
+	private static void handleLogIn(UserPacket userPack, SelectionKey key) {
+		System.out.println("[SERVER] it is a user package");
 
 		if (userPack.toDelete == 1)
 			deleteUserInfo(userPack);
 		else {
 			System.out.println("[SERVER] Add a new user");
-			addUserInfo(userPack, channel);
+			addUserInfo(userPack, key);
 		}
 	}
-	
+
 	/**
 	 * Performs actions required when the user accepts an offer
 	 * 
-	 * @param pack		packet with request information
+	 * @param pack
+	 *            packet with request information
 	 */
 	private static void handleAcceptOffer(SerializableAcceptOffer pack) {
 		// TODO
 	}
-	
+
 	/**
-	 *  Performs actions required when the user refuses an offer
+	 * Performs actions required when the user refuses an offer
 	 * 
-	 * @param pakc		packet with request information
+	 * @param pakc
+	 *            packet with request information
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pakc) {
 		// TODO
 	}
-	
+
 	/**
-	 *  Performs actions required when the user drops an auction
+	 * Performs actions required when the user drops an auction
 	 * 
-	 * @param pack		packet with request information
+	 * @param pack
+	 *            packet with request information
 	 */
 	private static void handleDropAuction(SerializableDropAuction pack) {
 		// TODO
 	}
-	
+
 	/**
-	 *  Performs actions required when the user makes an offer
+	 * Performs actions required when the user makes an offer
 	 * 
-	 * @param pack		packet with request information
+	 * @param pack
+	 *            packet with request information
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
 		// TODO
 	}
-	
+
 	/**
-	 *  Performs actions required when the user launches an offer request
+	 * Performs actions required when the user launches an offer request
 	 * 
-	 * @param pack		packet with request information
+	 * @param pack
+	 *            packet with request information
 	 */
 	private static void handleLaunchOfferReq(SerializableLaunchOfferReq pack) {
-		// TODO
+		//TODO send to all users interested on this service the name of this user
+		List<String> interestedUsers = pack.commandInfo;
+		SelectionKey key;
+		
+		for (String userName : interestedUsers) {
+			if (null != Server.registeredUsersChannels.get(userName)) {
+				//send the info about the new service and user
+				key = Server.registeredUsersChannels.get(userName);
+				try {
+					Server.write(key, pack);
+				} catch (IOException e) {
+					System.err.println("Error writing to channel");
+					e.printStackTrace();
+				}
+			}
+		}
 	}
-	
+
 	/**
-	 *  Performs actions required when the user drops an offer request
+	 * Performs actions required when the user drops an offer request
 	 * 
-	 * @param pack		packet with request information
+	 * @param pack
+	 *            packet with request information
 	 */
 	private static void handleDropOfferReq(SerializableDropOfferReq pack) {
 		// TODO

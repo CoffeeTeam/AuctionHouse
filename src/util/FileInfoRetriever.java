@@ -87,6 +87,7 @@ public class FileInfoRetriever {
 	/**
 	 * Get the list of users that provide a service
 	 * @param service the name of the service
+	 * @param userType type of the user that requested the information
 	 * @return the list of sellers
 	 */
 	public List<String> getUserList(String service, String userType) {

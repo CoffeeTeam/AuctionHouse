@@ -11,17 +11,18 @@ import util.NetworkPacketManager;
 
 public class Server extends Thread {
 
-	private final int BUF_SIZE = 8192;
+	private final static int BUF_SIZE = 8192;
 	private final String IP = "127.0.0.1";
 	private final int PORT = 30001;
 	private Hashtable<SelectionKey, byte[]> readBuffers;
+	private static Hashtable<SelectionKey, ArrayList<byte[]>> writeBuffers;
 	private ByteBuffer rBuffer = ByteBuffer.allocate(BUF_SIZE);
+	private static ByteBuffer wBuffer = ByteBuffer.allocate(BUF_SIZE);
 	public Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	
-	/* A list keeping associations between user name and its channel
-	 * (taken from selection key)*/
-	public static Map<String, SocketChannel> registeredUsersChannels
+	/* A list keeping associations between user name and its selection key */
+	public static Map<String, SelectionKey> registeredUsersChannels
 			= new HashMap<>();
 
 	public Server() {
@@ -127,7 +128,7 @@ public class Server extends Thread {
 			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
 
-			ServerUtils.chooseAction(st, socketChannel);
+			ServerUtils.chooseAction(st, key);
 			i += length;
 		} else
 			i -= 4;
@@ -145,27 +146,42 @@ public class Server extends Thread {
 		readBuffers.put(key, finalBuf);
 	}
 
-	public void write(SelectionKey key) throws IOException {
+	public static void write(SelectionKey key, Object obj) throws IOException {
 
 		System.out.println("WRITE: ");
 
-		int bytes;
-		ByteBuffer buf = (ByteBuffer) key.attachment();
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
-		try {
-			while ((bytes = socketChannel.write(buf)) > 0)
-				;
+		ArrayList<byte[]> wbuf = null;
+		
+		synchronized(key) {
+			wbuf = writeBuffers.get(key);
 
-			if (!buf.hasRemaining()) {
-				buf.clear();
-				key.interestOps(SelectionKey.OP_READ);
+			while (wbuf.size() > 0) {
+				byte[] bbuf = wbuf.get(0);
+				wbuf.remove(0);
+				
+				wBuffer.clear();
+				wBuffer.put(bbuf);
+				wBuffer.flip();
+	
+				int numWritten = socketChannel.write(wBuffer);
+				System.out.println("[NIOTCPServer] Am scris " + numWritten + " bytes pe socket-ul asociat cheii " + key);
+	
+				if (numWritten < bbuf.length) {
+					byte[] newBuf = new byte[bbuf.length - numWritten];
+	
+					// Copiaza datele inca nescrise din bbuf in newBuf.
+					for (int i = numWritten; i < bbuf.length; i++) {
+						newBuf[i - numWritten] = bbuf[i];
+					}
+					
+					wbuf.add(0, newBuf);
+					break;
+				}
 			}
-
-		} catch (IOException e) {
-			System.out.println("Connection closed: " + e.getMessage());
-			socketChannel.close();
-
+			
+			
 		}
 	}
 
@@ -186,8 +202,9 @@ public class Server extends Thread {
 					} else if (key.isReadable()) {
 						System.out.println("I read things");
 						read(key);
-					} else if (key.isWritable())
-						write(key);
+					}
+//					} else if (key.isWritable())
+//						write(key);
 				}
 			}
 		} catch (Exception e) {

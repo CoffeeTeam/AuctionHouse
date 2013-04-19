@@ -38,6 +38,8 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 import components.MyTableCellEditor;
 import components.MyTableCellRenderer;
 import components.PopupActionListener;
@@ -59,6 +61,7 @@ import mediator.Mediator;
 public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private static final long serialVersionUID = 1L;
+	static Logger clientLogger = Logger.getLogger(GUI.class);
 
 	private JButton logInButton;
 	private JButton logOutButton;
@@ -296,7 +299,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			public void actionPerformed(ActionEvent arg0) {
 				user.setUsername(userText.getText());
 				user.setPassword(new String(passText.getPassword()));
-
+				
 				// Validate given input
 				if (user.getUsername().isEmpty()
 						|| !(sellerButton.isSelected() || buyerButton
