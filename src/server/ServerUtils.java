@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 
 import java.util.List;
 
@@ -31,21 +30,22 @@ public class ServerUtils {
 	 * 
 	 * @param user
 	 *            object containing the information
-	 * @param channel TODO
+	 * @param channel
+	 *            TODO
 	 */
 	private static void addUserInfo(UserPacket user, SelectionKey channel) {
 		FileWriter file = null;
-		
+
 		try {
 			// write data to a database (a file)
 			file = new FileWriter(loggedUsersFile, true);
 			BufferedWriter outstream = new BufferedWriter(file);
-			
+
 			outstream.write(user.username + "\t" + user.password + "\t"
 					+ user.userType + "\n");
 
 			outstream.close();
-			
+
 			// write to local list
 			Server.registeredUsersChannels.put(user.username, channel);
 		} catch (IOException e1) {
@@ -135,7 +135,7 @@ public class ServerUtils {
 
 		/* Log in handler */
 		if (recvObject instanceof UserPacket) {
-			handleLogIn((UserPacket)recvObject, key);
+			handleLogIn((UserPacket) recvObject, key);
 			return;
 		}
 
@@ -175,6 +175,7 @@ public class ServerUtils {
 			return;
 		}
 	}
+
 	private static void handleLogIn(UserPacket userPack, SelectionKey key) {
 		System.out.println("[SERVER] it is a user package");
 
@@ -204,7 +205,7 @@ public class ServerUtils {
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pakc) {
 		// Send refused info to the seller TODO
-		
+
 	}
 
 	/**
@@ -234,20 +235,16 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleLaunchOfferReq(SerializableLaunchOfferReq pack) {
-		//TODO send to all users interested on this service the name of this user
+		// TODO send to all users interested on this service the name of this
+		// user
 		List<String> interestedUsers = pack.commandInfo;
 		SelectionKey key;
-		
+
 		for (String userName : interestedUsers) {
 			if (null != Server.registeredUsersChannels.get(userName)) {
-				//send the info about the new service and user
+				// send the info about the new service and user
 				key = Server.registeredUsersChannels.get(userName);
-				try {
-					Server.write(key, pack);
-				} catch (IOException e) {
-					System.err.println("Error writing to channel");
-					e.printStackTrace();
-				}
+				Server.sendData(key, pack);
 			}
 		}
 	}
@@ -260,7 +257,7 @@ public class ServerUtils {
 	 */
 	private static void handleDropOfferReq(SerializableDropOfferReq pack) {
 		// TODO
-		
+
 	}
 
 }

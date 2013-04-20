@@ -7,18 +7,20 @@ import java.nio.channels.spi.SelectorProvider;
 import java.net.*;
 import java.util.*;
 
+import constants.NetworkInfo;
+
 import util.NetworkPacketManager;
 
 public class Server extends Thread {
 
-	private final static int BUF_SIZE = 8192;
 	private final String IP = "127.0.0.1";
 	private final int PORT = 30001;
 	private Hashtable<SelectionKey, byte[]> readBuffers;
 	private static Hashtable<SelectionKey, ArrayList<byte[]>> writeBuffers;
-	private ByteBuffer rBuffer = ByteBuffer.allocate(BUF_SIZE);
-	private static ByteBuffer wBuffer = ByteBuffer.allocate(BUF_SIZE);
-	public Selector selector;
+	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+	private static ByteBuffer wBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+	private static LinkedList<ChangeRequest> changeRequestQueue;
+	public static Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	
 	/* A list keeping associations between user name and its selection key */
@@ -57,7 +59,7 @@ public class Server extends Thread {
 				.channel();
 		SocketChannel socketChannel = serverSocketChannel.accept();
 		socketChannel.configureBlocking(false);
-		ByteBuffer buf = ByteBuffer.allocateDirect(BUF_SIZE);
+		ByteBuffer buf = ByteBuffer.allocateDirect(NetworkInfo.BUF_SIZE);
 		socketChannel.register(key.selector(), SelectionKey.OP_READ, buf);
 
 		System.out.println("Connection from: "
@@ -98,9 +100,10 @@ public class Server extends Thread {
 
 		byte[] newBuf = new byte[rbuflen + numRead];
 
-		// Copiaza datele primite in newBuf (rbuf sunt datele primite
-		// anterior si care nu formeaza o cerere completa), iar currentBuf
-		// contine datele primite la read-ul curent.
+		/* Copy received data into newBuf
+		 * rbuf - contains data previously received but incomplete
+		 * currentBuf - contains data received during the current read
+		 */
 		for (int i = 0; i < rbuflen; i++) {
 			newBuf[i] = rbuf[i];
 		}
@@ -146,7 +149,8 @@ public class Server extends Thread {
 		readBuffers.put(key, finalBuf);
 	}
 
-	public static void write(SelectionKey key, Object obj) throws IOException {
+
+	public static void write(SelectionKey key) throws IOException {
 
 		System.out.println("WRITE: ");
 
@@ -166,12 +170,12 @@ public class Server extends Thread {
 				wBuffer.flip();
 	
 				int numWritten = socketChannel.write(wBuffer);
-				System.out.println("[NIOTCPServer] Am scris " + numWritten + " bytes pe socket-ul asociat cheii " + key);
+				System.out.println("[Server] I wrote " + numWritten + " bytes on the socket associated with the key" + key);
 	
 				if (numWritten < bbuf.length) {
 					byte[] newBuf = new byte[bbuf.length - numWritten];
 	
-					// Copiaza datele inca nescrise din bbuf in newBuf.
+					// Copy data which is still unwritten into newBuf
 					for (int i = numWritten; i < bbuf.length; i++) {
 						newBuf[i - numWritten] = bbuf[i];
 					}
@@ -181,15 +185,55 @@ public class Server extends Thread {
 				}
 			}
 			
-			
+			if (wbuf.size() == 0) {
+				synchronized (changeRequestQueue) {
+					changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ));
+				}
+			}
 		}
+	}
+	
+	/**
+	 * Called when the server must send a response to a client
+	 * @param key the key to communicate with the client
+	 * @param data data to send
+	 */
+	public static void sendData(SelectionKey key, Object dataObj) {
+		byte[] data = null;
+		
+		try {
+			data = NetworkPacketManager.serialize(dataObj);
+		} catch (IOException e) {
+			System.err.println("Error serializing object");
+			e.printStackTrace();
+		}
+		
+		System.out.println("[Server] I want to write " + data.length + " bytes on the socket associated with the key " + key);
+		
+		ArrayList<byte[]> wbuf = null;
+		
+		synchronized (key) {
+			wbuf = writeBuffers.get(key);
+			if (wbuf == null) {
+				wbuf = new ArrayList<byte[]>();
+				writeBuffers.put(key, wbuf);
+			}
+
+			wbuf.add(data);
+//			synchronized (changeRequestQueue) {
+//				changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ | SelectionKey.OP_WRITE));
+			key.interestOps(SelectionKey.OP_WRITE);
+			//}
+		}
+				
+		selector.wakeup();
 	}
 
 	@Override
 	public void run() {
 		try {
 			while (true) {
-				this.selector.select();
+				selector.select();
 				for (Iterator<SelectionKey> it = selector.selectedKeys()
 						.iterator(); it.hasNext();) {
 					System.out.println("I have connections");
@@ -202,9 +246,8 @@ public class Server extends Thread {
 					} else if (key.isReadable()) {
 						System.out.println("I read things");
 						read(key);
-					}
-//					} else if (key.isWritable())
-//						write(key);
+					} else if (key.isWritable())
+						write(key);
 				}
 			}
 		} catch (Exception e) {

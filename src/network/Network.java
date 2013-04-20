@@ -16,6 +16,7 @@ public class Network extends INetwork {
 
 	public Network() {
 		netClient = NetworkClient.getClientObject();
+		netClient.execute();
 	}
 
 	/**
@@ -29,6 +30,7 @@ public class Network extends INetwork {
 		launchOffer.serviceName = serviceName;
 		launchOffer.commandInfo = interestedUsers;
 
+		System.out.println("Interested users are " + interestedUsers);
 		//send offer to the client
 		netClient.sendData(launchOffer);
 	}

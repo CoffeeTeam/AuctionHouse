@@ -1,44 +1,76 @@
 package network;
+
 import java.io.*;
 
 import constants.NetworkInfo;
 import java.nio.*;
 import java.nio.channels.*;
 import java.net.*;
+import java.util.Arrays;
+import java.util.Iterator;
 
+import javax.swing.SwingWorker;
+
+import server.ServerUtils;
 import util.NetworkPacketManager;
 
 /**
  * Class which implements network functionalities. It is a singleton class
  * because, one client should have only one open connection with the central
  * server
- *
+ * 
  * @author Coffee Team
- *
+ * 
  */
-public class NetworkClient {
+public class NetworkClient extends SwingWorker {
 	private static NetworkClient netClient;
-	private SocketChannel socketChannel	= null;
+	private SocketChannel socketChannel = null;
+	private SelectionKey key;
+	private Selector selector;
+	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+	private byte[] readBuf = null;
+	private Object dataToSend;
+	private boolean running;
 
 	private NetworkClient() {
 		try {
+			selector = Selector.open();
 			socketChannel = SocketChannel.open();
 
 			// configure connection to be non-blocking
 			socketChannel.configureBlocking(false);
+			running = true;
 
 			// connect to the remote server
 			socketChannel.connect(new InetSocketAddress(NetworkInfo.IP,
 					NetworkInfo.PORT));
+			//
+			// while (!socketChannel.finishConnect()) {
+			// System.out.println("Waiting....");
+			// }
 
-			while (!socketChannel.finishConnect()) {
-				System.out.println("Waiting....");
-			}
+			socketChannel.register(selector, SelectionKey.OP_READ);
 
 		} catch (IOException e) {
 			System.err.println("Error opening client channel");
 			e.printStackTrace();
 		}
+
+	}
+
+	public void connect(SelectionKey key) throws IOException {
+
+		System.out.print("CONNECT: ");
+
+		SocketChannel socketChannel = (SocketChannel) key.channel();
+		if (!socketChannel.finishConnect()) {
+			System.err.println("Eroare finishConnect");
+			running = false;
+		}
+		this.key = key;
+		System.out.println("Finished connecting");
+		// socketChannel.close();
+		key.interestOps(SelectionKey.OP_READ);
 	}
 
 	public static NetworkClient getClientObject() {
@@ -49,7 +81,49 @@ public class NetworkClient {
 		return netClient;
 	}
 
-	public boolean sendData(Object dataToSend) {
+	public void sendData(Object dataObject) {
+		this.dataToSend = dataObject;
+		System.out.println("I send data");
+		System.out.println(key == null);
+		key.interestOps(SelectionKey.OP_WRITE);
+		selector.wakeup();
+	}
+
+	// public void sendData(Object dataToSend) {
+	// byte[] bytesToSend;
+	// byte[] lengthPack;
+	// ByteBuffer wBuff = ByteBuffer.allocate(8192);
+	//
+	// try {
+	// // serialize the result
+	// bytesToSend = NetworkPacketManager.serialize(dataToSend);
+	//
+	// // find the length of the packet
+	// lengthPack = NetworkPacketManager.packetLength(bytesToSend);
+	//
+	// // find the length of the packet
+	// lengthPack = NetworkPacketManager.packetLength(bytesToSend);
+	//
+	// // send the length of the object through the channel
+	// wBuff.clear();
+	// wBuff.put(lengthPack);
+	// wBuff.flip();
+	// socketChannel.write(wBuff);
+	//
+	// // send the object through the channel
+	// wBuff = ByteBuffer.allocate(8192);
+	//
+	// wBuff.clear();
+	// wBuff.put(bytesToSend);
+	// wBuff.flip();
+	// socketChannel.write(wBuff);
+	//
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// }
+
+	public void write(SelectionKey key) {
 		byte[] bytesToSend;
 		byte[] lengthPack;
 		ByteBuffer wBuff = ByteBuffer.allocate(8192);
@@ -58,7 +132,7 @@ public class NetworkClient {
 			// serialize the result
 			bytesToSend = NetworkPacketManager.serialize(dataToSend);
 
-			//find the length of the packet
+			// find the length of the packet
 			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 
 			// find the length of the packet
@@ -77,12 +151,130 @@ public class NetworkClient {
 			wBuff.put(bytesToSend);
 			wBuff.flip();
 			socketChannel.write(wBuff);
+			
+			key.interestOps(SelectionKey.OP_READ);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
 
-		return true;
+	public void read(SelectionKey key) throws IOException,
+			ClassNotFoundException {
+		SocketChannel socketChannel = (SocketChannel) key.channel();
+		this.rBuffer.clear();
+		
+		System.out.println("I received info to write");
+
+		int numRead = 0;
+
+		try {
+			numRead = socketChannel.read(rBuffer);
+		} catch (Exception e) {
+			numRead = -1000000000;
+		}
+
+		if (numRead <= 0) {
+			System.out.println("The socket was closed by the remote client"
+					+ key);
+			key.channel().close();
+			key.cancel();
+			return;
+		}
+
+		byte[] rbuf = null;
+		rbuf = readBuf;
+
+		int rbuflen = 0;
+		if (rbuf != null) {
+			rbuflen = rbuf.length;
+		}
+
+		byte[] currentBuf = rBuffer.array();
+		System.out.println("[Server] Number of read bytes " + numRead
+				+ " associated with the key " + key + " : " + currentBuf);
+
+		byte[] newBuf = new byte[rbuflen + numRead];
+
+		/*
+		 * Copy received data into newBuf rbuf - contains data previously
+		 * received but incomplete currentBuf - contains data received during
+		 * the current read
+		 */
+		for (int i = 0; i < rbuflen; i++) {
+			newBuf[i] = rbuf[i];
+		}
+
+		for (int i = rbuflen; i < newBuf.length; i++) {
+			newBuf[i] = currentBuf[i - rbuflen];
+		}
+
+		int i = 0;
+		int length = 0;
+		// Read size of sent object
+		if (i + 4 > newBuf.length)
+			return;
+
+		length = NetworkPacketManager.getLength(new byte[] { newBuf[0],
+				newBuf[1], newBuf[2], newBuf[3] });
+
+		System.out.println("[Clients] The received length is = " + length);
+		i += 4;
+
+		// Read the serialized object
+		if (i + length <= newBuf.length) {
+			System.out.println("[Client] deserialize received object");
+
+			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(
+					newBuf, 4, length + 4));
+
+			ClientUtils.chooseAction(st);
+			i += length;
+		} else
+			i -= 4;
+
+		byte[] finalBuf = null;
+		if (i > 0) {
+			finalBuf = new byte[newBuf.length - i];
+			for (int j = i; j < newBuf.length; j++) {
+				finalBuf[j - i] = newBuf[j];
+			}
+		} else {
+			finalBuf = newBuf;
+		}
+	}
+
+	@Override
+	protected Object doInBackground() throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("Entered do in background Client");
+		socketChannel.register(selector, SelectionKey.OP_CONNECT);
+		while (running) {
+			selector.select();
+
+			for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it
+					.hasNext();) {
+				SelectionKey key = it.next();
+				it.remove();
+				try {
+					if (key.isReadable()) {
+						read(key);
+					} else if (key.isWritable()) {
+						write(key);
+					} else if (key.isConnectable()) {
+						connect(key);
+					}
+					
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+		
+		return null;
+
 	}
 
 }

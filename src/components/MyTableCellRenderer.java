@@ -31,7 +31,6 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer{
 		setHorizontalAlignment(JLabel.CENTER);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, 
 		boolean isSelected, boolean hasFocus, int row, int column) {  

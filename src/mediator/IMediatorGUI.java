@@ -1,6 +1,5 @@
 package mediator;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface IMediatorGUI {
