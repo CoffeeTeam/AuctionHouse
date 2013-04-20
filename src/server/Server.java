@@ -29,7 +29,7 @@ public class Server extends Thread {
 
 	public Server() {
 		readBuffers = new Hashtable<SelectionKey, byte[]>();
-
+		writeBuffers = new Hashtable<SelectionKey, ArrayList<byte[]>>();
 		initServer();
 	}
 
@@ -151,7 +151,7 @@ public class Server extends Thread {
 
 
 	public static void write(SelectionKey key) throws IOException {
-
+		//TODO add length of the package when writing the package
 		System.out.println("WRITE: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -185,12 +185,16 @@ public class Server extends Thread {
 				}
 			}
 			
+		//	key.interestOps(SelectionKey.OP_READ);
 			if (wbuf.size() == 0) {
-				synchronized (changeRequestQueue) {
-					changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ));
-				}
+				key.interestOps(SelectionKey.OP_READ);
 			}
+//				synchronized (changeRequestQueue) {
+//					changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ));
+//				}
+//			}
 		}
+//		selector.wakeup();
 	}
 	
 	/**
@@ -246,8 +250,10 @@ public class Server extends Thread {
 					} else if (key.isReadable()) {
 						System.out.println("I read things");
 						read(key);
-					} else if (key.isWritable())
+					} else if (key.isWritable()) {
+						System.out.println("I write things");
 						write(key);
+					}
 				}
 			}
 		} catch (Exception e) {

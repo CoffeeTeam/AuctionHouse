@@ -14,6 +14,6 @@ public class ClientUtils {
 
 	private static void handleLaunchOfferRequest(
 			SerializableLaunchOfferReq launchedOffer) {
-
+		System.out.println("Handle launch offer");
 	}
 }
