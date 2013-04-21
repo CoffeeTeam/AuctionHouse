@@ -12,7 +12,7 @@ public class AcceptOffer extends SerializableAcceptOffer implements Command {
 	}
 	
 	@Override
-	public void execute(String serviceName, String user) {
+	public void execute(String serviceName, String user, String... auxUserInfo) {
 		// TODO Auto-generated method stub
 		
 	}

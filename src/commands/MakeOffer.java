@@ -12,7 +12,7 @@ public class MakeOffer extends SerializableMakeOffer implements Command{
 	}
 
 	@Override
-	public void execute(String serviceName, String user) {
+	public void execute(String serviceName, String user, String... auxUserInfo) {
 		this.medNetwork.makeOfferNet(serviceName, user);
 	}
 

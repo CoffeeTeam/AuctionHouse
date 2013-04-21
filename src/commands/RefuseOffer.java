@@ -12,9 +12,14 @@ public class RefuseOffer extends SerializableRefuseOffer implements Command {
 	}
 
 	@Override
-	public void execute(String serviceName, String user) {
-		// TODO Auto-generated method stub
-		
+	public void execute(String serviceName, String user, String... auxUserInfo) {
+		if (auxUserInfo.length != 1) {
+			System.err.println("[Refuse Offer][execute] Third parameter needed to store " +
+					"buyer's name!!");
+			return;
+		}
+
+		this.medNetwork.refuseOfferNet(user, serviceName, auxUserInfo[0]);
 	}
 
 }

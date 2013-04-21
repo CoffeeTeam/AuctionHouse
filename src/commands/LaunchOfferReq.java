@@ -12,7 +12,7 @@ public class LaunchOfferReq extends SerializableLaunchOfferReq implements Comman
 	}
 
 	@Override
-	public void execute(String serviceName, String user) {
+	public void execute(String serviceName, String user, String... auxUserInfo) {
 		this.medNetwork.launchOfferRequestNet(serviceName, user);
 	}
 	
