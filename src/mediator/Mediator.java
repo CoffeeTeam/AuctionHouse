@@ -74,6 +74,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void launchOfferRequestNet(String serviceName, String userName) {
 		List<String> interestedUsers = wsClient.getCurrentUsers(serviceName, UserTypes.buyer);
+		gui.updateServiceUsers(serviceName, interestedUsers);
 		network.launchOfferReq(userName, serviceName, interestedUsers);
 	}
 

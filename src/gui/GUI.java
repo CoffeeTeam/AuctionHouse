@@ -61,7 +61,6 @@ import mediator.Mediator;
 public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	static Logger clientLogger = Logger.getLogger(GUI.class);
 
 	private JButton logInButton;
 	private JButton logOutButton;
@@ -547,11 +546,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			}
 		}
 		user.setUserServiceList(serviceList);
-		if (user.getUserType().equals(UserTypes.seller)) {
-			for (String service : serviceList) {
-				this.launchOffer(service);
-			}
-		}
+
 		return serviceList;
 	}
 
@@ -596,8 +591,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void launchOffer(String serviceName) {
-		//List<String> userList = med.getUsers(serviceName);
-		//this.user.setUserListForService(serviceName, userList);
 		Page.Page2.panel.repaint();
 	}
 
@@ -661,10 +654,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		user.updateStatusForService(serviceName);
 	}
 
-	public static void main(String args[]) {
-		new GUI();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO => needs implemented for our purposes? so far it doesn't
@@ -696,4 +685,14 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		// update graphics
 		GUI.repaintUserTable();
 	}
+
+	public void updateServiceUsers(String serviceName, List<String> users) {
+		user.setUserListForService(serviceName, users);
+		GUI.repaintUserTable();
+	}
+	
+	public static void main(String args[]) {
+		new GUI();
+	}
+
 }
