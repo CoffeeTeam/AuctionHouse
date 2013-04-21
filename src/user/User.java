@@ -76,7 +76,7 @@ public class User extends UserPacket{
 			serviceHashMap.put(user, StatusMessages.noOffer);
 		}
 		
-		this.matchingUsers.put(serviceName, serviceHashMap);
+		//this.matchingUsers.put(serviceName, serviceHashMap);
 	}
 	
 	/**
@@ -133,8 +133,8 @@ public class User extends UserPacket{
 	
 	//this method is used for seller users
 	public void addUserToService(String serviceName, String user) {
-		System.out.println("I added " + user  +  "  " + serviceName);
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		
 		//find the status with which the user should be added
 		if(serviceHashMap.isEmpty())
 			serviceHashMap.put(user, StatusMessages.noOffer);

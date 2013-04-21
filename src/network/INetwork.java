@@ -16,13 +16,11 @@ public abstract class INetwork {
 	public abstract void launchOfferReq(String userName, String serviceName, List<String> interestedUsers);
 	public abstract void dropOfferReq(String buyer, String serviceName, List<String> sellers);
 	
-	public abstract void makeOffer(String userName, String serviceName);
+	public abstract void makeOffer(String seller, String serviceName, String buyer);
 	public abstract void dropAuction(String userName, String serviceName);
 	
 	public abstract void acceptOffer(String seller, String offer);
 	public abstract void refuseOffer(String seller, String offer, String buyer);
-
-
 
 	/* Methods to handle server feedback */
 	

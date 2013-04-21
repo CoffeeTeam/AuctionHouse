@@ -242,7 +242,20 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
-		// TODO
+		SelectionKey key;
+		
+		if (pack.commandInfo.isEmpty()) {
+			System.err.println("No buyer specified to make offer");
+			return;
+		}
+		
+		key = Server.registeredUsersChannels.get(pack.commandInfo.get(0));
+		if (null == key) {
+			System.err.println("The buyer is no longer logged in");
+			return;
+		}
+		
+		Server.sendData(key, pack);
 	}
 
 	/**
@@ -259,7 +272,12 @@ public class ServerUtils {
 			if (null != Server.registeredUsersChannels.get(userName)) {
 				// send the info about the new service and user
 				key = Server.registeredUsersChannels.get(userName);
-				Server.sendData(key, pack);
+				
+				if (null == key)
+					System.err.println("[Server] the user " + userName +
+							" is no longer logged in");
+				else
+					Server.sendData(key, pack);
 			}
 		}
 	}

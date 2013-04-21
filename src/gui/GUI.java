@@ -706,6 +706,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvMakeOffer(String serviceName, String seller) {
 		user.updateStatus(serviceName, seller, StatusMessages.offerMade);
+		GUI.repaintUserTable();
 	}
 
 	@Override

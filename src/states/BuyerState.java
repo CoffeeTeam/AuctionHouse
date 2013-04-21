@@ -32,12 +32,11 @@ public class BuyerState extends State {
 
 	@Override
 	public List<String> getServiceList(String userName) {
-		// TODO Auto-generated method stub
 		return this.medWS.getServiceList(userName, UserTypes.buyer);
 	}
 
 	@Override
-	public void launchService(String serviceName, String userName) {
+	public void launchService(String serviceName, String userName, String... auxUserInfo) {
 		launchOfferReq.execute(serviceName, userName);
 	}
 
@@ -48,13 +47,11 @@ public class BuyerState extends State {
 
 	@Override
 	public List<String> getCurrentUsers(String serviceName) {
-		// TODO Auto-generated method stub
 		return this.medWS.getUserList(serviceName, UserTypes.buyer);
 	}
 
 	@Override
 	public void acceptOffer(String seller, String serviceName) {
-		// TODO Auto-generated method stub
 		this.medNetwork.acceptOfferNet(seller, serviceName);
 	}
 

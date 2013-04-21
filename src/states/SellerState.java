@@ -16,6 +16,7 @@ public class SellerState extends State {
 
 	Command makeOffer;
 	Command dropAuction;
+
 	public SellerState(IMediatorGUI medGUI, IMediatorWSClient medWS,
 			IMediatorNetwork medNetwork) {
 		this.medGUI = medGUI;
@@ -27,24 +28,27 @@ public class SellerState extends State {
 
 	@Override
 	public List<String> getServiceList(String userName) {
-		// TODO Auto-generated method stub
 		return medWS.getServiceList(userName, UserTypes.seller);
 	}
 
 	@Override
-	public void launchService(String serviceName, String userName) {
-		// TODO Auto-generated method stub
-		makeOffer.execute(serviceName, userName);
+	public void launchService(String serviceName, String userName,
+			String... auxUserInfo) {
+		if (auxUserInfo.length == 0) {
+			System.err
+					.println("[Seller state] This function should have an extra-parameter"
+							+ " containing the name of the seller");
+		}
+		makeOffer.execute(serviceName, userName, auxUserInfo);
 	}
 
 	@Override
 	public void dropService(String serviceName, String userName) {
-		// TODO Auto-generated method stub
 		dropAuction.execute(serviceName, userName);
 	}
 
 	public void acceptOffer(String seller, String serviceName) {
-		
+
 	}
 
 	public void refuseOffer(String seller, String serviceName, String buyer) {
@@ -54,9 +58,7 @@ public class SellerState extends State {
 
 	@Override
 	public List<String> getCurrentUsers(String serviceName) {
-		// TODO Auto-generated method stub
 		return this.medWS.getUserList(serviceName, UserTypes.seller);
 	}
 
-	
 }

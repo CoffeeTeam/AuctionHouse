@@ -50,7 +50,6 @@ public class ClientUtils {
 
 	private static void handleLaunchOfferRequest(
 			SerializableLaunchOfferReq launchedOffer) {
-		System.out.println("Launched offer");
 		NetworkClient.network.recvLaunchOfferReq(launchedOffer.userName, launchedOffer.serviceName);
 	}
 	
@@ -89,7 +88,7 @@ public class ClientUtils {
 	 * @param pack		packet from server
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
-		// TODO
+		NetworkClient.network.recvMakeOffer(pack.userName, pack.serviceName);
 	}
 	
 	/**

@@ -1,5 +1,6 @@
 package network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mediator.IMediatorNetwork;
@@ -75,11 +76,13 @@ public class Network extends INetwork {
 	}
 	
 	@Override
-	public void makeOffer(String userName, String serviceName) {
+	public void makeOffer(String seller, String serviceName, String buyer) {
 		SerializableMakeOffer makeOffer = new SerializableMakeOffer();
 		
-		makeOffer.userName = userName;
+		makeOffer.userName = seller;
 		makeOffer.serviceName = serviceName;
+		makeOffer.commandInfo.add(buyer);
+		
 		
 		netClient.sendData(makeOffer);
 	}
@@ -113,7 +116,8 @@ public class Network extends INetwork {
 	
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		System.out.println("[Network] recv launch offer");
+		System.out.println("Network => received launch offer feedback");
+		
 		med.recvLaunchOfferReq(userName, serviceName);
 	}
 
@@ -137,13 +141,13 @@ public class Network extends INetwork {
 
 	@Override
 	public void recvMakeOffer(String seller, String serviceName) {
-		// TODO Auto-generated method stub
+		System.out.println("Network => received make offer feedback");
 		
+		med.recvMakeOffer(serviceName, seller);
 	}
 
 	@Override
 	public void recvDropAuction(String seller, String serviceName) {
-		// TODO Auto-generated method stub
 		
 	}
 
