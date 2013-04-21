@@ -60,7 +60,7 @@ public class ClientUtils {
 	 * @param pack		packet from server
 	 */
 	private static void handleDropOfferRequest(SerializableDropOfferReq pack) {
-		// TODO
+		NetworkClient.network.recvDropOfferReq(pack.userName, pack.serviceName);
 	}
 	
 	/**

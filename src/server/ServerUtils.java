@@ -218,8 +218,8 @@ public class ServerUtils {
 		pack.commandInfo.clear();
 		
 		if (key == null) {
-			System.err.println("The user " + pack.userName +
-					" is no longer logged in");
+			System.out.println("[Server] The user " + pack.userName +
+					" is no longer logged in => packet not sent");
 		} else {
 			Server.sendData(key, pack);
 		}
@@ -271,8 +271,28 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleDropOfferReq(SerializableDropOfferReq pack) {
-		// TODO
+		List<String> sellers = pack.commandInfo;
+		SelectionKey key;
 
+		// reset list in pack (no longer needed)
+		pack.commandInfo = null;
+		
+		// send "drop offer" packet to each seller still logged in		
+		for (String seller : sellers) {
+			key = Server.registeredUsersChannels.get(seller);
+			
+			if (key == null) {
+				System.out.println("[Server] User " + seller + " is no longer" +
+						" logged in => no 'drop offer' message sent to him");
+				continue;
+			}
+
+			System.out.println("[Server] sending drop offer announce to seller " + 
+					seller + " (from buyer " + pack.userName + ", service " +
+					pack.serviceName + ")");
+
+			Server.sendData(key, pack);
+		}
 	}
 
 }

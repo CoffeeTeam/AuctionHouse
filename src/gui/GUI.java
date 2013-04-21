@@ -595,13 +595,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 
 	@Override
-	public void launchOffer(String serviceName) {
+	public void launchOfferRequest(String serviceName) {
 		Page.Page2.panel.repaint();
 	}
 
 	@Override
-	public void dropOffer(String serviceName) {
+	public void dropOfferRequest(String serviceName) {
+		// update this user's list
 		this.user.emptyUserListForService(serviceName);
+		
+		// inform all providers of that service of the annulment
+		this.med.dropService(serviceName, this.user.username);
+		
+		// repaint GUI
 		Page.Page2.panel.repaint();
 	}
 	
@@ -673,8 +679,33 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 
 	@Override
+	public void recvDropOfferReq(String buyer, String serviceName) {
+		// get service's status and properly update the service list
+		String status = user.getUserServiceStatus(serviceName, buyer);
+		
+		System.out.println("[GUI] received drop offer packet for service " +
+				serviceName + " from buyer " + buyer + " (current status is " +
+				status + ")");
+		
+		switch (status) {
+		case StatusMessages.noOffer:
+			user.removeUserFromService(buyer, serviceName);
+			break;
+		case StatusMessages.offerMade:
+			user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
+			break;
+
+		default:
+			break;
+		}
+		
+		// update GUI
+		GUI.repaintUserTable();
+	}
+	
+	@Override
 	public void recvMakeOffer(String serviceName, String seller) {
-		user.updateStatusForSeller(serviceName, seller);
+		user.updateStatus(serviceName, seller, StatusMessages.offerMade);
 	}
 
 	@Override

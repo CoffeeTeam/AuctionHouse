@@ -108,14 +108,16 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void logInUser(String username, String password, String userType,
 			List<String> services) {
-		// TODO Auto-generated method stub
 		network.logInUser(username, password, userType, services);
 	}
 
 	@Override
 	public void dropOfferRequestNet(String serviceName, String userName) {
-		// TODO Auto-generated method stub
-		network.dropOfferReq(userName, serviceName);
+		// get the list of users matching this service from the database
+		List<String> providers = this.getUserList(serviceName, UserTypes.buyer);
+
+		// send drop offer to network
+		network.dropOfferReq(userName, serviceName, providers);
 	}
 
 	@Override
@@ -153,6 +155,11 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public void recvLaunchOfferReq(String userName, String serviceName) {
 		System.out.println("Mediator network");
 		gui.recvLaunchOfferReq(userName, serviceName);
+	}
+	
+	@Override
+	public void recvDropOfferReq(String buyer, String serviceName) {
+		gui.recvDropOfferReq(buyer, serviceName);
 	}
 	
 	@Override
@@ -195,7 +202,6 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public List<String> getUserList(String serviceName, String userType) {
-		// TODO Auto-generated method stub
 		return wsClient.getCurrentUsers(serviceName, userType);
 	}
 }

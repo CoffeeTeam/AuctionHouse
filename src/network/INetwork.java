@@ -14,7 +14,7 @@ public abstract class INetwork {
 	/* Methods that handle client actions */
 	
 	public abstract void launchOfferReq(String userName, String serviceName, List<String> interestedUsers);
-	public abstract void dropOfferReq(String userName, String serviceName);
+	public abstract void dropOfferReq(String buyer, String serviceName, List<String> sellers);
 	
 	public abstract void makeOffer(String userName, String serviceName);
 	public abstract void dropAuction(String userName, String serviceName);
@@ -27,9 +27,8 @@ public abstract class INetwork {
 	/* Methods to handle server feedback */
 	
 	public abstract void recvLaunchOfferReq(String userName, String serviceName);
-	// for drop offer request the taken action will be refuse offer 
-	// so there is no method for drop offer request
-	
+	public abstract void recvDropOfferReq(String buyer, String serviceName);
+
 	public abstract void recvAcceptOffer(String buyer, String serviceName);
 	public abstract void recvRefuseOffer(String buyer, String serviceName);
 	

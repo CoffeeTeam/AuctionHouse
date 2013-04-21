@@ -185,14 +185,15 @@ public class User extends UserPacket{
 	}
 
 	/**
-	 * Update status to offer made for a buyer user
-	 * @param serviceName the server for which the offer was made
-	 * @param seller the name of the seller of the service
+	 * Update status of a service provided by another user
 	 */
-	public void updateStatusForSeller(String serviceName, String seller) {
+	public void updateStatus(String serviceName, String provider, String status) {
 		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
-		serviceUsers.put(seller, StatusMessages.offerMade);
-		this.matchingUsers.put(serviceName, serviceUsers);
+		
+		if (serviceUsers == null)
+			return;
+		
+		serviceUsers.put(provider, status);
 	}
 	
 	public void updateStatusForService(String serviceName) {

@@ -21,13 +21,11 @@ public class WSClient extends IWSClient{
 	 */
 	@Override
 	public List<String> getCurrentUsers(String serviceName, String userType) {
-		// TODO Auto-generated method stub
 		return infoRetriever.getUserList(serviceName, userType);
 	}
 
 	@Override
 	public List<String> getServiceList(String userName, String userType) {
-		// TODO Auto-generated method stub
 		return infoRetriever.userService(userName, userType);
 	}
 

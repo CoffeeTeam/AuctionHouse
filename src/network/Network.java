@@ -40,11 +40,12 @@ public class Network extends INetwork {
 	}
 	
 	@Override
-	public void dropOfferReq(String userName, String serviceName) {
+	public void dropOfferReq(String buyer, String serviceName, List<String> sellers) {
 		SerializableDropOfferReq dropOffer = new SerializableDropOfferReq();
 		
-		dropOffer.userName = userName;
+		dropOffer.userName = buyer;
 		dropOffer.serviceName = serviceName;
+		dropOffer.commandInfo = sellers;
 		
 		netClient.sendData(dropOffer);
 	}
@@ -117,6 +118,11 @@ public class Network extends INetwork {
 	}
 
 	@Override
+	public void recvDropOfferReq(String buyer, String serviceName) {
+		med.recvDropOfferReq(buyer, serviceName);
+	}
+
+	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
 		System.out.println("[Network] => received refuse offer feedback");
 		
@@ -140,5 +146,5 @@ public class Network extends INetwork {
 		// TODO Auto-generated method stub
 		
 	}
-	
+
 }
