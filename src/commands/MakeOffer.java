@@ -13,8 +13,7 @@ public class MakeOffer extends SerializableMakeOffer implements Command{
 
 	@Override
 	public void execute(String serviceName, String user) {
-		// TODO Auto-generated method stub
-		this.medNetwork.makeOffer(serviceName, user);
+		this.medNetwork.makeOfferNet(serviceName, user);
 	}
 
 }

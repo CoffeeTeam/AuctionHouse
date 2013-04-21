@@ -33,7 +33,16 @@ public class NetworkClient extends SwingWorker {
 	private boolean running;
 
 	private NetworkClient(INetwork network) {
-		this.network = network;
+		// set network IF NOT ALREADY SET
+		if (NetworkClient.network == null) {
+			NetworkClient.network = network;
+		} else if (NetworkClient.network != network) {
+			// Signalizes an error if there is  an attempt to set a static field
+			// to 2 different values
+			System.err.println("[Network Client] Static field network is " +
+					"already set to another value !!");
+		}
+
 		try {
 			selector = Selector.open();
 			socketChannel = SocketChannel.open();

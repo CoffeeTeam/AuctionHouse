@@ -13,8 +13,7 @@ public class DropOfferReq extends SerializableDropOfferReq implements Command {
 	
 	@Override
 	public void execute(String serviceName, String user) {
-		// TODO Auto-generated method stub
-		this.medNetwork.dropOfferRequest(serviceName, user);
+		this.medNetwork.dropOfferRequestNet(serviceName, user);
 	}
 
 }

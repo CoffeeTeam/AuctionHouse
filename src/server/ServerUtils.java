@@ -200,12 +200,26 @@ public class ServerUtils {
 	/**
 	 * Performs actions required when the user refuses an offer
 	 * 
-	 * @param pakc
+	 * @param pack
 	 *            packet with request information
 	 */
-	private static void handleRefuseOffer(SerializableRefuseOffer pakc) {
-		// Send refused info to the seller TODO
-
+	private static void handleRefuseOffer(SerializableRefuseOffer pack) {
+		// Send refused info to the seller (in pack, the seller 
+		// is stored in userName)
+		
+		// get key
+		SelectionKey key = Server.registeredUsersChannels.get(pack.userName);
+		
+		// set username in packet to buyer instead of seller
+		pack.userName = pack.commandInfo.get(0);
+		pack.commandInfo.clear();
+		
+		if (key == null) {
+			System.err.println("The user " + pack.userName +
+					" is no longer logged in");
+		} else {
+			Server.sendData(key, pack);
+		}
 	}
 
 	/**

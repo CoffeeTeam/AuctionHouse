@@ -4,22 +4,21 @@ import java.util.List;
 
 public interface IMediatorNetwork {
 
-	public void registerUser(String username, String password, String userType, List<String> services);
+	public void logInUser(String username, String password, String userType, List<String> services);
 	
-	public void launchOfferRequest(String serviceName, String userName);
-	public void dropOfferRequest(String serviceName, String userName);
-	public void makeOffer(String serviceName, String userName);
-	public void dropAuction(String serviceName, String userName);
-	
-	public void updateUser(String serviceName, String userName);
-	public void makeOfferToBuyer(String serviceName, String seller);
-	
+	public void launchOfferRequestNet(String serviceName, String userName);
+	public void dropOfferRequestNet(String serviceName, String userName);
+	public void makeOfferNet(String serviceName, String userName);
+	public void dropAuctionNet(String serviceName, String userName);
 	public void acceptOfferNet(String seller, String offer);
 	public void refuseOfferNet(String seller, String offer, String buyer);
 	
+	public void recvUserUpdate(String serviceName, String userName);
+	public void recvMakeOffer(String serviceName, String seller);
 	public void recvLaunchOfferReq(String userName, String serviceName);
+	public void recvDropAuction(String userName, String serviceName);
+	public void recvAcceptOffer(String buyer, String serviceName);
+	public void recvRefuseOffer(String buyer, String serviceName);
 	
 	public void interruptTransfer(String seller, String serviceName);
-	
-	public void dropAuctionSeller(String userName, String serviceName);
 }

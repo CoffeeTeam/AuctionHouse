@@ -60,7 +60,6 @@ public class BuyerState extends State {
 	@Override
 	public void refuseOffer(String seller, String serviceName, String buyer) {
 		this.medNetwork.refuseOfferNet(seller, serviceName, buyer);
-		
 	}
 
 }

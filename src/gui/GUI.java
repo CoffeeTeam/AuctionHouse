@@ -615,7 +615,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void refuseOffer(String serviceName, String seller) {
-		// update the user
+		// update the user's status
 		this.user.refuseOffer(serviceName, seller);
 		
 		// inform the refused seller
@@ -661,16 +661,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		user.updateStatusForService(serviceName);
 	}
 
-	@Override
-	public void makeOfferToBuyer(String serviceName, String seller) {
-		user.updateStatusForSeller(serviceName, seller);
-	}
-
-	@Override
-	public void dropAuctionSeller(String userName, String serviceName) {
-		user.removeUserFromService(userName, serviceName);
-	}
-
 	public static void main(String args[]) {
 		new GUI();
 	}
@@ -688,4 +678,22 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		GUI.repaintUserTable();
 	}
 
+	@Override
+	public void recvMakeOffer(String serviceName, String seller) {
+		user.updateStatusForSeller(serviceName, seller);
+	}
+
+	@Override
+	public void recvDropAuction(String userName, String serviceName) {
+		user.removeUserFromService(userName, serviceName);
+	}
+
+	@Override
+	public void recvRefuseOffer(String buyer, String serviceName) {
+		// update status
+		user.refuseOffer(serviceName, buyer);
+		
+		// update graphics
+		GUI.repaintUserTable();
+	}
 }

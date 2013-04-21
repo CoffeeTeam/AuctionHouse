@@ -170,8 +170,6 @@ public class User extends UserPacket{
 	public void refuseOffer(String serviceName, String otherUser) {
 		// Change status
 		this.matchingUsers.get(serviceName).put(otherUser, StatusMessages.offerRefused);
-		
-		// TODO
 	}
 
 	/**

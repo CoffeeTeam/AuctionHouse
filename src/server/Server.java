@@ -211,7 +211,8 @@ public class Server extends Thread {
 			e.printStackTrace();
 		}
 		
-		System.out.println("[Server] I want to write " + data.length + " bytes on the socket associated with the key " + key);
+		System.out.println("[Server] I want to write " + data.length + 
+				" bytes on the socket associated with the key " + key);
 	
 		ArrayList<byte[]> wbuf = null;
 		

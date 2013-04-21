@@ -13,8 +13,7 @@ public class LaunchOfferReq extends SerializableLaunchOfferReq implements Comman
 
 	@Override
 	public void execute(String serviceName, String user) {
-		// TODO Auto-generated method stub
-		this.medNetwork.launchOfferRequest(serviceName, user);
+		this.medNetwork.launchOfferRequestNet(serviceName, user);
 	}
 	
 

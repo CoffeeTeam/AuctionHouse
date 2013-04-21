@@ -103,12 +103,38 @@ public class Network extends INetwork {
 		netClient.sendData(usrPack);
 	}
 
+	
+	/* Methods that handle server response */
+	
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
 		System.out.println("Network recv launch offer");
 		med.recvLaunchOfferReq(userName, serviceName);
 	}
 
+	@Override
+	public void recvRefuseOffer(String buyer, String serviceName) {
+		System.out.println("Network => received refuse offer feedback");
+		
+		med.recvRefuseOffer(buyer, serviceName);
+	}
 
+	@Override
+	public void recvAcceptOffer(String buyer, String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void recvMakeOffer(String seller, String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void recvDropAuction(String seller, String serviceName) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
