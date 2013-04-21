@@ -158,7 +158,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page.Page3.setPanel(logOutPanel);
 		panelCards.add(Page.Page3.getPanel(), Page.Page3.getName());
 
-		med = new Mediator();
+		med = new Mediator(this);
 		user = new User();
 		initGuiObjects(constraints);
 	}
@@ -596,8 +596,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void launchOffer(String serviceName) {
-		List<String> userList = med.getUsers(serviceName);
-		this.user.setUserListForService(serviceName, userList);
+		//List<String> userList = med.getUsers(serviceName);
+		//this.user.setUserListForService(serviceName, userList);
 		Page.Page2.panel.repaint();
 	}
 
@@ -679,6 +679,13 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO => needs implemented for our purposes? so far it doesn't
 		
+	}
+
+	@Override
+	public void recvLaunchOfferReq(String userName, String serviceName) {
+		System.out.println("Add user to service");
+		user.addUserToService(serviceName, userName);
+		GUI.repaintUserTable();
 	}
 
 }

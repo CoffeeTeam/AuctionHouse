@@ -1,9 +1,5 @@
 package util;
 
-import java.net.MalformedURLException;
-
-import gui.GUI;
-
 import javax.swing.ImageIcon;
 
 public class Image {

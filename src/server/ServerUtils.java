@@ -235,8 +235,6 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleLaunchOfferReq(SerializableLaunchOfferReq pack) {
-		// TODO send to all users interested on this service the name of this
-		// user
 		List<String> interestedUsers = pack.commandInfo;
 		SelectionKey key;
 

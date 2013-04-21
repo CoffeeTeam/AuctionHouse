@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 import javax.swing.SwingWorker;
 
-import server.ServerUtils;
 import util.NetworkPacketManager;
 
 /**
@@ -23,6 +22,7 @@ import util.NetworkPacketManager;
  * 
  */
 public class NetworkClient extends SwingWorker {
+	public static INetwork network;
 	private static NetworkClient netClient;
 	private SocketChannel socketChannel = null;
 	private SelectionKey key;
@@ -32,7 +32,8 @@ public class NetworkClient extends SwingWorker {
 	private Object dataToSend;
 	private boolean running;
 
-	private NetworkClient() {
+	private NetworkClient(INetwork network) {
+		this.network = network;
 		try {
 			selector = Selector.open();
 			socketChannel = SocketChannel.open();
@@ -44,10 +45,6 @@ public class NetworkClient extends SwingWorker {
 			// connect to the remote server
 			socketChannel.connect(new InetSocketAddress(NetworkInfo.IP,
 					NetworkInfo.PORT));
-			//
-			// while (!socketChannel.finishConnect()) {
-			// System.out.println("Waiting....");
-			// }
 
 			socketChannel.register(selector, SelectionKey.OP_READ);
 
@@ -68,66 +65,31 @@ public class NetworkClient extends SwingWorker {
 			running = false;
 		}
 		this.key = key;
-		System.out.println("Finished connecting");
-		// socketChannel.close();
+		
+		System.out.println("[Client] Finished connecting");
 		key.interestOps(SelectionKey.OP_READ);
 	}
 
-	public static NetworkClient getClientObject() {
+	public static NetworkClient getClientObject(INetwork network) {
 		if (netClient == null) {
 			System.out.println("I created a new object");
-			netClient = new NetworkClient();
+			netClient = new NetworkClient(network);
 		}
 		return netClient;
 	}
 
 	public void sendData(Object dataObject) {
 		this.dataToSend = dataObject;
-		System.out.println("I send data");
-		System.out.println(key == null);
 		key.interestOps(SelectionKey.OP_WRITE);
 		selector.wakeup();
 	}
-
-	// public void sendData(Object dataToSend) {
-	// byte[] bytesToSend;
-	// byte[] lengthPack;
-	// ByteBuffer wBuff = ByteBuffer.allocate(8192);
-	//
-	// try {
-	// // serialize the result
-	// bytesToSend = NetworkPacketManager.serialize(dataToSend);
-	//
-	// // find the length of the packet
-	// lengthPack = NetworkPacketManager.packetLength(bytesToSend);
-	//
-	// // find the length of the packet
-	// lengthPack = NetworkPacketManager.packetLength(bytesToSend);
-	//
-	// // send the length of the object through the channel
-	// wBuff.clear();
-	// wBuff.put(lengthPack);
-	// wBuff.flip();
-	// socketChannel.write(wBuff);
-	//
-	// // send the object through the channel
-	// wBuff = ByteBuffer.allocate(8192);
-	//
-	// wBuff.clear();
-	// wBuff.put(bytesToSend);
-	// wBuff.flip();
-	// socketChannel.write(wBuff);
-	//
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// }
 
 	public void write(SelectionKey key) {
 		byte[] bytesToSend;
 		byte[] lengthPack;
 		ByteBuffer wBuff = ByteBuffer.allocate(8192);
 
+		System.out.println("[Client] write");
 		try {
 			// serialize the result
 			bytesToSend = NetworkPacketManager.serialize(dataToSend);
@@ -164,7 +126,7 @@ public class NetworkClient extends SwingWorker {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		this.rBuffer.clear();
 		
-		System.out.println("I received info to write");
+		System.out.println("[Client] Read");
 
 		int numRead = 0;
 
@@ -188,10 +150,11 @@ public class NetworkClient extends SwingWorker {
 		int rbuflen = 0;
 		if (rbuf != null) {
 			rbuflen = rbuf.length;
+			System.out.println("[Client] there was data in the buffer " + rbuflen);
 		}
 
 		byte[] currentBuf = rBuffer.array();
-		System.out.println("[Server] Number of read bytes " + numRead
+		System.out.println("[Client] Number of read bytes " + numRead
 				+ " associated with the key " + key + " : " + currentBuf);
 
 		byte[] newBuf = new byte[rbuflen + numRead];
@@ -211,6 +174,7 @@ public class NetworkClient extends SwingWorker {
 
 		int i = 0;
 		int length = 0;
+		
 		// Read size of sent object
 		if (i + 4 > newBuf.length)
 			return;
@@ -218,7 +182,7 @@ public class NetworkClient extends SwingWorker {
 		length = NetworkPacketManager.getLength(new byte[] { newBuf[0],
 				newBuf[1], newBuf[2], newBuf[3] });
 
-		System.out.println("[Clients] The received length is = " + length);
+		System.out.println("[Client] The received length is = " + length);
 		i += 4;
 
 		// Read the serialized object
@@ -242,13 +206,14 @@ public class NetworkClient extends SwingWorker {
 		} else {
 			finalBuf = newBuf;
 		}
+		
+		readBuf = finalBuf;
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
-		// TODO Auto-generated method stub
-		System.out.println("Entered do in background Client");
 		socketChannel.register(selector, SelectionKey.OP_CONNECT);
+		
 		while (running) {
 			selector.select();
 
@@ -266,7 +231,6 @@ public class NetworkClient extends SwingWorker {
 					}
 					
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

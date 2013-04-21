@@ -6,8 +6,7 @@ import java.util.List;
 
 import constants.UserTypes;
 
-import network.INetwork;
-import network.Network;
+import network.*;
 
 import states.StateManager;
 import web_service.IWSClient;
@@ -21,10 +20,11 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	private INetwork network;
 	private IGUI gui;
 
-	public Mediator() {
+	public Mediator(IGUI gui) {
 		stateMgr = new StateManager(this, this, this);
 		wsClient = new WSClient(this);
-		network = new Network();
+		network = new Network(this);
+		this.gui = gui;
 	}
 
 	@Override
@@ -156,8 +156,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void dropAuctionSeller(String userName, String serviceName) {
-		// TODO Auto-generated method stub
 		gui.dropAuctionSeller(userName, serviceName);
+	}
+
+	@Override
+	public void recvLaunchOfferReq(String userName, String serviceName) {
+		System.out.println("Mediator network");
+		gui.recvLaunchOfferReq(userName, serviceName);
 	}
 
 }

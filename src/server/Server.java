@@ -151,7 +151,6 @@ public class Server extends Thread {
 
 
 	public static void write(SelectionKey key) throws IOException {
-		//TODO add length of the package when writing the package
 		System.out.println("WRITE: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -185,16 +184,10 @@ public class Server extends Thread {
 				}
 			}
 			
-		//	key.interestOps(SelectionKey.OP_READ);
 			if (wbuf.size() == 0) {
 				key.interestOps(SelectionKey.OP_READ);
 			}
-//				synchronized (changeRequestQueue) {
-//					changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ));
-//				}
-//			}
 		}
-//		selector.wakeup();
 	}
 	
 	/**
@@ -204,16 +197,22 @@ public class Server extends Thread {
 	 */
 	public static void sendData(SelectionKey key, Object dataObj) {
 		byte[] data = null;
+		byte[] lengthPacket = null;
 		
 		try {
+			//serialize the data to be sent
 			data = NetworkPacketManager.serialize(dataObj);
+			
+			//compute the length of the package
+			lengthPacket = NetworkPacketManager.packetLength(data);
+			
 		} catch (IOException e) {
 			System.err.println("Error serializing object");
 			e.printStackTrace();
 		}
 		
 		System.out.println("[Server] I want to write " + data.length + " bytes on the socket associated with the key " + key);
-		
+	
 		ArrayList<byte[]> wbuf = null;
 		
 		synchronized (key) {
@@ -222,7 +221,7 @@ public class Server extends Thread {
 				wbuf = new ArrayList<byte[]>();
 				writeBuffers.put(key, wbuf);
 			}
-
+			wbuf.add(lengthPacket);
 			wbuf.add(data);
 //			synchronized (changeRequestQueue) {
 //				changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ | SelectionKey.OP_WRITE));

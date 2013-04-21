@@ -2,6 +2,8 @@ package network;
 
 import java.util.List;
 
+import mediator.IMediatorNetwork;
+
 import commands.serializableCommands.SerializableAcceptOffer;
 import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
@@ -14,8 +16,9 @@ public class Network extends INetwork {
 
 	private NetworkClient netClient;
 
-	public Network() {
-		netClient = NetworkClient.getClientObject();
+	public Network(IMediatorNetwork med) {
+		this.med = med;
+		netClient = NetworkClient.getClientObject(this);
 		netClient.execute();
 	}
 
@@ -98,6 +101,12 @@ public class Network extends INetwork {
 		usrPack.toDelete = 0;
 
 		netClient.sendData(usrPack);
+	}
+
+	@Override
+	public void recvLaunchOfferReq(String userName, String serviceName) {
+		System.out.println("Network recv launch offer");
+		med.recvLaunchOfferReq(userName, serviceName);
 	}
 
 

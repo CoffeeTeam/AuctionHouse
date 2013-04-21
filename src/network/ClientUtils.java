@@ -14,6 +14,7 @@ public class ClientUtils {
 
 	private static void handleLaunchOfferRequest(
 			SerializableLaunchOfferReq launchedOffer) {
-		System.out.println("Handle launch offer");
+		System.out.println("Launced offer");
+		NetworkClient.network.recvLaunchOfferReq(launchedOffer.userName, launchedOffer.serviceName);
 	}
 }
