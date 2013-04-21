@@ -54,19 +54,20 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	
 	
-	/* Generic calls => do not consider is the user is a buyer or a seller */
+	/* Generic calls => do not consider if the user is a buyer or a seller */
 	
 	@Override
-	public void launchService(String serviceName, String userName) {
-		stateMgr.launchService(serviceName, userName);
+	public void launchService(String serviceName, String userName, String... auxInfo) {
+		if (0 != auxInfo.length)
+			stateMgr.launchService(serviceName, userName, auxInfo[0]);
+		else 
+			stateMgr.launchService(serviceName, userName);
 	}
 
 	@Override
-	public void dropService(String serviceName, String userName) {
+	public void dropService(String serviceName, String userName, String... auxInfo) {
 		stateMgr.dropService(serviceName, userName);
 	}
-
-	
 	
 	/* User specific methods => they are called depending on the user's state
 	 * (buyer or seller) */
@@ -119,9 +120,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void makeOfferNet(String serviceName, String userName) {
-		// TODO Auto-generated method stub
-		network.makeOffer(userName, serviceName);
+	public void makeOfferNet(String seller, String serviceName, String buyer) {
+		network.makeOffer(seller, serviceName, buyer);
 	}
 
 	@Override
@@ -151,7 +151,6 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		System.out.println("Mediator network");
 		gui.recvLaunchOfferReq(userName, serviceName);
 	}
 	
@@ -198,4 +197,6 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		// TODO Auto-generated method stub
 		return wsClient.getCurrentUsers(serviceName, userType);
 	}
+
+	
 }

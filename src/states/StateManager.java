@@ -34,8 +34,11 @@ public class StateManager {
 		return currentState.getCurrentUsers(serviceName);
 	}
 	
-	public void launchService(String serviceName, String userName) {
-		this.currentState.launchService(serviceName, userName);
+	public void launchService(String serviceName, String userName, String... auxInfo) {
+		if (0 != auxInfo.length)
+			this.currentState.launchService(serviceName, userName, auxInfo[0]);
+		else
+			this.currentState.launchService(serviceName, userName);
 	}
 
 	public void dropService(String serviceName, String userName) {

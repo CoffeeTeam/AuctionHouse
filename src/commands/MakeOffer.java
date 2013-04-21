@@ -13,7 +13,13 @@ public class MakeOffer extends SerializableMakeOffer implements Command{
 
 	@Override
 	public void execute(String serviceName, String user, String... auxUserInfo) {
-		this.medNetwork.makeOfferNet(serviceName, user);
+		if (auxUserInfo.length != 1) {
+			System.err.println("[Make Offer][execute] Third parameter needed to store " +
+					"buyer's name!!");
+			return;
+		}
+		
+		this.medNetwork.makeOfferNet(user, serviceName, auxUserInfo[0]);
 	}
 
 }

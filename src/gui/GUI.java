@@ -38,8 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.Logger;
-
 import components.MyTableCellEditor;
 import components.MyTableCellRenderer;
 import components.PopupActionListener;
@@ -596,19 +594,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void launchOffer(String serviceName) {
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	@Override
 	public void dropOffer(String serviceName) {
 		this.user.emptyUserListForService(serviceName);
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 	
 	@Override
 	public void acceptOffer(String serviceName, String seller) {
 		this.user.startTransfer(serviceName, seller);
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	@Override
@@ -620,7 +618,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		this.med.refuseOfferGui(seller, serviceName, this.user.username);
 		
 		// repaint GUI
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 	
 	public User getUser() {
@@ -648,7 +646,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void updateServices(String serviceName, String userName) {
 		user.addUserToService(serviceName, userName);
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	public static void repaintUserTable() {
@@ -667,14 +665,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		System.out.println("Add user to service");
 		user.addUserToService(serviceName, userName);
 		GUI.repaintUserTable();
 	}
 
 	@Override
 	public void recvMakeOffer(String serviceName, String seller) {
+		System.out.println("GUI => update status for seller");
 		user.updateStatusForSeller(serviceName, seller);
+		GUI.repaintUserTable();
 	}
 
 	@Override

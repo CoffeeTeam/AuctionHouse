@@ -19,7 +19,6 @@ public class Server extends Thread {
 	private static Hashtable<SelectionKey, ArrayList<byte[]>> writeBuffers;
 	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 	private static ByteBuffer wBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-	private static LinkedList<ChangeRequest> changeRequestQueue;
 	public static Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	

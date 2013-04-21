@@ -76,7 +76,7 @@ public class User extends UserPacket{
 			serviceHashMap.put(user, StatusMessages.noOffer);
 		}
 		
-		this.matchingUsers.put(serviceName, serviceHashMap);
+		//this.matchingUsers.put(serviceName, serviceHashMap);
 	}
 	
 	/**
@@ -133,8 +133,8 @@ public class User extends UserPacket{
 	
 	//this method is used for seller users
 	public void addUserToService(String serviceName, String user) {
-		System.out.println("I added " + user  +  "  " + serviceName);
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
+		
 		//find the status with which the user should be added
 		if(serviceHashMap.isEmpty())
 			serviceHashMap.put(user, StatusMessages.noOffer);
@@ -190,8 +190,18 @@ public class User extends UserPacket{
 	 * @param seller the name of the seller of the service
 	 */
 	public void updateStatusForSeller(String serviceName, String seller) {
+		System.out.println("ServiceName " + serviceName + " seller " + seller);
+		
 		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
+		if (null == serviceUsers)
+			System.out.println("Hash for this service is NULL");
+		if (serviceUsers.isEmpty()) {
+			System.out.println("Empty hash for service " + serviceName);
+			return;
+		}
+
 		serviceUsers.put(seller, StatusMessages.offerMade);
+		System.out.println("Update status for " + serviceName + "  " + seller);
 		this.matchingUsers.put(serviceName, serviceUsers);
 	}
 	
