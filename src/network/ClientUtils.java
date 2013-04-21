@@ -78,6 +78,8 @@ public class ClientUtils {
 	 * @param pack		packet from server
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pack) {
+		System.out.println("[ClientUtils] Received refuse offer packet from server");
+		
 		NetworkClient.network.recvRefuseOffer(pack.userName, pack.serviceName);
 	}
 	

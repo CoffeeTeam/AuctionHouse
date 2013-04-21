@@ -9,6 +9,7 @@ import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
+import commands.serializableCommands.SerializableRefuseOffer;
 
 import user.UserPacket;
 
@@ -60,13 +61,16 @@ public class Network extends INetwork {
 
 	@Override
 	public void refuseOffer(String seller, String offer, String buyer) {
-		SerializableDropOfferReq dropOffer= new SerializableDropOfferReq();
+		SerializableRefuseOffer dropOffer= new SerializableRefuseOffer();
 		
 		dropOffer.userName = seller;
 		dropOffer.serviceName = offer;
 		dropOffer.commandInfo.add(buyer);
 		
 		netClient.sendData(dropOffer);
+		
+		System.out.println("[Network] " + buyer + " sent 'refuse offer' for " +
+				"service " + offer + " to " + seller);
 	}
 	
 	@Override
@@ -108,13 +112,13 @@ public class Network extends INetwork {
 	
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		System.out.println("Network recv launch offer");
+		System.out.println("[Network] recv launch offer");
 		med.recvLaunchOfferReq(userName, serviceName);
 	}
 
 	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
-		System.out.println("Network => received refuse offer feedback");
+		System.out.println("[Network] => received refuse offer feedback");
 		
 		med.recvRefuseOffer(buyer, serviceName);
 	}

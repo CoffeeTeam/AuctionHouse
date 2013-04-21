@@ -13,7 +13,7 @@ public class User extends UserPacket{
 
 	private static final long serialVersionUID = -67237845923510708L;
 
-	//associate a list of users to each service
+	//associate a list of users to each service - status
 	private HashMap<String,HashMap<String,String>> matchingUsers;
 
 	// active transfers (if any)
@@ -84,9 +84,8 @@ public class User extends UserPacket{
 	 */
 	public boolean isEmptyService(String serviceName) {
 		HashMap<String, String> serviceHashMap = this.matchingUsers.get(serviceName);
-		if(serviceHashMap.isEmpty())
-			return true;
-		return false;
+		
+		return serviceHashMap.isEmpty();
 	}
 	
 	/**
@@ -97,7 +96,7 @@ public class User extends UserPacket{
 	}
 	
 	/**
-	 * Gets the info on ths transfer for the given service if any (null otherwise)
+	 * Gets the info on this transfer for the given service if any (null otherwise)
 	 */
 	public UserTransferStatus getServiceTransfer(String serviceName) {
 		return transfersInfo.get(serviceName);
@@ -105,11 +104,24 @@ public class User extends UserPacket{
 	
 	/**
 	 * get the association between an user and it's status for a certain service
+	 * 
 	 * @param serviceName
 	 * @return hash map containing the associations
 	 */
-	public HashMap<String,String> getUserStatus(String serviceName) {
+	public HashMap<String,String> getServiceStatus(String serviceName) {
 		return this.matchingUsers.get(serviceName);
+	}
+	
+	/**
+	 * Gets the status of this user's service provided by another user
+	 */
+	public String getUserServiceStatus(String serviceName, String anotherUser) {
+		HashMap<String, String> providers = matchingUsers.get(serviceName);
+		
+		if (providers == null)
+			return null;
+		
+		return providers.get(anotherUser);
 	}
 	
 	public void emptyUserListForService(String serviceName) {

@@ -79,7 +79,7 @@ public class MyTableCellRenderer extends DefaultTableCellRenderer{
 		
 		// Return selection from combo (if unchanged)
 		HashMap<String, String> matches = 
-				instanceGUI.getUser().getUserStatus(serviceName);
+				instanceGUI.getUser().getServiceStatus(serviceName);
 		Set<String> users = matches.keySet();
 		boolean unchanged = false;
 		String newStatus = null;

@@ -207,6 +207,9 @@ public class ServerUtils {
 		// Send refused info to the seller (in pack, the seller 
 		// is stored in userName)
 		
+		System.out.println("[Server] Received refuse offer packet\n\t sending" +
+				" anounce to seller");
+		
 		// get key
 		SelectionKey key = Server.registeredUsersChannels.get(pack.userName);
 		

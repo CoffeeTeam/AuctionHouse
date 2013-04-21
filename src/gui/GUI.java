@@ -299,6 +299,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				user.setUsername(userText.getText());
 				user.setPassword(new String(passText.getPassword()));
 				
+				System.out.println("[GUI] User " + user.username + " logged in");
+				
 				// Validate given input
 				if (user.getUsername().isEmpty()
 						|| !(sellerButton.isSelected() || buyerButton
@@ -473,6 +475,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			break;
 		case 1:
 			serviceName = (String) table.getValueAt(row, column-1);
+			String anotherUser = ((String)table.getValueAt(row, column)).split(" \t-")[0];
+			
 			// add menu for those who will sell products for buyers
 			if (user.getUserType().equals(UserTypes.buyer)) {
 				// Accept offer
@@ -487,10 +491,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// Refuse offer
 				item = new JMenuItem(ComponentNames.buyerUserMenu[1]);
 				item.addActionListener(actionListener);
-				// check that status is ACTIVE
+				// check that status is ACTIVE & OFFER MADE
 				if (user.getServiceTransfer(serviceName) != null ||
-						user.isEmptyService(serviceName))
+						user.getUserServiceStatus(serviceName, anotherUser) == null)
 					item.setEnabled(false);
+				
 				contextMenu.add(item);
 
 			} else {
@@ -566,7 +571,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		List<String> services = user.getUserServiceList();
 
 		for (String service : services) {
-			HashMap<String, String> userStatus = user.getUserStatus(service);
+			HashMap<String, String> userStatus = user.getServiceStatus(service);
 			Set<Map.Entry<String, String>> pairs = userStatus.entrySet();
 			Iterator<Map.Entry<String, String>> values = pairs.iterator();
 			Map.Entry<String, String> item;
@@ -612,7 +617,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		this.user.refuseOffer(serviceName, seller);
 		
 		// inform the refused seller
-		this.med.refuseOfferGui(this.user.username, serviceName, seller);
+		this.med.refuseOfferGui(seller, serviceName, this.user.username);
 		
 		// repaint GUI
 		Page.Page2.panel.repaint();
