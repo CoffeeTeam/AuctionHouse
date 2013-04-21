@@ -5,6 +5,7 @@ import java.util.List;
 import commands.Command;
 import commands.DropOfferReq;
 import commands.LaunchOfferReq;
+import commands.RefuseOffer;
 
 import constants.UserTypes;
 
@@ -16,6 +17,7 @@ public class BuyerState extends State {
 
 	Command launchOfferReq;
 	Command dropOfferReq;
+	Command refuseOffer;
 
 	public BuyerState(IMediatorGUI medGUI, IMediatorWSClient medWS,
 			IMediatorNetwork medNetwork) {
@@ -25,6 +27,7 @@ public class BuyerState extends State {
 		
 		launchOfferReq = new LaunchOfferReq(medNetwork);
 		dropOfferReq = new DropOfferReq(medNetwork);
+		refuseOffer = new RefuseOffer(medNetwork);
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class BuyerState extends State {
 
 	@Override
 	public void refuseOffer(String seller, String serviceName, String buyer) {
-		this.medNetwork.refuseOfferNet(seller, serviceName, buyer);
+		refuseOffer.execute(serviceName, seller, buyer);
 	}
 
 }
