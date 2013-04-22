@@ -3,6 +3,7 @@ package network;
 import java.io.*;
 
 import constants.NetworkInfo;
+
 import java.nio.*;
 import java.nio.channels.*;
 import java.net.*;
@@ -21,6 +22,7 @@ import util.NetworkPacketManager;
  * @author Coffee Team
  * 
  */
+@SuppressWarnings("rawtypes")
 public class NetworkClient extends SwingWorker {
 	public static INetwork network;
 	private static NetworkClient netClient;
@@ -96,7 +98,7 @@ public class NetworkClient extends SwingWorker {
 	public void write(SelectionKey key) {
 		byte[] bytesToSend;
 		byte[] lengthPack;
-		ByteBuffer wBuff = ByteBuffer.allocate(8192);
+		ByteBuffer wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 
 		System.out.println("[Client] write");
 		try {
@@ -116,7 +118,7 @@ public class NetworkClient extends SwingWorker {
 			socketChannel.write(wBuff);
 
 			// send the object through the channel
-			wBuff = ByteBuffer.allocate(8192);
+			wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 
 			wBuff.clear();
 			wBuff.put(bytesToSend);

@@ -2,6 +2,7 @@ package states;
 
 import java.util.List;
 
+import commands.AcceptOffer;
 import commands.Command;
 import commands.DropOfferReq;
 import commands.LaunchOfferReq;
@@ -18,6 +19,7 @@ public class BuyerState extends State {
 	Command launchOfferReq;
 	Command dropOfferReq;
 	Command refuseOffer;
+	Command acceptOffer;
 
 	public BuyerState(IMediatorGUI medGUI, IMediatorWSClient medWS,
 			IMediatorNetwork medNetwork) {
@@ -28,6 +30,7 @@ public class BuyerState extends State {
 		launchOfferReq = new LaunchOfferReq(medNetwork);
 		dropOfferReq = new DropOfferReq(medNetwork);
 		refuseOffer = new RefuseOffer(medNetwork);
+		acceptOffer = new AcceptOffer(medNetwork);
 	}
 
 	@Override
@@ -51,8 +54,16 @@ public class BuyerState extends State {
 	}
 
 	@Override
-	public void acceptOffer(String seller, String serviceName) {
-		this.medNetwork.acceptOfferNet(seller, serviceName);
+	public void acceptOffer(String buyer, String serviceName, String seller, List<String> otherSellers) {
+		/* on the first position will be the name of the seller who's offer was accepted
+		 * and after will be the name of the sellers which which will be refused
+		 */
+		String allSellers  = new String(seller);
+		for (String refusedSeller : otherSellers) {
+			allSellers += " " + refusedSeller;
+		}
+		
+		acceptOffer.execute(buyer, serviceName, allSellers);
 	}
 
 	@Override

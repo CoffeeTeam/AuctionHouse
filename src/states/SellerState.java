@@ -47,10 +47,6 @@ public class SellerState extends State {
 		dropAuction.execute(serviceName, userName);
 	}
 
-	public void acceptOffer(String seller, String serviceName) {
-
-	}
-
 	public void refuseOffer(String seller, String serviceName, String buyer) {
 		// does nothing for this state
 		return;
@@ -59,6 +55,12 @@ public class SellerState extends State {
 	@Override
 	public List<String> getCurrentUsers(String serviceName) {
 		return this.medWS.getUserList(serviceName, UserTypes.seller);
+	}
+
+	@Override
+	public void acceptOffer(String buyer, String serviceName, String seller,
+			List<String> otherSellers) {
+		//does nothing in this state
 	}
 
 }

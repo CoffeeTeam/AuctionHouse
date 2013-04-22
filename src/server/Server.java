@@ -223,10 +223,7 @@ public class Server extends Thread {
 			}
 			wbuf.add(lengthPacket);
 			wbuf.add(data);
-//			synchronized (changeRequestQueue) {
-//				changeRequestQueue.add(new ChangeRequest(key, SelectionKey.OP_READ | SelectionKey.OP_WRITE));
 			key.interestOps(SelectionKey.OP_WRITE);
-			//}
 		}
 				
 		selector.wakeup();

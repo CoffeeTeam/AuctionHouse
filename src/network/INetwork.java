@@ -19,7 +19,7 @@ public abstract class INetwork {
 	public abstract void makeOffer(String seller, String serviceName, String buyer);
 	public abstract void dropAuction(String userName, String serviceName);
 	
-	public abstract void acceptOffer(String seller, String offer);
+	public abstract void acceptOffer(String buyer, String offer, String seller);
 	public abstract void refuseOffer(String seller, String offer, String buyer);
 
 	/* Methods to handle server feedback */
@@ -27,9 +27,15 @@ public abstract class INetwork {
 	public abstract void recvLaunchOfferReq(String userName, String serviceName);
 	public abstract void recvDropOfferReq(String buyer, String serviceName);
 
-	public abstract void recvAcceptOffer(String buyer, String serviceName);
+	// for drop offer request the taken action will be refuse offer 
+	// so there is no method for drop offer request
+	
+	public abstract void recvAcceptOffer(String buyer, String serviceName, String seller);
 	public abstract void recvRefuseOffer(String buyer, String serviceName);
 	
 	public abstract void recvMakeOffer(String seller, String serviceName);
 	public abstract void recvDropAuction(String seller, String serviceName);
+	
+	public abstract void sendFileToBuyer(String buyer, String serviceName, String seller);
+	public abstract void recvFileTransfer(String seller, String serviceName, byte[] fileContent);
 }

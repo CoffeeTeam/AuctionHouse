@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.channels.SelectionKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import commands.serializableCommands.SerializableAcceptOffer;
@@ -20,6 +21,7 @@ import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableRefuseOffer;
 
 import user.UserPacket;
+import util.FileService;
 
 public class ServerUtils {
 
@@ -174,16 +176,45 @@ public class ServerUtils {
 			handleDropOfferReq((SerializableDropOfferReq) recvObject);
 			return;
 		}
+		
+		/* File transfer handler */
+		if (recvObject instanceof FileService) {
+			handleFileTransferService((FileService)recvObject);
+			return;
+		}
 	}
 
 	private static void handleLogIn(UserPacket userPack, SelectionKey key) {
-		System.out.println("[SERVER] it is a user package");
+		System.out.println("[Server] A new user logged in");
 
-		if (userPack.toDelete == 1)
-			deleteUserInfo(userPack);
-		else {
-			System.out.println("[SERVER] Add a new user");
-			addUserInfo(userPack, key);
+		addUserInfo(userPack, key);
+	}
+
+	/**
+	 * Send refuse offer package to multiple sellers
+	 * 
+	 * @param buyer
+	 *            the buyer who sends the package
+	 * @param usersToRefuse
+	 *            the seller which will be refused
+	 */
+	private static void sendRefuseOfferPackages(String buyer, String service,
+			List<String> usersToRefuse) {
+		SerializableRefuseOffer refuseOffer;
+		SelectionKey key;
+
+		for (String refusedSeller : usersToRefuse) {
+			refuseOffer = new SerializableRefuseOffer();
+			refuseOffer.userName = buyer;
+			refuseOffer.serviceName = service;
+
+			key = Server.registeredUsersChannels.get(refusedSeller);
+
+			if (null == key) {
+				System.err.println("The user is no longer logged in");
+			} else {
+				Server.sendData(key, refuseOffer);
+			}
 		}
 	}
 
@@ -194,7 +225,34 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleAcceptOffer(SerializableAcceptOffer pack) {
-		// TODO
+		// send to the seller for which the offer was accepted the confirmation
+		System.out.println("[Server] Received accept offer packet");
+
+		String seller;
+		List<String> refusedSellers = new ArrayList<String>();
+		SelectionKey key = Server.registeredUsersChannels.get(pack.commandInfo
+				.get(0));
+
+		if (null == key) {
+			System.err.println("[Server]  Target user doesn't exist");
+			return;
+		}
+
+		seller = pack.commandInfo.get(0);
+		// extract the list of sellers to be refused
+		if (1 != pack.commandInfo.size()) {
+			refusedSellers = pack.commandInfo.subList(1,
+					pack.commandInfo.size());
+		}
+
+		pack.commandInfo.clear();
+		pack.commandInfo.add(seller);
+
+		Server.sendData(key, pack);
+
+		// to all the other sellers send refuse offer packages
+		sendRefuseOfferPackages(pack.userName, pack.serviceName, refusedSellers);
+
 	}
 
 	/**
@@ -204,19 +262,19 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pack) {
-		// Send refused info to the seller (in pack, the seller 
+		// Send refused info to the seller (in pack, the seller
 		// is stored in userName)
-		
-		System.out.println("[Server] Received refuse offer packet\n\t sending" +
-				" anounce to seller");
-		
+
+		System.out.println("[Server] Received refuse offer packet\n\t sending"
+				+ " anounce to seller");
+
 		// get key
 		SelectionKey key = Server.registeredUsersChannels.get(pack.userName);
-		
+
 		// set username in packet to buyer instead of seller
 		pack.userName = pack.commandInfo.get(0);
 		pack.commandInfo.clear();
-		
+
 		if (key == null) {
 			System.out.println("[Server] The user " + pack.userName +
 					" is no longer logged in => packet not sent");
@@ -242,19 +300,21 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
+		System.out.println("[Server] Received a Make Offer packet");
+
 		SelectionKey key;
-		
+
 		if (pack.commandInfo.isEmpty()) {
 			System.err.println("No buyer specified to make offer");
 			return;
 		}
-		
+
 		key = Server.registeredUsersChannels.get(pack.commandInfo.get(0));
 		if (null == key) {
 			System.err.println("The buyer is no longer logged in");
 			return;
 		}
-		
+
 		Server.sendData(key, pack);
 	}
 
@@ -272,10 +332,10 @@ public class ServerUtils {
 			if (null != Server.registeredUsersChannels.get(userName)) {
 				// send the info about the new service and user
 				key = Server.registeredUsersChannels.get(userName);
-				
+
 				if (null == key)
-					System.err.println("[Server] the user " + userName +
-							" is no longer logged in");
+					System.err.println("[Server] the user " + userName
+							+ " is no longer logged in");
 				else
 					Server.sendData(key, pack);
 			}
@@ -311,6 +371,21 @@ public class ServerUtils {
 
 			Server.sendData(key, pack);
 		}
+	}
+	
+	private static void handleFileTransferService(FileService recvObject) {
+		System.out.println("[Server] Send file to buyer " + recvObject.buyer);
+		
+		String buyer = recvObject.buyer;
+		SelectionKey key = Server.registeredUsersChannels.get(buyer);
+		
+		if (null == key) {
+			System.err.println("The buyer logged out");
+			return;
+		}
+		
+		//send data to buyer
+		Server.sendData(key, recvObject);
 	}
 
 }

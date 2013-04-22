@@ -717,12 +717,23 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
 		// update status
-		user.refuseOffer(serviceName, buyer);
+		user.setStatusForBuyer(buyer, serviceName, StatusMessages.offerRefused);
 		
 		// update graphics
 		GUI.repaintUserTable();
 	}
 
+	@Override
+	public void recvAcceptOffer(String serviceName, String buyer) {
+		//update status
+		user.setStatusForBuyer(serviceName, buyer, StatusMessages.offerAccepted);
+		
+		//update graphics
+		GUI.repaintUserTable();
+	}
+	
+	
+	
 	public void updateServiceUsers(String serviceName, List<String> users) {
 		user.setUserListForService(serviceName, users);
 		GUI.repaintUserTable();
@@ -731,5 +742,12 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	public static void main(String args[]) {
 		new GUI();
 	}
+
+	@Override
+	public void updateTransfer(String service, int status) {
+		user.getTransfersInfo().get(service).setProgress(status);
+	}
+
+	
 
 }

@@ -7,4 +7,7 @@ public class Sizes {
 	
 	// Size of the textfields in the Log In screen
 	public static final int maxTextFieldLen 		= 20;
+	
+	//Number of chunks to be read
+	public static final int noChunks = 35;
 }

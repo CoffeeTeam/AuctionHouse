@@ -4,10 +4,12 @@ import gui.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JTable;
 
 import constants.ComponentNames;
+import constants.StatusMessages;
 
 public class PopupActionListener implements ActionListener {
 	private JTable table;
@@ -21,7 +23,7 @@ public class PopupActionListener implements ActionListener {
 		this.column = column;
 		this.gui = gui;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		String actionName = arg0.getActionCommand();
@@ -49,7 +51,9 @@ public class PopupActionListener implements ActionListener {
 		} else
 		// Accept offer
 		if (actionName.equals(ComponentNames.buyerUserMenu[0])) {
-			gui.getMed().acceptOfferGui(user, serviceName);
+			List<String> usersHavingStatus = gui.getUser().getUsersHavingStatus(user, StatusMessages.offerMade, serviceName);
+
+			gui.getMed().acceptOfferGui(gui.getUser().username, serviceName, user, usersHavingStatus);
 			gui.acceptOffer(serviceName, user);
 		} else
 		// refuse offer
@@ -68,5 +72,4 @@ public class PopupActionListener implements ActionListener {
 		}
 
 	}
-
 }

@@ -52,7 +52,7 @@ public abstract class State {
 	 * @param seller
 	 *            the name of the person who provides the service
 	 */
-	public abstract void acceptOffer(String seller, String serviceName);
+	public abstract void acceptOffer(String buyer, String serviceName, String seller, List<String> otherSellers);
 
 	/**
 	 * The buyer drops the offer of a seller

@@ -22,5 +22,9 @@ public interface IGUI {
 
 	void recvRefuseOffer(String buyer, String serviceName);
 	
+	void recvAcceptOffer(String serviceName, String buyer);
+	
 	void updateServiceUsers(String serviceName, List<String> users);
+	
+	void updateTransfer(String service, int status);
 }
