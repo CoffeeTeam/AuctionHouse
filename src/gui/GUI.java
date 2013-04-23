@@ -508,7 +508,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				item.addActionListener(actionListener);
 				// check that status is ACTIVE & OFFER MADE
 				if (user.getServiceTransfer(serviceName) != null ||
-						user.getUserServiceStatus(serviceName, anotherUser) == null)
+						user.getUserServiceStatus(serviceName, anotherUser) == null ||
+						user.getUserServiceStatus(serviceName, anotherUser).equals(StatusMessages.noOffer))
 					item.setEnabled(false);
 				
 				contextMenu.add(item);
