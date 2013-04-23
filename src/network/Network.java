@@ -18,6 +18,7 @@ import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
+import constants.NetworkInfo;
 import constants.Sizes;
 
 import user.UserPacket;
@@ -237,7 +238,10 @@ public class Network extends INetwork {
 		fileObj.seller = seller;
 		fileObj.serviceName = serviceName;
 		
+		med.startFileTransfer(serviceName, buyer);
+
 		netClient.sendData(fileObj);
+		
 		
 	}
 
@@ -245,8 +249,10 @@ public class Network extends INetwork {
 	public void recvFileTransfer(String seller, String serviceName, byte[] fileContent) {
 		String filename = seller + "_" + serviceName;
 		int toWrite;
-		int chunkSize = fileContent.length/Sizes.noChunks;
+		int noChunks = fileContent.length/NetworkInfo.BUF_SIZE;
+		int chunkSize = fileContent.length/noChunks;
 		int offset = 0;
+		
 		try {
 			File outFile = new File(filename);
 			if (outFile.exists()) {

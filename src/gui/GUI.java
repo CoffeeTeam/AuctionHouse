@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -388,7 +387,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			public void actionPerformed(ActionEvent arg0) {
 				boolean canLogout = true;
 				if (user.getUserType().equals(UserTypes.seller)) {
-					canLogout = verifySellerLogOut();
+					canLogout = user.canSellerLogout();
 				} else {
 					doBuyerLogoutActions();
 				}
@@ -525,10 +524,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 
 	public void resetUserData() {
-		List<String> emptyList = new Vector<String>();
-		this.user.setUsername(Symbols.emptyString);
-		this.user.setPassword(Symbols.emptyString);
-		this.user.setUserServiceList(emptyList);
+		//reset user structures
+		this.user.emptyData();
 
 		// Reset buyer/seller selection
 		invisibleButton.doClick();
