@@ -81,6 +81,10 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		gui.updateServiceUsers(serviceName, interestedUsers);
 		network.launchOfferReq(userName, serviceName, interestedUsers);
 	}
+	
+	
+	
+	
 
 	/* GUI calls */
 
@@ -100,6 +104,11 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		return stateMgr.getCurrentUsers(serviceName);
 	}
 
+	
+	
+	
+	
+	
 	/* Network calls */
 
 	/* User to network calls */
@@ -159,8 +168,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 	
 	@Override
-	public void recvMakeOffer(String serviceName, String seller) {
-		gui.recvMakeOffer(serviceName, seller);
+	public void recvMakeOffer(String serviceName, String seller, String price) {
+		gui.recvMakeOffer(serviceName, seller, price);
 	}
 
 	@Override

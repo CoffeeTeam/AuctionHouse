@@ -33,7 +33,7 @@ public abstract class INetwork {
 	public abstract void recvAcceptOffer(String buyer, String serviceName, String seller);
 	public abstract void recvRefuseOffer(String buyer, String serviceName);
 	
-	public abstract void recvMakeOffer(String seller, String serviceName);
+	public abstract void recvMakeOffer(String seller, String serviceName, String price);
 	public abstract void recvDropAuction(String seller, String serviceName);
 	
 	public abstract void sendFileToBuyer(String buyer, String serviceName, String seller);

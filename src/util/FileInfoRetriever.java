@@ -18,7 +18,6 @@ public class FileInfoRetriever {
 	private String filename;
 
 	public FileInfoRetriever(String filename) {
-		// TODO Auto-generated constructor stub
 		this.filename = filename;
 	}
 
@@ -29,7 +28,6 @@ public class FileInfoRetriever {
 		try {
 			br = new BufferedReader(new FileReader(filename));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Error opening database file");
 			e.printStackTrace();
 			System.exit(1);
@@ -76,7 +74,6 @@ public class FileInfoRetriever {
 			}
 			br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Error reading database file");
 			e.printStackTrace();
 		}
@@ -119,7 +116,6 @@ public class FileInfoRetriever {
 			}
 			br.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Error reading database file");
 			e.printStackTrace();
 		}

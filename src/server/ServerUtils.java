@@ -304,8 +304,9 @@ public class ServerUtils {
 
 		SelectionKey key;
 
-		if (pack.commandInfo.isEmpty()) {
-			System.err.println("No buyer specified to make offer");
+		if (pack.commandInfo == null || pack.commandInfo.size() != 2) {
+			System.err.println("Two aditional params required as command info: " +
+					"buyer's name and price offered");
 			return;
 		}
 
@@ -315,6 +316,10 @@ public class ServerUtils {
 			return;
 		}
 
+		// rearrange information in packet (send to the buyer only relevant data)
+		// remove buyer's name from packet
+		pack.commandInfo.remove(0);
+		
 		Server.sendData(key, pack);
 	}
 

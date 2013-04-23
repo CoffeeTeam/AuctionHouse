@@ -15,7 +15,7 @@ public interface IMediatorNetwork {
 	
 	public void recvUserUpdate(String serviceName, String userName);
 	
-	public void recvMakeOffer(String serviceName, String seller);
+	public void recvMakeOffer(String serviceName, String seller, String price);
 	public void recvLaunchOfferReq(String userName, String serviceName);
 	public void recvDropOfferReq(String buyer, String serviceName);
 	public void recvDropAuction(String userName, String serviceName);

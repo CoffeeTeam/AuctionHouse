@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Random;
 
 import mediator.IMediatorNetwork;
 
@@ -93,8 +94,11 @@ public class Network extends INetwork {
 		
 		makeOffer.userName = seller;
 		makeOffer.serviceName = serviceName;
+		// in the auxiliary list add the buyer's name first and
+		// the price second
 		makeOffer.commandInfo.add(buyer);
-		
+		makeOffer.commandInfo.add(new Integer(
+				new Random().nextInt(Sizes.maxPrice)).toString());
 		
 		netClient.sendData(makeOffer);
 	}
@@ -153,10 +157,10 @@ public class Network extends INetwork {
 	}
 
 	@Override
-	public void recvMakeOffer(String seller, String serviceName) {
+	public void recvMakeOffer(String seller, String serviceName, String price) {
 		System.out.println("Network => received make offer feedback");
 		
-		med.recvMakeOffer(serviceName, seller);
+		med.recvMakeOffer(serviceName, seller, price);
 	}
 
 	@Override
