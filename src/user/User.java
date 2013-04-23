@@ -143,22 +143,6 @@ public class User extends UserPacket {
 
 	}
 
-	// this method is used for seller users
-	public void addUserToService(String serviceName, String user) {
-		HashMap<String, String> serviceHashMap = this.matchingUsers
-				.get(serviceName);
-
-		// find the status with which the user should be added
-		if (serviceHashMap.isEmpty())
-			serviceHashMap.put(user, StatusMessages.noOffer);
-		else {
-			String status = ((ArrayList<String>) serviceHashMap.values())
-					.get(0);
-			serviceHashMap.put(user, status);
-		}
-		this.matchingUsers.put(serviceName, serviceHashMap);
-	}
-
 	public void removeUserFromService(String userName, String serviceName) {
 		HashMap<String, String> serviceHashMap = this.matchingUsers
 				.get(serviceName);
@@ -209,14 +193,11 @@ public class User extends UserPacket {
 	public void updateStatus(String serviceName, String provider, String status) {
 		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
 
-		if (null == serviceUsers)
+		if (null == serviceUsers) {
 			System.out.println("Hash for this service is NULL");
-
-		if (serviceUsers.isEmpty()) {
-			System.out.println("Empty hash for service " + serviceName);
-			return;
+			System.exit(1);
 		}
-		
+
 		serviceUsers.put(provider, status);
 	}
 

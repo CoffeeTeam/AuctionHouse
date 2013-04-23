@@ -38,8 +38,6 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.Logger;
-
 import components.MyTableCellEditor;
 import components.MyTableCellRenderer;
 import components.PopupActionListener;
@@ -653,7 +651,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void updateServices(String serviceName, String userName) {
-		user.addUserToService(serviceName, userName);
+		user.updateStatus(serviceName, userName, StatusMessages.offerMade);
 		Page.Page2.panel.repaint();
 	}
 
@@ -674,7 +672,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
 		System.out.println("Add user to service");
-		user.addUserToService(serviceName, userName);
+		user.updateStatus(serviceName, userName, StatusMessages.noOffer);
 		GUI.repaintUserTable();
 	}
 
