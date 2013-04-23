@@ -9,7 +9,7 @@ public interface IMediatorNetwork {
 	public void launchOfferRequestNet(String serviceName, String userName);
 	public void dropOfferRequestNet(String serviceName, String userName);
 	public void makeOfferNet(String seller, String serviceName, String buyer);
-	public void dropAuctionNet(String serviceName, String userName);
+	void dropAuctionNet(String serviceName, String buyer, String seller);
 	public void acceptOfferNet(String buyer, String offer, String sellers);
 	public void refuseOfferNet(String seller, String offer, String buyer);
 	
@@ -26,4 +26,5 @@ public interface IMediatorNetwork {
 	public void acceptFileTransfer(String service, int progress);
 
 	public void recvOfferExceeded(String userName, String serviceName);
+
 }

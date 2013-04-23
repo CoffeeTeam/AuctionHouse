@@ -18,7 +18,7 @@ public abstract class INetwork {
 	
 	public abstract void makeOffer(String seller, String serviceName, String buyer);
 	public abstract void sendOfferExceeded(List<String> sellers, String serviceName, String buyer);
-	public abstract void dropAuction(String userName, String serviceName);
+	public abstract void dropAuction(String userName, String serviceName, String seller);
 	
 	public abstract void acceptOffer(String buyer, String offer, String seller);
 	public abstract void refuseOffer(String seller, String offer, String buyer);

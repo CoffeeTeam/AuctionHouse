@@ -41,8 +41,8 @@ public class StateManager {
 			this.currentState.launchService(serviceName, userName);
 	}
 
-	public void dropService(String serviceName, String userName) {
-		this.currentState.dropService(serviceName, userName);
+	public void dropService(String serviceName, String userName, String... auxInfo) {
+		this.currentState.dropService(serviceName, userName, auxInfo[0]);
 	}
 
 	public void acceptOffer(String buyer, String serviceName, String seller, List<String> otherSellers) {

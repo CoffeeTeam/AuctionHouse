@@ -116,11 +116,12 @@ public class Network extends INetwork {
 	}
 	
 	@Override
-	public void dropAuction(String userName, String serviceName) {
+	public void dropAuction(String userName, String serviceName, String seller) {
 		SerializableDropAuction dropAuction = new SerializableDropAuction();
 		
 		dropAuction.userName = userName;
 		dropAuction.serviceName = serviceName;
+		dropAuction.commandInfo.add(seller);
 		
 		netClient.sendData(dropAuction);
 	}
@@ -174,15 +175,11 @@ public class Network extends INetwork {
 		
 		// update the seller's status
 		med.recvMakeOffer(serviceName, seller, price);
-		
-		// check if any offers were exceeded in order to announce the suppliers
-		// if so TODO
-		
 	}
 
 	@Override
 	public void recvDropAuction(String seller, String serviceName) {
-		
+		med.recvDropAuction(seller, serviceName);
 	}
 
 	@Override

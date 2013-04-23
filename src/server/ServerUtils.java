@@ -297,7 +297,27 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleDropAuction(SerializableDropAuction pack) {
-		// TODO
+		String seller = pack.commandInfo.get(0);
+		String buyer = pack.userName;
+		SelectionKey key;
+
+		// reset list in pack (no longer needed)
+		pack.commandInfo = null;
+		pack.userName = seller;
+		
+		// try to send "drop auction" packet to the buyer
+		key = Server.registeredUsersChannels.get(buyer);
+		
+		if (key == null) {
+			System.out.println("[Server] User " + seller + " is no longer" +
+					" logged in => no 'drop offer' message sent to him");
+			return;
+		}
+		
+		System.out.println("[Server] SENDING drop auction to " + buyer + " for service " +
+				pack.serviceName + " (from " + seller + ")");
+
+		Server.sendData(key, pack);
 	}
 
 	/**
@@ -421,10 +441,6 @@ public class ServerUtils {
 						" logged in => no 'drop offer' message sent to him");
 				continue;
 			}
-
-			System.out.println("[Server] sending drop offer announce to seller " + 
-					seller + " (from buyer " + pack.userName + ", service " +
-					pack.serviceName + ")");
 
 			Server.sendData(key, pack);
 		}

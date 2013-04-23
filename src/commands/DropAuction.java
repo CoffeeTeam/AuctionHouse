@@ -13,8 +13,7 @@ public class DropAuction extends SerializableDropAuction implements Command {
 	
 	@Override
 	public void execute(String serviceName, String user, String... auxUserInfo) {
-		// TODO Auto-generated method stub
-		
+		this.medNetwork.dropAuctionNet(serviceName, user, auxUserInfo[0]);
 	}
 
 }

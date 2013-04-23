@@ -633,6 +633,30 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		repaintUserTable();
 	}
 	
+	@Override
+	public void makeOffer(String serviceName, String buyer) {
+		// update current user's status
+		user.updateStatus(serviceName, buyer, StatusMessages.offerMade);
+		
+		// inform the buyer to whom the offer was made
+		med.launchService(serviceName, user.username, buyer);
+		
+		// repaint GUI
+		repaintUserTable();
+	}
+	
+	@Override
+	public void dropAuction(String serviceName, String buyer) {
+		// update current user's providers' list
+		user.removeUserFromService(buyer, serviceName);
+		
+		// inform the buyer that the seller has dropped this auction
+		med.dropService(serviceName, buyer, user.username);
+		
+		// repaint GUI
+		GUI.repaintUserTable();
+	}
+	
 	public User getUser() {
 		return user;
 	}
@@ -665,17 +689,6 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page.Page2.panel.repaint();
 	}
 	
-	public void makeOffer(String serviceName, String buyer) {
-		// update current user's status
-		user.updateStatus(serviceName, buyer, StatusMessages.offerMade);
-		
-		// inform the buyer to whom the offer was made
-		med.launchService(serviceName, user.username, buyer);
-		
-		// repaint GUI
-		repaintUserTable();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO => needs implemented for our purposes? so far it doesn't
@@ -743,7 +756,11 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvDropAuction(String userName, String serviceName) {
+		// update user's list
 		user.removeUserFromService(userName, serviceName);
+		
+		// repaint GUI
+		GUI.repaintUserTable();
 	}
 
 	@Override

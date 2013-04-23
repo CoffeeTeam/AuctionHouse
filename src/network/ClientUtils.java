@@ -128,7 +128,7 @@ public class ClientUtils {
 	 *            packet from server
 	 */
 	private static void handleDropAuction(SerializableDropAuction pack) {
-		// TODO
+		NetworkClient.network.recvDropAuction(pack.userName, pack.serviceName);
 	}
 
 	private static void handleFileTransferService(FileService recvObject) {

@@ -44,8 +44,8 @@ public class SellerState extends State {
 	}
 
 	@Override
-	public void dropService(String serviceName, String userName) {
-		dropAuction.execute(serviceName, userName);
+	public void dropService(String serviceName, String userName, String... auxInfo) {
+		dropAuction.execute(serviceName, userName, auxInfo[0]);
 	}
 
 	public void refuseOffer(String seller, String serviceName, String buyer) {

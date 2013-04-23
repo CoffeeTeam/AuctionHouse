@@ -41,8 +41,9 @@ public abstract class State {
 	 * 
 	 * @param serviceName
 	 *            the name of the service for which the actions are made
+	 * @param auxInfo TODO
 	 */
-	public abstract void dropService(String serviceName, String userName);
+	public abstract void dropService(String serviceName, String userName, String... auxInfo);
 
 	/**
 	 * Used by the buyer to accept an offer

@@ -66,7 +66,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void dropService(String serviceName, String userName,
 			String... auxInfo) {
-		stateMgr.dropService(serviceName, userName);
+		if (auxInfo.length != 1) {
+			System.err.println("[Mediator] drop service must receive one aditional info:" +
+					" the seller's name");
+			return;
+		}
+				
+		stateMgr.dropService(serviceName, userName, auxInfo[0]);
 	}
 
 	/*
@@ -134,9 +140,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void dropAuctionNet(String serviceName, String userName) {
-		// TODO Auto-generated method stub
-		network.dropAuction(userName, serviceName);
+	public void dropAuctionNet(String serviceName, String buyer, String seller) {
+		network.dropAuction(buyer, serviceName, seller);
 	}
 
 	@Override
