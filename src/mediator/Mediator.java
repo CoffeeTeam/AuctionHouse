@@ -225,6 +225,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void recvOfferExceeded(String userName, String serviceName) {
 		gui.recvOfferExceeded(userName, serviceName);
+	}
 
 	@Override
 	public void startFileTransfer(String serviceName, String buyer) {
