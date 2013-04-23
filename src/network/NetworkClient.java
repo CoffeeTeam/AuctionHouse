@@ -1,5 +1,7 @@
 package network;
 
+import gui.GUI;
+
 import java.io.*;
 
 import constants.NetworkInfo;
@@ -12,6 +14,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.SwingWorker;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import util.FileService;
 import util.NetworkPacketManager;
@@ -26,20 +31,33 @@ import util.NetworkPacketManager;
  */
 @SuppressWarnings("rawtypes")
 public class NetworkClient extends SwingWorker {
+	
+	static Logger loggerNetworkClient = Logger.getLogger(NetworkClient.class);
+	
 	public static INetwork network;
 	private static NetworkClient netClient;
+	
 	private SocketChannel socketChannel = null;
 	private SelectionKey key;
 	private Selector selector;
+	
 	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-	private byte[] readBuf = null;
 	private static ArrayList<byte[]> wbuf = new ArrayList<byte[]>();
+	private byte[] readBuf = null;
+	
 	private Object dataToSend;
-	private boolean running;
+	
+	//used for progress bar
 	private int offset = 0;
 	private int sizeToWrite = 0;
+	
+	private boolean running;
 
 	private NetworkClient(INetwork network) {
+		PropertyConfigurator.configure("log4j.properties");
+		loggerNetworkClient.addAppender(GUI.customAppender.getFileAppender());
+		//PropertyConfigurator.configure("log4j.properties");
+		
 		// set network IF NOT ALREADY SET
 		if (NetworkClient.network == null) {
 			NetworkClient.network = network;
@@ -47,7 +65,7 @@ public class NetworkClient extends SwingWorker {
 			// Signalizes an error if there is an attempt to set a static field
 			// to 2 different values
 			System.err.println("[Network Client] Static field network is "
-					+ "already set to another value !!");
+					+ "already set to another value !!!");
 		}
 
 		try {
@@ -73,22 +91,21 @@ public class NetworkClient extends SwingWorker {
 
 	public void connect(SelectionKey key) throws IOException {
 
-		System.out.print("CONNECT: ");
+		loggerNetworkClient.info("CONNECT: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		if (!socketChannel.finishConnect()) {
-			System.err.println("Eroare finishConnect");
+			loggerNetworkClient.warn("Eroare finishConnect");
 			running = false;
 		}
 		this.key = key;
 
-		System.out.println("[Client] Finished connecting");
+		loggerNetworkClient.info("Finished connecting");
 		key.interestOps(SelectionKey.OP_READ);
 	}
 
 	public static NetworkClient getClientObject(INetwork network) {
 		if (netClient == null) {
-			System.out.println("I created a new object");
 			netClient = new NetworkClient(network);
 		}
 		return netClient;
@@ -108,14 +125,14 @@ public class NetworkClient extends SwingWorker {
 			lengthPacket = NetworkPacketManager.packetLength(data);
 
 		} catch (IOException e) {
-			System.err.println("Error serializing object");
+			loggerNetworkClient.error("Error serializing object");
 			e.printStackTrace();
 		}
 
 		sizeToWrite = data.length;
 		offset = 0;
 
-		System.out.println("[Client] I want to write " + data.length
+		loggerNetworkClient.info("I want to write " + data.length
 				+ " bytes on the socket associated with the key " + key);
 
 		synchronized (key) {
@@ -128,7 +145,8 @@ public class NetworkClient extends SwingWorker {
 	}
 
 	public void write(SelectionKey key) throws IOException {
-		System.out.println("WRITE: ");
+		loggerNetworkClient.info("WRITE: ");
+		
 		FileService fileService;
 		ByteBuffer wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 		SocketChannel socketChannel = (SocketChannel) key.channel();
@@ -154,9 +172,10 @@ public class NetworkClient extends SwingWorker {
 				}
 
 				int numWritten = socketChannel.write(wBuff);
-				System.out.println("[Client] I wrote " + numWritten
+				loggerNetworkClient.info("I wrote " + numWritten
 						+ " bytes on the socket associated with the key" + key);
-
+				
+				//update progress bar
 				if (this.dataToSend instanceof FileService) {
 					fileService = (FileService) dataToSend;
 					offset += numWritten;
@@ -184,10 +203,12 @@ public class NetworkClient extends SwingWorker {
 
 	public void read(SelectionKey key) throws IOException,
 			ClassNotFoundException {
+		loggerNetworkClient.info("READ:");
+		
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		this.rBuffer.clear();
 
-		System.out.println("[Client] Read");
+		
 
 		int numRead = 0;
 
@@ -198,7 +219,7 @@ public class NetworkClient extends SwingWorker {
 		}
 
 		if (numRead <= 0) {
-			System.out.println("The socket was closed by the remote client"
+			loggerNetworkClient.info("The socket was closed by the remote client"
 					+ key);
 			key.channel().close();
 			key.cancel();
@@ -211,12 +232,10 @@ public class NetworkClient extends SwingWorker {
 		int rbuflen = 0;
 		if (rbuf != null) {
 			rbuflen = rbuf.length;
-			System.out.println("[Client] there was data in the buffer "
-					+ rbuflen);
 		}
 
 		byte[] currentBuf = rBuffer.array();
-		System.out.println("[Client] Number of read bytes " + numRead
+		loggerNetworkClient.info("Number of read bytes " + numRead
 				+ " associated with the key " + key + " : " + currentBuf);
 
 		byte[] newBuf = new byte[rbuflen + numRead];
@@ -244,16 +263,15 @@ public class NetworkClient extends SwingWorker {
 		length = NetworkPacketManager.getLength(new byte[] { newBuf[0],
 				newBuf[1], newBuf[2], newBuf[3] });
 
-		System.out.println("[Client] The received length is = " + length);
+		loggerNetworkClient.info("The length of the package = " + length);
 		i += 4;
 
 		// Read the serialized object
 		if (i + length <= newBuf.length) {
-			System.out.println("[Client] deserialize received object");
+			loggerNetworkClient.info("deserialize received object");
 
-			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(
-					newBuf, 4, length + 4));
-			System.out.println("Before choose action");
+			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4, length + 4));
+			
 			ClientUtils.chooseAction(st);
 			i += length;
 		} else

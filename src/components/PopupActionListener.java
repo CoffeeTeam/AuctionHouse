@@ -36,8 +36,7 @@ public class PopupActionListener implements ActionListener {
 		} else {
 			serviceName = (String) table.getValueAt(row, column);
 		}
-		System.out.println("Element " + table.getValueAt(row, column));
-
+		
 		// verify action name
 
 		// Launch Offer Request

@@ -61,7 +61,7 @@ public class NetworkPacketManager {
 		req[1] = (byte) (((serialized.length >> 16) % 256) - 128);
 		req[2] = (byte) (((serialized.length >> 8) % 256) - 128);
 		req[3] = (byte) ((serialized.length % 256) - 128);
-		System.out.println("Length of array " + serialized.length);
+		
 		return req;
 	}
 	

@@ -1,8 +1,12 @@
 package mediator;
 
+import gui.GUI;
 import gui.IGUI;
 
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import constants.UserTypes;
 
@@ -15,12 +19,15 @@ import web_service.WSClient;
 public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		IMediatorWSClient {
 
+	static Logger loggerMediator = Logger.getLogger(Mediator.class);
 	StateManager stateMgr;
 	private IWSClient wsClient;
 	private INetwork network;
 	private IGUI gui;
 
 	public Mediator(IGUI gui) {
+		PropertyConfigurator.configure("log4j.properties");
+		loggerMediator.addAppender(GUI.customAppender.getFileAppender());
 		stateMgr = new StateManager(this, this, this);
 		wsClient = new WSClient(this);
 		network = new Network(this);
@@ -29,6 +36,8 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public List<String> logInBuyer(String name, String passwd) {
+		loggerMediator.info("Log in buyer " + name);
+		
 		List<String> serviceList;
 		stateMgr.setBuyerState();
 		serviceList = stateMgr.getServiceList(name);
@@ -41,6 +50,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public List<String> logInSeller(String name, String passwd) {
+		loggerMediator.info("Log in seller " + name);
 		List<String> serviceList;
 
 		stateMgr.setSellerState();
@@ -67,7 +77,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public void dropService(String serviceName, String userName,
 			String... auxInfo) {
 		if (auxInfo.length != 1) {
-			System.err.println("[Mediator] drop service must receive one aditional info:" +
+			loggerMediator.warn("[Mediator] drop service must receive one aditional info:" +
 					" the seller's name");
 			return;
 		}
@@ -97,11 +107,17 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void acceptOfferGui(String buyer, String offer, String seller,
 			List<String> otherSellers) {
+		loggerMediator.info("Buyer " + buyer + " accepted offer " + offer +
+				" from " + seller);
+		
 		stateMgr.acceptOffer(buyer, offer, seller, otherSellers);
 	}
 
 	@Override
 	public void refuseOfferGui(String seller, String offer, String buyer) {
+		loggerMediator.info("Buyer " + buyer + " refused offer " + offer +
+				" from " + seller);
+		
 		stateMgr.refuseOffer(seller, offer, buyer);
 	}
 
@@ -155,25 +171,34 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void interruptTransfer(String seller, String serviceName) {
-		// TODO Auto-generated method stub
-
+	public void recvTransferFailed(String buyer, String serviceName) {
+		loggerMediator.info("Buyer " + buyer + " failed to received service " + serviceName);
+		gui.recvTransferFailed(buyer, serviceName);
 	}
 
 	/* Network to user calls */
 
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
+		loggerMediator.info("Seller  " + userName + " is interested in " + 
+					serviceName + " service");
+		
 		gui.recvLaunchOfferReq(userName, serviceName);
 	}
 
 	@Override
 	public void recvDropOfferReq(String buyer, String serviceName) {
+		loggerMediator.info("Buyer  " + buyer + " isn't interested in " + 
+				serviceName + " service");
+		
 		gui.recvDropOfferReq(buyer, serviceName);
 	}
 	
 	@Override
 	public void recvMakeOffer(String serviceName, String seller, String price) {
+		loggerMediator.info("Seller  " + seller + " made an offer for " + 
+				serviceName + " service with price " + price);
+		
 		// update current user & check for exceeded offers
 		List<String> exceeded = gui.recvMakeOffer(serviceName, seller, price);
 		
@@ -185,6 +210,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void recvDropAuction(String userName, String serviceName) {
+		loggerMediator.info("Seller  " + userName + " dropped auction for " + 
+				serviceName + " service");
+		
 		gui.recvDropAuction(userName, serviceName);
 	}
 
@@ -197,6 +225,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void recvAcceptOffer(String buyer, String serviceName, String seller) {
+		loggerMediator.info("Buyer  " + buyer + " accepted  offer " + 
+				serviceName + " from " + seller);
+		
 		// update status in gui
 		gui.recvAcceptOffer(serviceName, buyer);
 
@@ -206,6 +237,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
+		loggerMediator.info("Buyer  " + buyer + " refused  offer " + 
+				serviceName);
+		
 		gui.recvRefuseOffer(buyer, serviceName);
 	}
 
@@ -229,12 +263,23 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void recvOfferExceeded(String userName, String serviceName) {
+		loggerMediator.info("User " + userName + " received offer exceeded "+ 
+				 " for service " + serviceName);
+		
 		gui.recvOfferExceeded(userName, serviceName);
 	}
 
 	@Override
 	public void startFileTransfer(String serviceName, String buyer) {
 		gui.acceptOffer(serviceName, buyer);
+	}
+
+	@Override
+	public void transferFailed(String seller, String serviceName, String buyer) {
+		loggerMediator.warn("Transferring service " + serviceName + " from seller" +
+					seller + " to buyer " + buyer + " failed");
+		
+		network.transferFailed(seller, serviceName, buyer);
 	}
 
 }

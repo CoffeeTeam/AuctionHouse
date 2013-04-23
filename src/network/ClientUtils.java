@@ -9,11 +9,12 @@ import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
+import commands.serializableCommands.SerializableTransferFailed;
 
 public class ClientUtils {
 
 	public static void chooseAction(Object recvObject) {
-		System.out.println(recvObject.getClass());
+		NetworkClient.loggerNetworkClient.info(recvObject.getClass());
 
 		if (recvObject instanceof SerializableLaunchOfferReq) {
 			handleLaunchOfferRequest((SerializableLaunchOfferReq) recvObject);
@@ -54,17 +55,36 @@ public class ClientUtils {
 			handleFileTransferService((FileService) recvObject);
 			return;
 		}
-		
-		/* Handle a response from server to a client's update and a seller's
-		 * offer exceed */
+
+		/*
+		 * Handle a response from server to a client's update and a seller's
+		 * offer exceed
+		 */
 		if (recvObject instanceof SerializableOfferExceeded) {
 			handleOfferExceeded((SerializableOfferExceeded) recvObject);
 			return;
 		}
+
+		/*
+		 * Handle a response from server to client informing that the transfer
+		 * didn't complete successful
+		 */
+		if (recvObject instanceof SerializableTransferFailed) {
+			handleTransferFailed((SerializableTransferFailed) recvObject);
+			return;
+		}
 	}
 
+	/**
+	 * Handle packet from server containing info about a seller registering into
+	 * the system
+	 * 
+	 * @param launchedOffer
+	 *            packet from server
+	 */
 	private static void handleLaunchOfferRequest(
 			SerializableLaunchOfferReq launchedOffer) {
+		NetworkClient.loggerNetworkClient.info("[Client] => received launch offer request");
 		NetworkClient.network.recvLaunchOfferReq(launchedOffer.userName,
 				launchedOffer.serviceName);
 	}
@@ -87,9 +107,10 @@ public class ClientUtils {
 	 *            packet from server
 	 */
 	private static void handleAcceptOffer(SerializableAcceptOffer pack) {
-		System.out.println("[ClientUtils] Received accept offer packet");
+		NetworkClient.loggerNetworkClient.info("[ClientUtils] Received accept offer packet");
 
-		NetworkClient.network.recvAcceptOffer(pack.userName, pack.serviceName, pack.commandInfo.get(0));
+		NetworkClient.network.recvAcceptOffer(pack.userName, pack.serviceName,
+				pack.commandInfo.get(0));
 
 	}
 
@@ -100,7 +121,8 @@ public class ClientUtils {
 	 *            packet from server
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pack) {
-		System.out.println("[ClientUtils] Received refuse offer packet from server");
+		System.out
+				.println("[ClientUtils] Received refuse offer packet from server");
 
 		NetworkClient.network.recvRefuseOffer(pack.userName, pack.serviceName);
 	}
@@ -113,8 +135,9 @@ public class ClientUtils {
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
 		if (pack.commandInfo.size() != 1) {
-			System.err.println("Make offer packet should contain the price (as sole" +
-					" auxiliary parameter)");
+			System.err
+					.println("Make offer packet should contain the price (as sole"
+							+ " auxiliary parameter)");
 		}
 
 		NetworkClient.network.recvMakeOffer(pack.userName, pack.serviceName,
@@ -132,17 +155,29 @@ public class ClientUtils {
 	}
 
 	private static void handleFileTransferService(FileService recvObject) {
-		System.out.println("[Client Utils] Receive file handler");
-	
+		NetworkClient.loggerNetworkClient.info("[Client Utils] Receive file handler");
+
 		NetworkClient.network.recvFileTransfer(recvObject.seller,
 				recvObject.serviceName, recvObject.fileContent);
 	}
 
 	/**
-	 * Handles a response from server to a client's update and a seller's
-	 * offer exceed 
+	 * Handles a response from server to a client's update and a seller's offer
+	 * exceed
 	 */
-	private static void handleOfferExceeded(SerializableOfferExceeded pack){
-		NetworkClient.network.recvOfferExceeded(pack.userName, pack.serviceName);
+	private static void handleOfferExceeded(SerializableOfferExceeded pack) {
+		NetworkClient.network
+				.recvOfferExceeded(pack.userName, pack.serviceName);
+	}
+
+	/**
+	 * Handle packet from server informing the seller that the transfer of a
+	 * service failed
+	 * 
+	 * @param pack
+	 *            the packet from server
+	 */
+	public static void handleTransferFailed(SerializableTransferFailed pack) {
+		NetworkClient.network.recvTransferFailed(pack.userName, pack.serviceName);
 	}
 }

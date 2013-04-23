@@ -20,6 +20,7 @@ import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
+import commands.serializableCommands.SerializableTransferFailed;
 
 import user.UserPacket;
 import util.FileService;
@@ -34,7 +35,7 @@ public class ServerUtils {
 	 * @param user
 	 *            object containing the information
 	 * @param channel
-	 *            TODO
+	 *            info about the transmission channel
 	 */
 	private static void addUserInfo(UserPacket user, SelectionKey channel) {
 		FileWriter file = null;
@@ -73,14 +74,14 @@ public class ServerUtils {
 
 		// verify if the file exists
 		if (!file.isFile()) {
-			System.out.println("File doesn't exist");
+			Server.loggerServer.info("File doesn't exist");
 			return;
 		}
 
 		try {
 			br = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException e2) {
-			System.err.println("File " + loggedUsersFile + "wasn't found");
+			Server.loggerServer.error("File " + loggedUsersFile + "wasn't found");
 			e2.printStackTrace();
 		}
 		try {
@@ -117,24 +118,24 @@ public class ServerUtils {
 		try {
 			br.close();
 		} catch (IOException e) {
-			System.err.println("Error closing read buffer");
+			Server.loggerServer.error("Error closing read buffer");
 			e.printStackTrace();
 		}
 
 		// delete the old file
 		if (!file.delete()) {
-			System.err.println("Error deleting the old file");
+			Server.loggerServer.error("Error deleting the old file");
 		}
 
 		// rename the temporary file to the original file
 		if (tmpFile.renameTo(file)) {
-			System.err.println("Could not rename file");
+			Server.loggerServer.error("Could not rename file");
 		}
 
 	}
 
 	public static void chooseAction(Object recvObject, SelectionKey key) {
-		System.out.println(recvObject.getClass());
+		Server.loggerServer.info(recvObject.getClass());
 
 		/* Log in handler */
 		if (recvObject instanceof UserPacket) {
@@ -189,10 +190,19 @@ public class ServerUtils {
 			handleSendOfferExceeded((SerializableOfferExceeded)recvObject);
 			return;
 		}
+		
+		/*
+		 * Handle a response from server to client informing that the transfer
+		 * didn't complete successful
+		 */
+		if (recvObject instanceof SerializableTransferFailed) {
+			handleTransferFailed((SerializableTransferFailed) recvObject);
+			return;
+		}
 	}
 
 	private static void handleLogIn(UserPacket userPack, SelectionKey key) {
-		System.out.println("[Server] A new user logged in");
+		Server.loggerServer.info("[Server] A new user logged in");
 
 		addUserInfo(userPack, key);
 	}
@@ -218,7 +228,7 @@ public class ServerUtils {
 			key = Server.registeredUsersChannels.get(refusedSeller);
 
 			if (null == key) {
-				System.err.println("The user is no longer logged in");
+				Server.loggerServer.error("The user is no longer logged in");
 			} else {
 				Server.sendData(key, refuseOffer);
 			}
@@ -233,7 +243,7 @@ public class ServerUtils {
 	 */
 	private static void handleAcceptOffer(SerializableAcceptOffer pack) {
 		// send to the seller for which the offer was accepted the confirmation
-		System.out.println("[Server] Received accept offer packet");
+		Server.loggerServer.info("[Server] Received accept offer packet");
 
 		String seller;
 		List<String> refusedSellers = new ArrayList<String>();
@@ -241,7 +251,7 @@ public class ServerUtils {
 				.get(0));
 
 		if (null == key) {
-			System.err.println("[Server]  Target user doesn't exist");
+			Server.loggerServer.error("[Server]  Target user doesn't exist");
 			return;
 		}
 
@@ -259,7 +269,6 @@ public class ServerUtils {
 
 		// to all the other sellers send refuse offer packages
 		sendRefuseOfferPackages(pack.userName, pack.serviceName, refusedSellers);
-
 	}
 
 	/**
@@ -272,7 +281,7 @@ public class ServerUtils {
 		// Send refused info to the seller (in pack, the seller
 		// is stored in userName)
 
-		System.out.println("[Server] Received refuse offer packet\n\t sending"
+		Server.loggerServer.info("[Server] Received refuse offer packet\n\t sending"
 				+ " anounce to seller");
 
 		// get key
@@ -283,7 +292,7 @@ public class ServerUtils {
 		pack.commandInfo.clear();
 
 		if (key == null) {
-			System.out.println("[Server] The user " + pack.userName +
+			Server.loggerServer.info("[Server] The user " + pack.userName +
 					" is no longer logged in => packet not sent");
 		} else {
 			Server.sendData(key, pack);
@@ -309,12 +318,12 @@ public class ServerUtils {
 		key = Server.registeredUsersChannels.get(buyer);
 		
 		if (key == null) {
-			System.out.println("[Server] User " + seller + " is no longer" +
+			Server.loggerServer.info("[Server] User " + seller + " is no longer" +
 					" logged in => no 'drop offer' message sent to him");
 			return;
 		}
 		
-		System.out.println("[Server] SENDING drop auction to " + buyer + " for service " +
+		Server.loggerServer.info("[Server] SENDING drop auction to " + buyer + " for service " +
 				pack.serviceName + " (from " + seller + ")");
 
 		Server.sendData(key, pack);
@@ -327,19 +336,19 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
-		System.out.println("[Server] Received a Make Offer packet");
+		Server.loggerServer.info("[Server] Received a Make Offer packet");
 
 		SelectionKey key;
 
 		if (pack.commandInfo == null || pack.commandInfo.size() != 2) {
-			System.err.println("Two aditional params required as command info: " +
+			Server.loggerServer.error("Two aditional params required as command info: " +
 					"buyer's name and price offered");
 			return;
 		}
 
 		key = Server.registeredUsersChannels.get(pack.commandInfo.get(0));
 		if (null == key) {
-			System.err.println("The buyer is no longer logged in");
+			Server.loggerServer.error("The buyer is no longer logged in");
 			return;
 		}
 
@@ -362,13 +371,11 @@ public class ServerUtils {
 
 		for (String userName : interestedUsers) {
 			if (null != (key = Server.registeredUsersChannels.get(userName))) {
+				
 				// send the info about the new service and user
 				Server.sendData(key, pack);
-				
-				System.out.println("[Server][HANDLE LAUNCH OFFER REQ] sent update " +
-						"packet to user " + userName);
 			} else {
-				System.err.println("[Server] the user " + userName
+				Server.loggerServer.error("[Server] the user " + userName
 						+ " is no longer logged in");
 			}
 		}
@@ -381,9 +388,12 @@ public class ServerUtils {
 	 *            packet with request information
 	 */
 	private static void handleDropOfferReq(SerializableDropOfferReq pack) {
-		List<String> sellers = pack.commandInfo;
+		//List<String> sellers = pack.commandInfo;
+		Server.loggerServer.info("[Server] drop auction");
+		List<String> sellers = new ArrayList<String>();
 		SelectionKey key;
 
+		sellers.addAll(pack.commandInfo);
 		// reset list in pack (no longer needed)
 		pack.commandInfo = null;
 		
@@ -392,12 +402,12 @@ public class ServerUtils {
 			key = Server.registeredUsersChannels.get(seller);
 			
 			if (key == null) {
-				System.out.println("[Server] User " + seller + " is no longer" +
+				Server.loggerServer.info("[Server] User " + seller + " is no longer" +
 						" logged in => no 'drop offer' message sent to him");
 				continue;
 			}
 
-			System.out.println("[Server] sending drop offer announce to seller " + 
+			Server.loggerServer.info("[Server] sending drop offer announce to seller " + 
 					seller + " (from buyer " + pack.userName + ", service " +
 					pack.serviceName + ")");
 
@@ -406,13 +416,13 @@ public class ServerUtils {
 	}
 	
 	private static void handleFileTransferService(FileService recvObject) {
-		System.out.println("[Server] Send file to buyer " + recvObject.buyer);
+		Server.loggerServer.info("[Server] Send file to buyer " + recvObject.buyer);
 		
 		String buyer = recvObject.buyer;
 		SelectionKey key = Server.registeredUsersChannels.get(buyer);
 		
 		if (null == key) {
-			System.err.println("The buyer logged out");
+			Server.loggerServer.error("The buyer logged out");
 			return;
 		}
 		
@@ -437,12 +447,34 @@ public class ServerUtils {
 			key = Server.registeredUsersChannels.get(seller);
 			
 			if (key == null) {
-				System.out.println("[Server] User " + seller + " is no longer" +
+				Server.loggerServer.info("[Server] User " + seller + " is no longer" +
 						" logged in => no 'drop offer' message sent to him");
 				continue;
 			}
 
 			Server.sendData(key, pack);
 		}
+	}
+	
+	public static void handleTransferFailed(SerializableTransferFailed pack) {
+		SelectionKey key;
+		String seller;
+		
+		if (pack.commandInfo.isEmpty()) {
+			Server.loggerServer.error("The packet doesn't contain seller's name");
+			return;
+		}
+		
+		seller = pack.commandInfo.get(0);		
+		key = Server.registeredUsersChannels.get(seller);
+		
+		if (null == key) {
+			Server.loggerServer.error("[Server] The user " + seller + " is no longer" +
+							" logged in => No transfer failed message sent");
+			return;
+		}
+		
+		//send packet "transfer failed" to the seller
+		Server.sendData(key, pack);
 	}
 }

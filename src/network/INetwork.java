@@ -38,4 +38,7 @@ public abstract class INetwork {
 	public abstract void recvFileTransfer(String seller, String serviceName, byte[] fileContent);
 
 	public abstract void recvOfferExceeded(String userName, String serviceName);
+	
+	public abstract void transferFailed(String seller, String serviceName, String buyer);
+	public abstract void recvTransferFailed(String buyer, String serviceName);
 }

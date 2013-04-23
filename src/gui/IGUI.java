@@ -19,12 +19,15 @@ public interface IGUI {
 	void refuseOffer(String serviceName, String seller);
 	void makeOffer(String serviceName, String buyer);
 	void dropAuction(String serviceName, String buyer);
+	public void transferFailed(String seller, String serviceName, String buyer);
 	
 	List<String> recvMakeOffer(String serviceName, String seller, String price);
 	void recvDropAuction(String userName, String serviceName);
 	void recvLaunchOfferReq(String userName, String serviceName);
-	void recvDropOfferReq(String buyer, String serviceName);
+	void recvDropOfferReq(String buyer, String serviceName);	
 	void recvRefuseOffer(String buyer, String serviceName);
 	void recvAcceptOffer(String serviceName, String buyer);
 	public void recvOfferExceeded(String userName, String serviceName);
+	public void recvTransferFailed(String userName, String serviceName);
+	
 }

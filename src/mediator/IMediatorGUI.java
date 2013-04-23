@@ -23,4 +23,6 @@ public interface IMediatorGUI {
 	public void acceptOfferGui(String buyer, String offer, String seller, List<String> otherSellers);
 	public void refuseOfferGui(String seller, String offer, String buyer);
 	
+	
+	public void transferFailed(String seller, String serviceName, String buyer);
 }

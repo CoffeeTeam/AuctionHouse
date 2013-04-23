@@ -105,6 +105,15 @@ public class User extends UserPacket {
 		return this.matchingUsers.isEmpty();
 	}
 
+	public HashMap<String, HashMap<String, String>> getMatchingUsers() {
+		return matchingUsers;
+	}
+
+	public void setMatchingUsers(
+			HashMap<String, HashMap<String, String>> matchingUsers) {
+		this.matchingUsers = matchingUsers;
+	}
+
 	/**
 	 * Gets the info on this transfer for the given service if any (null
 	 * otherwise)
@@ -194,7 +203,6 @@ public class User extends UserPacket {
 		HashMap<String, String> serviceUsers = this.matchingUsers.get(serviceName);
 
 		if (null == serviceUsers) {
-			System.out.println("Hash for this service is NULL");
 			System.exit(1);
 		}
 

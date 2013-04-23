@@ -7,26 +7,35 @@ import java.nio.channels.spi.SelectorProvider;
 import java.net.*;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import constants.NetworkInfo;
 
+import util.CustomFileAppender;
 import util.NetworkPacketManager;
 
 public class Server extends Thread {
 
-	private final String IP = "127.0.0.1";
-	private final int PORT = 30001;
-	private Hashtable<SelectionKey, byte[]> readBuffers;
-	private static Hashtable<SelectionKey, ArrayList<byte[]>> writeBuffers;
-	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-	private static ByteBuffer wBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+	static Logger loggerServer = Logger.getLogger(Server.class);
+	
 	public static Selector selector;
 	private ServerSocketChannel serverSocketChannel;
+	
+	private Hashtable<SelectionKey, byte[]> readBuffers;
+	private static Hashtable<SelectionKey, ArrayList<byte[]>> writeBuffers;
+	
+	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+	private static ByteBuffer wBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 	
 	/* A list keeping associations between user name and its selection key */
 	public static Map<String, SelectionKey> registeredUsersChannels
 			= new HashMap<>();
 
 	public Server() {
+		PropertyConfigurator.configure("log4j.properties");
+		loggerServer.addAppender(CustomFileAppender.getCustomFileAppender("server.log").getFileAppender());
+		
 		readBuffers = new Hashtable<SelectionKey, byte[]>();
 		writeBuffers = new Hashtable<SelectionKey, ArrayList<byte[]>>();
 		initServer();
@@ -38,7 +47,7 @@ public class Server extends Thread {
 
 			this.serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.configureBlocking(false);
-			serverSocketChannel.socket().bind(new InetSocketAddress(IP, PORT));
+			serverSocketChannel.socket().bind(new InetSocketAddress(NetworkInfo.IP, NetworkInfo.PORT));
 			serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 		} catch (Exception e) {
@@ -52,7 +61,7 @@ public class Server extends Thread {
 
 	public void accept(SelectionKey key) throws IOException {
 
-		System.out.print("ACCEPT: ");
+		loggerServer.info("ACCEPT: ");
 
 		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
 				.channel();
@@ -61,8 +70,7 @@ public class Server extends Thread {
 		ByteBuffer buf = ByteBuffer.allocateDirect(NetworkInfo.BUF_SIZE);
 		socketChannel.register(key.selector(), SelectionKey.OP_READ, buf);
 
-		System.out.println("Connection from: "
-				+ socketChannel.socket().getRemoteSocketAddress());
+		loggerServer.info("Connection from: " + socketChannel.socket().getRemoteSocketAddress());
 	}
 
 	public void read(SelectionKey key) throws Exception {
@@ -78,7 +86,7 @@ public class Server extends Thread {
 		}
 
 		if (numRead <= 0) {
-			System.out.println("The socket was closed by the remote client"
+			loggerServer.warn("The socket was closed by the remote client"
 					+ key);
 			key.channel().close();
 			key.cancel();
@@ -94,7 +102,7 @@ public class Server extends Thread {
 		}
 
 		byte[] currentBuf = rBuffer.array();
-		System.out.println("[Server] Number of read bytes " + numRead
+		loggerServer.info("[Server] Number of read bytes " + numRead
 				+ " associated with the key " + key + " : " + currentBuf);
 
 		byte[] newBuf = new byte[rbuflen + numRead];
@@ -120,12 +128,11 @@ public class Server extends Thread {
 		length = NetworkPacketManager.getLength(new byte[] { newBuf[0], newBuf[1],
 				newBuf[2], newBuf[3] });
 
-		System.out.println("[Server] The received length is = " + length);
 		i += 4;
 
 		// Read the serialized object
 		if (i + length <= newBuf.length) {
-			System.out.println("[Server] deserialize array");
+			loggerServer.info("deserialize array");
 			
 			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
@@ -150,7 +157,7 @@ public class Server extends Thread {
 
 
 	public static void write(SelectionKey key) throws IOException {
-		System.out.println("WRITE: ");
+		loggerServer.info("WRITE: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
@@ -180,7 +187,7 @@ public class Server extends Thread {
 				}
 	
 				int numWritten = socketChannel.write(wBuffer);
-				System.out.println("[Server] I wrote " + numWritten + " bytes on the socket associated with the key" + key);
+				loggerServer.info("wrote " + numWritten + " bytes on the socket associated with the key" + key);
 	
 				if (numWritten < bbuf.length) {
 					byte[] newBuf = new byte[bbuf.length - numWritten];
@@ -218,11 +225,11 @@ public class Server extends Thread {
 			lengthPacket = NetworkPacketManager.packetLength(data);
 			
 		} catch (IOException e) {
-			System.err.println("Error serializing object");
+			loggerServer.error("Error serializing object");
 			e.printStackTrace();
 		}
 		
-		System.out.println("[Server] I want to write " + data.length + 
+		loggerServer.info("To write " + data.length + 
 				" bytes on the socket associated with the key " + key);
 	
 		ArrayList<byte[]> wbuf = null;
@@ -248,18 +255,14 @@ public class Server extends Thread {
 				selector.select();
 				for (Iterator<SelectionKey> it = selector.selectedKeys()
 						.iterator(); it.hasNext();) {
-					System.out.println("I have connections");
 					SelectionKey key = it.next();
 					it.remove();
 
 					if (key.isAcceptable()) {
-						System.out.println("Incoming connection to accept");
 						accept(key);
 					} else if (key.isReadable()) {
-						System.out.println("I read things");
 						read(key);
 					} else if (key.isWritable()) {
-						System.out.println("I write things");
 						write(key);
 					}
 				}

@@ -22,9 +22,12 @@ public interface IMediatorNetwork {
 	public void recvAcceptOffer(String buyer, String serviceName, String seller);
 	public void recvRefuseOffer(String buyer, String serviceName);
 	
-	public void interruptTransfer(String seller, String serviceName);
+	public void startFileTransfer(String serviceName, String buyer);
 	public void acceptFileTransfer(String service, int progress);
+	public void recvTransferFailed(String buyer, String serviceName);
+	
 	public void recvOfferExceeded(String userName, String serviceName);
 	
-	public void startFileTransfer(String serviceName, String buyer);
+	
+	
 }

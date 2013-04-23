@@ -16,10 +16,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -38,11 +36,15 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 import components.MyTableCellEditor;
 import components.MyTableCellRenderer;
 import components.PopupActionListener;
 
 import user.User;
+import util.CustomFileAppender;
 import util.DataGenerator;
 import util.Image;
 import verifier.JTextFieldVerifier;
@@ -60,6 +62,8 @@ import mediator.Mediator;
 public class GUI extends JFrame implements IGUI, ActionListener {
 
 	private static final long serialVersionUID = 1L;
+	static Logger loggerGui = Logger.getLogger(GUI.class);
+	public static CustomFileAppender customAppender;
 
 	private JButton logInButton;
 	private JButton logOutButton;
@@ -112,6 +116,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	public GUI() {
 		super("Auction House");
+		PropertyConfigurator.configure("log4j.properties");
+		customAppender = CustomFileAppender.getCustomFileAppender(DataGenerator.logFileName().toString());
+		loggerGui.addAppender(customAppender.getFileAppender());
+		
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -302,7 +310,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				user.setUsername(userText.getText());
 				user.setPassword(new String(passText.getPassword()));
 				
-				System.out.println("[GUI] User " + user.username + " logged in");
+				loggerGui.info("[log in] User " + user.username);
 				
 				// Validate given input
 				if (user.getUsername().isEmpty()
@@ -393,16 +401,19 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				}
 
 				if (canLogout) {
+					loggerGui.info("[log out] " + user.getUsername());
 					// show the Log In page again
 					cardLayout.show(panelCards, Page.Page1.getName());
 					resetUserData();
 					Page.Page2.panel.removeAll();
 				} else {
+					loggerGui.info("[log out]" + user.getUsername() + " didn't meet the conditions");
 					JOptionPane.showMessageDialog(Page.Page2.panel,
 							ErrorMessages.logOutDenied);
 				}
 			}
 		});
+		
 	}
 
 	/**
@@ -478,7 +489,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			break;
 		case 1:
 			serviceName = (String) table.getValueAt(row, column-1);
-			String anotherUser = ((String)table.getValueAt(row, column)).split(" \t-")[0];
+			String anotherUser = ((String)table.getValueAt(row, column)).split("\\s+")[0];
 			
 			// add menu for those who will sell products for buyers
 			if (user.getUserType().equals(UserTypes.buyer)) {
@@ -487,7 +498,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				item.addActionListener(actionListener);
 				// check that status is ACTIVE and not yet accepted
 				if (user.getServiceTransfer(serviceName) != null ||
-						user.isEmptyService(serviceName))
+						user.isEmptyService(serviceName) || 
+						user.getUserServiceStatus(serviceName, anotherUser).equals(StatusMessages.noOffer))
 					item.setEnabled(false);
 				contextMenu.add(item);
 
@@ -556,42 +568,21 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		return serviceList;
 	}
 
-	public boolean verifySellerLogOut() {
-
-		// verify if all offers are exceeded
-		boolean allOffersExceeded = user
-				.allOffersHaveStatus(StatusMessages.offerExceeded);
-
-		// verify if the seller isn't part of an auction
-		boolean hasActiveAuctions = user
-				.allOffersHaveStatus(StatusMessages.noOffer);
-		return allOffersExceeded || hasActiveAuctions;
-	}
-
+	/**
+	 * Implemented necessary actions when a buyer logs out
+	 */
 	public void doBuyerLogoutActions() {
 		List<String> services = user.getUserServiceList();
+		HashMap<String, String> usersStatusList;
 
 		for (String service : services) {
-			HashMap<String, String> userStatus = user.getServiceProviders(service);
-			Set<Map.Entry<String, String>> pairs = userStatus.entrySet();
-			Iterator<Map.Entry<String, String>> values = pairs.iterator();
-			Map.Entry<String, String> item;
-			while (values.hasNext()) {
-				item = values.next();
-				if (item.getValue().equals(StatusMessages.offerAccepted))
-					med.refuseOfferGui(item.getKey(), service, null);
-				else if (item.getValue().equals(
-						StatusMessages.transferInProgress))
-					med.refuseOfferGui(item.getKey(), service, null);
-				else if (item.getValue().equals(StatusMessages.transferStarted))
-					med.refuseOfferGui(item.getKey(), service, null);
-				else if (item.getValue().equals(
-						StatusMessages.transferCompleted))
-					med.refuseOfferGui(item.getKey(), service, null);
-				else if (item.getValue().equals(StatusMessages.noOffer))
-					med.dropService(service, user.getUsername());
-			}
+			//all users that provide a service
+			usersStatusList = user.getMatchingUsers().get(service);
 
+			//drop all offer requests
+			if (!usersStatusList.isEmpty()) {
+				this.dropOfferRequest(service);
+			}
 		}
 	}
 
@@ -602,24 +593,27 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void dropOfferRequest(String serviceName) {
+		loggerGui.info("[ " + user.getUsername() + " ] dropped offer request for serivce " + serviceName);
+		// inform all providers of that service of the annulment
+		this.med.dropService(serviceName, this.user.username, "mockUp");
+		
 		// update this user's list
 		this.user.emptyUserListForService(serviceName);
 		
-		// inform all providers of that service of the annulment
-		this.med.dropService(serviceName, this.user.username);
-		
 		// repaint GUI
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 	
 	@Override
 	public void acceptOffer(String serviceName, String seller) {
+		loggerGui.info("[ " + user.getUsername() + "] accepted offer from " + seller + " for " + serviceName);
 		this.user.startTransfer(serviceName, seller);
 		repaintUserTable();
 	}
 
 	@Override
 	public void refuseOffer(String serviceName, String seller) {
+		loggerGui.info("[ " + user.getUsername() + " ] refused offer from " + seller + " for " + serviceName);
 		// update the user's status
 		this.user.refuseOffer(serviceName, seller);
 		
@@ -644,6 +638,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	
 	@Override
 	public void dropAuction(String serviceName, String buyer) {
+		loggerGui.info("[ " + user.getUsername() + " ] dropped auction for serivce " + serviceName);
+		
 		// update current user's providers' list
 		user.removeUserFromService(buyer, serviceName);
 		
@@ -694,7 +690,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		user.updateStatus(serviceName, userName, StatusMessages.noOffer);		
+		loggerGui.info("[ " + user.getUsername() + " ] received launch offer request for serivce " +
+						serviceName + " from " + userName);
+		user.updateStatus(serviceName, userName, StatusMessages.noOffer);
 		GUI.repaintUserTable();
 	}
 
@@ -703,7 +701,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		// get service's status and properly update the service list
 		String status = user.getUserServiceStatus(serviceName, buyer);
 		
-		System.out.println("[GUI] received drop offer packet for service " +
+		loggerGui.info(user.getUsername() + "received drop offer packet for service " +
 				serviceName + " from buyer " + buyer + " (current status is " +
 				status + ")");
 		
@@ -714,7 +712,12 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 			case StatusMessages.offerMade:
 				user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
 				break;
-	
+			case StatusMessages.transferStarted:
+				user.updateStatus(serviceName, buyer, StatusMessages.transferFailed);
+				break;
+			case StatusMessages.transferInProgress:
+				user.updateStatus(serviceName, buyer, StatusMessages.transferFailed);
+				break;
 			default:
 				break;
 		}
@@ -725,6 +728,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	
 	@Override
 	public List<String> recvMakeOffer(String serviceName, String seller, String price) {
+		loggerGui.info("[ " + user.getUsername() + "] received make offer packet for service " +
+				serviceName + " from seller " + seller);
+		
 		// update buyer's status (add price to status)
 		String newStatus = StatusMessages.offerMade + " (" + price +" " +
 				Symbols.currency + ")";
@@ -753,6 +759,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvDropAuction(String userName, String serviceName) {
+		loggerGui.info("[ " + user.getUsername() + "] received drop auction packet for service " +
+				serviceName + " from seller " + userName);
+		
 		// update user's list
 		user.removeUserFromService(userName, serviceName);
 		
@@ -762,6 +771,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
+		loggerGui.info("[ " + user.getUsername() + "] received reufse offer packet for service " +
+				serviceName + " from buyer " + buyer);
+		
 		// update status
 		user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
 		
@@ -789,6 +801,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	
 	public void updateServiceUsers(String serviceName, List<String> users) {
 		user.setUserListForService(serviceName, users);
+		user.getTransfersInfo().remove(serviceName);
 		GUI.repaintUserTable();
 	}
 	
@@ -799,6 +812,17 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void updateTransfer(String service, int status) {
 		user.getTransfersInfo().get(service).setProgress(status);
+	}
+
+	@Override
+	public void transferFailed(String seller, String serviceName, String buyer) {
+		med.transferFailed(seller, serviceName, buyer);
+	}
+
+	@Override
+	public void recvTransferFailed(String userName, String serviceName) {
+		user.updateStatus(serviceName, userName, StatusMessages.transferFailed);
+		GUI.repaintUserTable();
 	}
 
 }
