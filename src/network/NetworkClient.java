@@ -39,10 +39,10 @@ public class NetworkClient extends SwingWorker {
 		if (NetworkClient.network == null) {
 			NetworkClient.network = network;
 		} else if (NetworkClient.network != network) {
-			// Signalizes an error if there is  an attempt to set a static field
+			// Signalizes an error if there is an attempt to set a static field
 			// to 2 different values
-			System.err.println("[Network Client] Static field network is " +
-					"already set to another value !!");
+			System.err.println("[Network Client] Static field network is "
+					+ "already set to another value !!");
 		}
 
 		try {
@@ -76,7 +76,7 @@ public class NetworkClient extends SwingWorker {
 			running = false;
 		}
 		this.key = key;
-		
+
 		System.out.println("[Client] Finished connecting");
 		key.interestOps(SelectionKey.OP_READ);
 	}
@@ -99,14 +99,14 @@ public class NetworkClient extends SwingWorker {
 		byte[] bytesToSend;
 		byte[] lengthPack;
 		ByteBuffer wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+		int offset;
+		int toWrite;
 
 		System.out.println("[Client] write");
+		
 		try {
 			// serialize the result
 			bytesToSend = NetworkPacketManager.serialize(dataToSend);
-
-			// find the length of the packet
-			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
 
 			// find the length of the packet
 			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
@@ -116,15 +116,32 @@ public class NetworkClient extends SwingWorker {
 			wBuff.put(lengthPack);
 			wBuff.flip();
 			socketChannel.write(wBuff);
-
-			// send the object through the channel
-			wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-
-			wBuff.clear();
-			wBuff.put(bytesToSend);
-			wBuff.flip();
-			socketChannel.write(wBuff);
 			
+			// send the object through the channel
+			if (bytesToSend.length > NetworkInfo.BUF_SIZE) {
+				//if the object is too large send it in chunks
+				offset = 0;
+				while (offset != bytesToSend.length) {
+					wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+					
+					toWrite = (bytesToSend.length - offset < NetworkInfo.BUF_SIZE)? bytesToSend.length - offset: NetworkInfo.BUF_SIZE;
+					
+					wBuff.clear();
+					wBuff.put(bytesToSend, offset, toWrite);
+					wBuff.flip();
+					socketChannel.write(wBuff);
+					
+					offset += toWrite;
+				}
+			} else {
+				wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
+
+				wBuff.clear();
+				wBuff.put(bytesToSend);
+				wBuff.flip();
+				socketChannel.write(wBuff);
+			}
+
 			key.interestOps(SelectionKey.OP_READ);
 
 		} catch (IOException e) {
@@ -136,7 +153,7 @@ public class NetworkClient extends SwingWorker {
 			ClassNotFoundException {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		this.rBuffer.clear();
-		
+
 		System.out.println("[Client] Read");
 
 		int numRead = 0;
@@ -161,7 +178,8 @@ public class NetworkClient extends SwingWorker {
 		int rbuflen = 0;
 		if (rbuf != null) {
 			rbuflen = rbuf.length;
-			System.out.println("[Client] there was data in the buffer " + rbuflen);
+			System.out.println("[Client] there was data in the buffer "
+					+ rbuflen);
 		}
 
 		byte[] currentBuf = rBuffer.array();
@@ -185,7 +203,7 @@ public class NetworkClient extends SwingWorker {
 
 		int i = 0;
 		int length = 0;
-		
+
 		// Read size of sent object
 		if (i + 4 > newBuf.length)
 			return;
@@ -202,7 +220,7 @@ public class NetworkClient extends SwingWorker {
 
 			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(
 					newBuf, 4, length + 4));
-
+			System.out.println("Before choose action");
 			ClientUtils.chooseAction(st);
 			i += length;
 		} else
@@ -217,14 +235,14 @@ public class NetworkClient extends SwingWorker {
 		} else {
 			finalBuf = newBuf;
 		}
-		
+
 		readBuf = finalBuf;
 	}
 
 	@Override
 	protected Object doInBackground() throws Exception {
 		socketChannel.register(selector, SelectionKey.OP_CONNECT);
-		
+
 		while (running) {
 			selector.select();
 
@@ -240,14 +258,14 @@ public class NetworkClient extends SwingWorker {
 					} else if (key.isConnectable()) {
 						connect(key);
 					}
-					
+
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
 
 			}
 		}
-		
+
 		return null;
 
 	}

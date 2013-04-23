@@ -125,7 +125,7 @@ public class Server extends Thread {
 
 		// Read the serialized object
 		if (i + length <= newBuf.length) {
-			System.out.println("[SERVER] deserialize array");
+			System.out.println("[Server] deserialize array");
 			
 			Object st = NetworkPacketManager.deserialize(Arrays.copyOfRange(newBuf, 4,
 					length + 4));
@@ -155,6 +155,8 @@ public class Server extends Thread {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
 		ArrayList<byte[]> wbuf = null;
+		int offset;
+		int toWrite;
 		
 		synchronized(key) {
 			wbuf = writeBuffers.get(key);
@@ -163,9 +165,19 @@ public class Server extends Thread {
 				byte[] bbuf = wbuf.get(0);
 				wbuf.remove(0);
 				
-				wBuffer.clear();
-				wBuffer.put(bbuf);
-				wBuffer.flip();
+				//write all the array
+				if (bbuf.length < NetworkInfo.BUF_SIZE) {
+					wBuffer.clear();
+					wBuffer.put(bbuf);
+					wBuffer.flip();
+				} else {
+					//write only the size of the buffer
+					offset = 0;
+					toWrite = (bbuf.length - offset < NetworkInfo.BUF_SIZE)? bbuf.length - offset: NetworkInfo.BUF_SIZE;
+					wBuffer.clear();
+					wBuffer.put(bbuf, offset, toWrite);
+					wBuffer.flip();
+				}
 	
 				int numWritten = socketChannel.write(wBuffer);
 				System.out.println("[Server] I wrote " + numWritten + " bytes on the socket associated with the key" + key);
