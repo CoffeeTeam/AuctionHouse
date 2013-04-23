@@ -594,7 +594,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void launchOfferRequest(String serviceName) {
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	@Override
@@ -612,7 +612,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void acceptOffer(String serviceName, String seller) {
 		this.user.startTransfer(serviceName, seller);
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	@Override
@@ -624,7 +624,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		this.med.refuseOfferGui(seller, serviceName, this.user.username);
 		
 		// repaint GUI
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 	
 	public User getUser() {
@@ -659,8 +659,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		Page.Page2.panel.repaint();
 	}
 	
-	public void updateBuyersStatus(String serviceName) {
-		user.updateStatusForService(serviceName);
+	public void makeOffer(String serviceName, String buyer) {
+		// update current user's status
+		user.updateStatus(serviceName, buyer, StatusMessages.offerMade);
+		
+		// inform the buyer to whom the offer was made
+		med.launchService(serviceName, user.username, buyer);
+		
+		// repaint GUI
+		repaintUserTable();
 	}
 
 	@Override
@@ -671,8 +678,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
-		System.out.println("Add user to service");
-		user.updateStatus(serviceName, userName, StatusMessages.noOffer);
+		user.updateStatus(serviceName, userName, StatusMessages.noOffer);		
 		GUI.repaintUserTable();
 	}
 
@@ -686,15 +692,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				status + ")");
 		
 		switch (status) {
-		case StatusMessages.noOffer:
-			user.removeUserFromService(buyer, serviceName);
-			break;
-		case StatusMessages.offerMade:
-			user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
-			break;
-
-		default:
-			break;
+			case StatusMessages.noOffer:
+				user.removeUserFromService(buyer, serviceName);
+				break;
+			case StatusMessages.offerMade:
+				user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
+				break;
+	
+			default:
+				break;
 		}
 		
 		// update GUI
@@ -702,8 +708,13 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 	
 	@Override
-	public void recvMakeOffer(String serviceName, String seller) {
-		user.updateStatus(serviceName, seller, StatusMessages.offerMade);
+	public void recvMakeOffer(String serviceName, String seller, String price) {
+		// update buyer's status (add price to status)
+		String newStatus = StatusMessages.offerMade + " (" + price +" " +
+				Symbols.currency + ")";
+		user.updateStatus(serviceName, seller, newStatus);
+		
+		// repaint GUI
 		GUI.repaintUserTable();
 	}
 

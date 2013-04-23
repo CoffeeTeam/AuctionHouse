@@ -34,11 +34,12 @@ public class SellerState extends State {
 	@Override
 	public void launchService(String serviceName, String userName,
 			String... auxUserInfo) {
+		
 		if (auxUserInfo.length == 0) {
-			System.err
-					.println("[Seller state] This function should have an extra-parameter"
-							+ " containing the name of the seller");
+			System.err.println("[Seller state] This function should have an " +
+					"extra-parameter containing the name of the buyer");
 		}
+		
 		makeOffer.execute(serviceName, userName, auxUserInfo);
 	}
 

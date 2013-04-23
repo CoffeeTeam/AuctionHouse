@@ -92,8 +92,7 @@ public class ClientUtils {
 	 *            packet from server
 	 */
 	private static void handleRefuseOffer(SerializableRefuseOffer pack) {
-		System.out
-				.println("[ClientUtils] Received refuse offer packet from server");
+		System.out.println("[ClientUtils] Received refuse offer packet from server");
 
 		NetworkClient.network.recvRefuseOffer(pack.userName, pack.serviceName);
 	}
@@ -105,7 +104,13 @@ public class ClientUtils {
 	 *            packet from server
 	 */
 	private static void handleMakeOffer(SerializableMakeOffer pack) {
-		NetworkClient.network.recvMakeOffer(pack.userName, pack.serviceName);
+		if (pack.commandInfo.size() != 1) {
+			System.err.println("Make offer packet should contain the price (as sole" +
+					" auxiliary parameter)");
+		}
+
+		NetworkClient.network.recvMakeOffer(pack.userName, pack.serviceName,
+				pack.commandInfo.get(0));
 	}
 
 	/**
@@ -121,6 +126,7 @@ public class ClientUtils {
 	private static void handleFileTransferService(FileService recvObject) {
 		System.out.println("[Client Utils] Receive file handler");
 	
-		NetworkClient.network.recvFileTransfer(recvObject.seller, recvObject.serviceName, recvObject.fileContent);
+		NetworkClient.network.recvFileTransfer(recvObject.seller,
+				recvObject.serviceName, recvObject.fileContent);
 	}
 }

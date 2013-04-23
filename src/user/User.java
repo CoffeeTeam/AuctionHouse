@@ -201,21 +201,6 @@ public class User extends UserPacket {
 		serviceUsers.put(provider, status);
 	}
 
-	public void updateStatusForService(String serviceName) {
-		HashMap<String, String> serviceUsers = this.matchingUsers
-				.get(serviceName);
-		HashMap<String, String> tmpHash = new HashMap<String, String>();
-		Set<String> users = serviceUsers.keySet();
-		Iterator<String> it = users.iterator();
-
-		while (it.hasNext()) {
-			String user = it.next();
-			tmpHash.put(user, StatusMessages.offerMade);
-		}
-
-		this.matchingUsers.put(serviceName, tmpHash);
-	}
-
 	public boolean hasStatus(String serviceName, String status) {
 		HashMap<String, String> serviceUsers = this.matchingUsers
 				.get(serviceName);
