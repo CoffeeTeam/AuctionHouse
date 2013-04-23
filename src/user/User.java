@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import constants.StatusMessages;
+import constants.Symbols;
 
 public class User extends UserPacket {
 
@@ -85,7 +86,6 @@ public class User extends UserPacket {
 			serviceHashMap.put(user, StatusMessages.noOffer);
 		}
 
-		// this.matchingUsers.put(serviceName, serviceHashMap);
 	}
 
 	/**
@@ -243,4 +243,45 @@ public class User extends UserPacket {
 
 		return usersWithStatus;
 	}
+	
+	/**
+	 * Verify logout conditions for seller.
+	 * @return true if the seller can logout or false otherwise
+	 */
+	
+	public boolean canSellerLogout() {
+		String serviceName;
+		
+		Set<String> services = this.matchingUsers.keySet();
+		Iterator<String> serviceIt = services.iterator();
+		
+		HashMap<String, String> userStatuses;
+		
+		while (serviceIt.hasNext()) {
+			serviceName = serviceIt.next();
+			
+			if (!this.matchingUsers.isEmpty()) {
+				userStatuses = this.matchingUsers.get(serviceName);
+				if (userStatuses.containsValue(StatusMessages.offerExceeded) ||
+						userStatuses.containsValue(StatusMessages.offerMade) ||
+						userStatuses.containsValue(StatusMessages.transferStarted) ||
+						userStatuses.containsValue(StatusMessages.transferInProgress))
+					
+					return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Empty all structures used by the user
+	 */
+	public void emptyData() {
+		setUsername(Symbols.emptyString);
+		setPassword(Symbols.emptyString);
+		matchingUsers.clear();
+		transfersInfo.clear();
+	}
+
 }

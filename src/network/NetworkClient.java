@@ -7,11 +7,13 @@ import constants.NetworkInfo;
 import java.nio.*;
 import java.nio.channels.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.swing.SwingWorker;
 
+import util.FileService;
 import util.NetworkPacketManager;
 
 /**
@@ -31,8 +33,11 @@ public class NetworkClient extends SwingWorker {
 	private Selector selector;
 	private ByteBuffer rBuffer = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 	private byte[] readBuf = null;
+	private static ArrayList<byte[]> wbuf = new ArrayList<byte[]>();
 	private Object dataToSend;
 	private boolean running;
+	private int offset = 0;
+	private int sizeToWrite = 0;
 
 	private NetworkClient(INetwork network) {
 		// set network IF NOT ALREADY SET
@@ -91,61 +96,89 @@ public class NetworkClient extends SwingWorker {
 
 	public void sendData(Object dataObject) {
 		this.dataToSend = dataObject;
-		key.interestOps(SelectionKey.OP_WRITE);
+
+		byte[] data = null;
+		byte[] lengthPacket = null;
+
+		try {
+			// serialize the data to be sent
+			data = NetworkPacketManager.serialize(dataToSend);
+
+			// compute the length of the package
+			lengthPacket = NetworkPacketManager.packetLength(data);
+
+		} catch (IOException e) {
+			System.err.println("Error serializing object");
+			e.printStackTrace();
+		}
+
+		sizeToWrite = data.length;
+		offset = 0;
+
+		System.out.println("[Client] I want to write " + data.length
+				+ " bytes on the socket associated with the key " + key);
+
+		synchronized (key) {
+			wbuf.add(lengthPacket);
+			wbuf.add(data);
+
+			key.interestOps(SelectionKey.OP_WRITE);
+		}
 		selector.wakeup();
 	}
 
-	public void write(SelectionKey key) {
-		byte[] bytesToSend;
-		byte[] lengthPack;
+	public void write(SelectionKey key) throws IOException {
+		System.out.println("WRITE: ");
+		FileService fileService;
 		ByteBuffer wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-		int offset;
+		SocketChannel socketChannel = (SocketChannel) key.channel();
+
 		int toWrite;
 
-		System.out.println("[Client] write");
-		
-		try {
-			// serialize the result
-			bytesToSend = NetworkPacketManager.serialize(dataToSend);
+		synchronized (key) {
+			while (wbuf.size() > 0) {
+				byte[] bbuf = wbuf.get(0);
+				wbuf.remove(0);
 
-			// find the length of the packet
-			lengthPack = NetworkPacketManager.packetLength(bytesToSend);
-
-			// send the length of the object through the channel
-			wBuff.clear();
-			wBuff.put(lengthPack);
-			wBuff.flip();
-			socketChannel.write(wBuff);
-			
-			// send the object through the channel
-			if (bytesToSend.length > NetworkInfo.BUF_SIZE) {
-				//if the object is too large send it in chunks
-				offset = 0;
-				while (offset != bytesToSend.length) {
-					wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
-					
-					toWrite = (bytesToSend.length - offset < NetworkInfo.BUF_SIZE)? bytesToSend.length - offset: NetworkInfo.BUF_SIZE;
-					
+				// write all the array
+				if (bbuf.length < NetworkInfo.BUF_SIZE) {
 					wBuff.clear();
-					wBuff.put(bytesToSend, offset, toWrite);
+					wBuff.put(bbuf);
 					wBuff.flip();
-					socketChannel.write(wBuff);
-					
-					offset += toWrite;
+				} else {
+					// write only the size of the buffer
+					toWrite = NetworkInfo.BUF_SIZE;
+					wBuff.clear();
+					wBuff.put(bbuf,0,toWrite);
+					wBuff.flip();
 				}
-			} else {
-				wBuff = ByteBuffer.allocate(NetworkInfo.BUF_SIZE);
 
-				wBuff.clear();
-				wBuff.put(bytesToSend);
-				wBuff.flip();
-				socketChannel.write(wBuff);
+				int numWritten = socketChannel.write(wBuff);
+				System.out.println("[Client] I wrote " + numWritten
+						+ " bytes on the socket associated with the key" + key);
+
+				if (this.dataToSend instanceof FileService) {
+					fileService = (FileService) dataToSend;
+					offset += numWritten;
+					network.med.acceptFileTransfer(fileService.serviceName, 100 * offset / sizeToWrite);
+				}
+				
+				if (numWritten < bbuf.length) {
+					byte[] newBuf = new byte[bbuf.length - numWritten];
+
+					// Copy data which is still unwritten into newBuf
+					for (int i = numWritten; i < bbuf.length; i++) {
+						newBuf[i - numWritten] = bbuf[i];
+					}
+
+					wbuf.add(0, newBuf);
+					break;
+				}
+
+				if (wbuf.size() == 0) {
+					key.interestOps(SelectionKey.OP_READ);
+				}
 			}
-
-			key.interestOps(SelectionKey.OP_READ);
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
