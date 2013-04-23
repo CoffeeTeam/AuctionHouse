@@ -596,7 +596,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void launchOfferRequest(String serviceName) {
-		Page.Page2.panel.repaint();
+		repaintUserTable();
 	}
 
 	@Override
@@ -681,7 +681,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvLaunchOfferReq(String userName, String serviceName) {
 		System.out.println("Add user to service");
+		
 		user.addUserToService(serviceName, userName);
+		
 		GUI.repaintUserTable();
 	}
 
@@ -713,7 +715,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvMakeOffer(String serviceName, String seller, String price) {
 		// update buyer's status (add price to status)
-		String newStatus = StatusMessages.offerMade + "(" + price + ")";
+		String newStatus = StatusMessages.offerMade + " (" + price +" " +
+				Symbols.currency + ")";
 		user.updateStatus(serviceName, seller, newStatus);
 		
 		// repaint GUI

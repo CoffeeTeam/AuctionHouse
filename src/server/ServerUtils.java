@@ -334,15 +334,15 @@ public class ServerUtils {
 		SelectionKey key;
 
 		for (String userName : interestedUsers) {
-			if (null != Server.registeredUsersChannels.get(userName)) {
+			if (null != (key = Server.registeredUsersChannels.get(userName))) {
 				// send the info about the new service and user
-				key = Server.registeredUsersChannels.get(userName);
-
-				if (null == key)
-					System.err.println("[Server] the user " + userName
-							+ " is no longer logged in");
-				else
-					Server.sendData(key, pack);
+				Server.sendData(key, pack);
+				
+				System.out.println("[Server][HANDLE LAUNCH OFFER REQ] sent update " +
+						"packet to user " + userName);
+			} else {
+				System.err.println("[Server] the user " + userName
+						+ " is no longer logged in");
 			}
 		}
 	}

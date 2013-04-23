@@ -91,14 +91,15 @@ public class Network extends INetwork {
 	@Override
 	public void makeOffer(String seller, String serviceName, String buyer) {
 		SerializableMakeOffer makeOffer = new SerializableMakeOffer();
+		Integer price = new Random().nextInt(Sizes.maxPrice - Sizes.minPrice) +
+				Sizes.minPrice;
 		
 		makeOffer.userName = seller;
 		makeOffer.serviceName = serviceName;
 		// in the auxiliary list add the buyer's name first and
 		// the price second
 		makeOffer.commandInfo.add(buyer);
-		makeOffer.commandInfo.add(new Integer(
-				new Random().nextInt(Sizes.maxPrice)).toString());
+		makeOffer.commandInfo.add(price.toString());
 		
 		netClient.sendData(makeOffer);
 	}

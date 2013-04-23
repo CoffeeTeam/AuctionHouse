@@ -12,5 +12,6 @@ public class Sizes {
 	public static final int noChunks 				= 35;
 
 	// Maximum generated price
-	public static final int maxPrice				= 100;
+	public static final int maxPrice				= 300;
+	public static final int minPrice				= 100;
 }
