@@ -174,10 +174,13 @@ public class Network extends INetwork {
 		
 		long length;
 		int offset, numRead;
+		
 		byte[] fileBytes;
+		
 		String filename = serviceName;
 		File verifyFile = new File(filename); 
 		InputStream serviceFile = null;
+		
 		try {
 			serviceFile = new FileInputStream(filename);
 		} catch (FileNotFoundException e1) {
