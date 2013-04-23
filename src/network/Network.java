@@ -16,10 +16,12 @@ import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
+import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
 import constants.Sizes;
 
 import user.UserPacket;
+import util.DataGenerator;
 import util.FileService;
 
 public class Network extends INetwork {
@@ -91,18 +93,28 @@ public class Network extends INetwork {
 	@Override
 	public void makeOffer(String seller, String serviceName, String buyer) {
 		SerializableMakeOffer makeOffer = new SerializableMakeOffer();
-		Integer price = serviceName.hashCode() % Sizes.maxPrice;
 		
 		makeOffer.userName = seller;
 		makeOffer.serviceName = serviceName;
 		// in the auxiliary list add the buyer's name first and
 		// the price second
 		makeOffer.commandInfo.add(buyer);
-		makeOffer.commandInfo.add(price.toString());
+		makeOffer.commandInfo.add(DataGenerator.getPrice(serviceName, seller).toString());
 		
 		netClient.sendData(makeOffer);
 	}
 
+	@Override
+	public void sendOfferExceeded(List<String> sellers, String serviceName, String buyer) {
+		SerializableOfferExceeded offerExceeded = new SerializableOfferExceeded();
+		
+		offerExceeded.userName = buyer;
+		offerExceeded.serviceName = serviceName;
+		offerExceeded.commandInfo = sellers;
+		
+		netClient.sendData(offerExceeded);
+	}
+	
 	@Override
 	public void dropAuction(String userName, String serviceName) {
 		SerializableDropAuction dropAuction = new SerializableDropAuction();
@@ -160,7 +172,12 @@ public class Network extends INetwork {
 	public void recvMakeOffer(String seller, String serviceName, String price) {
 		System.out.println("Network => received make offer feedback");
 		
+		// update the seller's status
 		med.recvMakeOffer(serviceName, seller, price);
+		
+		// check if any offers were exceeded in order to announce the suppliers
+		// if so TODO
+		
 	}
 
 	@Override
@@ -264,6 +281,11 @@ public class Network extends INetwork {
 			System.err.println("Error writing file on disk");
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void recvOfferExceeded(String userName, String serviceName) {
+		med.recvOfferExceeded(userName, serviceName);
 	}
 	
 }

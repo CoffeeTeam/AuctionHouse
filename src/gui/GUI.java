@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +44,7 @@ import components.MyTableCellRenderer;
 import components.PopupActionListener;
 
 import user.User;
+import util.DataGenerator;
 import util.Image;
 import verifier.JTextFieldVerifier;
 
@@ -176,6 +178,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	}
 
+	public String getCurrentUser() {
+		return user.username;
+	}
+	
 	/**
 	 * Puts the username label and the input field for the username in the panel
 	 * 
@@ -569,7 +575,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		List<String> services = user.getUserServiceList();
 
 		for (String service : services) {
-			HashMap<String, String> userStatus = user.getServiceStatus(service);
+			HashMap<String, String> userStatus = user.getServiceProviders(service);
 			Set<Map.Entry<String, String>> pairs = userStatus.entrySet();
 			Iterator<Map.Entry<String, String>> values = pairs.iterator();
 			Map.Entry<String, String> item;
@@ -708,7 +714,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	}
 	
 	@Override
-	public void recvMakeOffer(String serviceName, String seller, String price) {
+	public List<String> recvMakeOffer(String serviceName, String seller, String price) {
 		// update buyer's status (add price to status)
 		String newStatus = StatusMessages.offerMade + " (" + price +" " +
 				Symbols.currency + ")";
@@ -716,6 +722,23 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		
 		// repaint GUI
 		GUI.repaintUserTable();
+		
+		// check for exceeded offers and return a list of exceeded suppliers
+		Map<String, String> providers = user.getServiceProviders(serviceName);
+		List<String> exceededProviders = new ArrayList<>();
+		Integer currentPrice = Integer.parseInt(price);
+		
+		for (String provider : providers.keySet()) {
+			if (!providers.get(provider).contains(StatusMessages.offerMade))
+				continue;
+			
+			Integer providerPrice = DataGenerator.getPrice(serviceName, provider);
+			if (currentPrice < providerPrice) {
+				exceededProviders.add(provider);
+			}
+		}
+		
+		return exceededProviders;
 	}
 
 	@Override
@@ -726,7 +749,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvRefuseOffer(String buyer, String serviceName) {
 		// update status
-		user.setStatusForBuyer(buyer, serviceName, StatusMessages.offerRefused);
+		user.updateStatus(serviceName, buyer, StatusMessages.offerRefused);
 		
 		// update graphics
 		GUI.repaintUserTable();
@@ -735,13 +758,20 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	@Override
 	public void recvAcceptOffer(String serviceName, String buyer) {
 		//update status
-		user.setStatusForBuyer(serviceName, buyer, StatusMessages.offerAccepted);
+		user.updateStatus(serviceName, buyer, StatusMessages.offerAccepted);
 		
 		//update graphics
 		GUI.repaintUserTable();
 	}
 	
-	
+	@Override
+	public void recvOfferExceeded(String userName, String serviceName) {
+		// update status
+		user.updateStatus(serviceName, userName, StatusMessages.offerExceeded);
+
+		// update graphics
+		GUI.repaintUserTable();
+	}
 	
 	public void updateServiceUsers(String serviceName, List<String> users) {
 		user.setUserListForService(serviceName, users);
@@ -756,7 +786,5 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	public void updateTransfer(String service, int status) {
 		user.getTransfersInfo().get(service).setProgress(status);
 	}
-
-	
 
 }

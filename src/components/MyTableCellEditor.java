@@ -51,7 +51,7 @@ public class MyTableCellEditor extends DefaultCellEditor {
 		// Add matching users to a combobox
 		JComboBox<String> combo = (JComboBox<String>) super.getTableCellEditorComponent(
 				table, value, isSelected, row, column);
-		userStatusAssoc = instanceGUI.getUser().getServiceStatus(serviceName);
+		userStatusAssoc = instanceGUI.getUser().getServiceProviders(serviceName);
 		Set<String> keySet = userStatusAssoc.keySet();
 		Iterator<String> userNameIt = keySet.iterator();
 

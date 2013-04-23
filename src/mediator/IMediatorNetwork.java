@@ -24,4 +24,6 @@ public interface IMediatorNetwork {
 	
 	public void interruptTransfer(String seller, String serviceName);
 	public void acceptFileTransfer(String service, int progress);
+
+	public void recvOfferExceeded(String userName, String serviceName);
 }

@@ -119,7 +119,7 @@ public class User extends UserPacket {
 	 * @param serviceName
 	 * @return hash map containing the associations
 	 */
-	public HashMap<String, String> getServiceStatus(String serviceName) {
+	public HashMap<String, String> getServiceProviders(String serviceName) {
 		return this.matchingUsers.get(serviceName);
 	}
 
@@ -243,21 +243,4 @@ public class User extends UserPacket {
 
 		return usersWithStatus;
 	}
-
-	/**
-	 * Set status for a buyer from a seller's list
-	 * 
-	 * @param serviceName
-	 *            the name of the service
-	 * @param buyer
-	 *            the entity for which the status will be updated
-	 * @param status
-	 *            the new status of the buyer
-	 */
-	public void setStatusForBuyer(String serviceName, String buyer,
-			String status) {
-
-		this.matchingUsers.get(serviceName).put(buyer, status);
-	}
-
 }

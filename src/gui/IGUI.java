@@ -14,7 +14,7 @@ public interface IGUI {
 	void acceptOffer(String serviceName, String seller);
 	void refuseOffer(String serviceName, String seller);
 	
-	void recvMakeOffer(String serviceName, String seller, String price);
+	List<String> recvMakeOffer(String serviceName, String seller, String price);
 	void recvDropAuction(String userName, String serviceName);
 	
 	void recvLaunchOfferReq(String userName, String serviceName);
@@ -27,4 +27,7 @@ public interface IGUI {
 	void updateServiceUsers(String serviceName, List<String> users);
 	
 	void updateTransfer(String service, int status);
+	
+	String getCurrentUser();
+	public void recvOfferExceeded(String userName, String serviceName);
 }

@@ -169,7 +169,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	
 	@Override
 	public void recvMakeOffer(String serviceName, String seller, String price) {
-		gui.recvMakeOffer(serviceName, seller, price);
+		// update current user & check for exceeded offers
+		List<String> exceeded = gui.recvMakeOffer(serviceName, seller, price);
+		
+		// if there are any exceeded offers, announce the suppliers
+		if (! exceeded.isEmpty()) {
+			network.sendOfferExceeded(exceeded, serviceName, gui.getCurrentUser());
+		}
 	}
 
 	@Override
@@ -214,6 +220,11 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	public void acceptFileTransfer(String service,
 			int progress) {
 		gui.updateTransfer(service, progress);
+	}
+
+	@Override
+	public void recvOfferExceeded(String userName, String serviceName) {
+		gui.recvOfferExceeded(userName, serviceName);
 	}
 
 }

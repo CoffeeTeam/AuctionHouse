@@ -7,6 +7,7 @@ import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
+import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
 
 public class ClientUtils {
@@ -51,6 +52,13 @@ public class ClientUtils {
 
 		if (recvObject instanceof FileService) {
 			handleFileTransferService((FileService) recvObject);
+			return;
+		}
+		
+		/* Handle a response from server to a client's update and a seller's
+		 * offer exceed */
+		if (recvObject instanceof SerializableOfferExceeded) {
+			handleOfferExceeded((SerializableOfferExceeded) recvObject);
 			return;
 		}
 	}
@@ -128,5 +136,13 @@ public class ClientUtils {
 	
 		NetworkClient.network.recvFileTransfer(recvObject.seller,
 				recvObject.serviceName, recvObject.fileContent);
+	}
+
+	/**
+	 * Handles a response from server to a client's update and a seller's
+	 * offer exceed 
+	 */
+	private static void handleOfferExceeded(SerializableOfferExceeded pack){
+		NetworkClient.network.recvOfferExceeded(pack.userName, pack.serviceName);
 	}
 }

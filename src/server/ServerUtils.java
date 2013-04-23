@@ -18,6 +18,7 @@ import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
 import commands.serializableCommands.SerializableMakeOffer;
+import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
 
 import user.UserPacket;
@@ -180,6 +181,12 @@ public class ServerUtils {
 		/* File transfer handler */
 		if (recvObject instanceof FileService) {
 			handleFileTransferService((FileService)recvObject);
+			return;
+		}
+		
+		/* Send offer exceeded handler */
+		if (recvObject instanceof SerializableOfferExceeded) {
+			handleSendOfferExceeded((SerializableOfferExceeded)recvObject);
 			return;
 		}
 	}
@@ -393,4 +400,33 @@ public class ServerUtils {
 		Server.sendData(key, recvObject);
 	}
 
+	/**
+	 * Performs actions required when a buyer receives an offer that tops other ones
+	 * 
+	 * @param pack		packet with request information
+	 */
+	private static void handleSendOfferExceeded(SerializableOfferExceeded pack) {
+		List<String> sellers = pack.commandInfo;
+		SelectionKey key;
+
+		// reset list in pack (no longer needed)
+		pack.commandInfo = null;
+		
+		// send "offer exceeded" packet to each seller still logged in
+		for (String seller : sellers) {
+			key = Server.registeredUsersChannels.get(seller);
+			
+			if (key == null) {
+				System.out.println("[Server] User " + seller + " is no longer" +
+						" logged in => no 'drop offer' message sent to him");
+				continue;
+			}
+
+			System.out.println("[Server] sending drop offer announce to seller " + 
+					seller + " (from buyer " + pack.userName + ", service " +
+					pack.serviceName + ")");
+
+			Server.sendData(key, pack);
+		}
+	}
 }
