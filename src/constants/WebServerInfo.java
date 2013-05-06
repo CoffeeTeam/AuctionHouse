@@ -13,4 +13,8 @@ public class WebServerInfo {
 	public static final String active = "active";
 	public static final String inactive = "inactive";
 	
+	//table names
+	public static final String USERS = "Users";
+	public static final String SERVICES = "Services";
+	
 }

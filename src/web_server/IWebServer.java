@@ -33,15 +33,6 @@ public interface IWebServer {
 	public List<String> userServices(String username);
 
 	/**
-	 * change the status of a user from active to inactive
-	 * 
-	 * @param username
-	 *            the name of the user for whom the status should be changed
-	 */
-
-	public void updateStatus(String username);
-
-	/**
 	 * Finds all active users that provide a certain service
 	 * 
 	 * @param serviceName

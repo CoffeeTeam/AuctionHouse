@@ -2,16 +2,14 @@ package web_server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.sql.RowSet;
-
-import com.sun.rowset.JdbcRowSetImpl;
-
+import constants.UserTypes;
 import constants.WebServerInfo;
 
 public class WebServer implements IWebServer {
@@ -44,21 +42,27 @@ public class WebServer implements IWebServer {
 	public boolean logIn(String username, String password, String type) {
 
 		boolean userExists = false;
+		ResultSet rs;
 		String status;
 
 		System.out.println("Enter log in...");
 		try {
-			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT * " + "FROM Users "
-					+ "WHERE username=" + username + " AND password="
-					+ password + " AND type=" + type);
+			PreparedStatement statement = connection
+					.prepareStatement(
+							"SELECT * FROM Users "
+									+ "WHERE username = ?  AND password = ? AND type = ?",
+							ResultSet.TYPE_SCROLL_INSENSITIVE,
+							ResultSet.CONCUR_UPDATABLE);
 
-			System.out.println("Connected to DB..");
+			statement.setString(1, username);
+			statement.setString(2, password);
+			statement.setString(3, type);
+
+			rs = statement.executeQuery();
+
 			// verify if the user with the given characteristics exists
 
-			System.out.println("Before loop");
 			while (rs.next()) {
-				System.out.println("Enter loop");
 				status = rs.getString(WebServerInfo.status);
 
 				// update status if user is inactive
@@ -85,30 +89,93 @@ public class WebServer implements IWebServer {
 
 	@Override
 	public List<String> userServices(String username) {
-		return null;
-	}
+		List<String> userServicesList = new ArrayList<String>();
+		String serviceName;
+		ResultSet rs;
+		
+		try {
+			PreparedStatement statement = connection.prepareStatement(
+					"SELECT * FROM Services " + "WHERE username = ?");
+			
+			statement.setString(1, username);
+			
+			rs = statement.executeQuery();
+			
+			while (rs.next()) {
+				serviceName = rs.getString("service");
+				userServicesList.add(serviceName);
+			}
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-	@Override
-	public void updateStatus(String username) {
-
+		return userServicesList;
 	}
 
 	@Override
 	public List<String> getUsersForService(String serviceName) {
-		return null;
+		//TODO for each active user verify if it is interested on that service
+		ResultSet rs, rsSearch;
+		PreparedStatement statement, searchService;
+		List<String> usersList = new ArrayList<String>();
+		
+		try {
+			//find active sellers
+			statement = connection.prepareStatement("SELECT * FROM Users " +
+					"WHERE type = ? AND status = ?");
+			statement.setString(1, UserTypes.seller);
+			statement.setString(2, WebServerInfo.active);
+			
+			rs = statement.executeQuery();
+			
+			//find if the active seller provides a certain service
+			while (rs.next()) {
+				searchService = connection.prepareStatement("SELECT * " +
+								"FROM Services " +
+								"WHERE username = ? AND service = ?");
+				System.out.println("Selected user " + rs.getString("username"));
+				searchService.setString(1, rs.getString("username"));
+				searchService.setString(2, serviceName);
+				
+				rsSearch = searchService.executeQuery();
+				
+				//get the name of the user that provides the service
+				if (rsSearch.next()) {
+					usersList.add(rsSearch.getString("username"));
+				}
+				
+				rsSearch.close();
+			}
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return usersList;
 	}
 
 	@Override
 	public void logOut(String username) {
+		ResultSet rs;
 		try {
-			RowSet rs = new JdbcRowSetImpl(WebServerInfo.url,
-					WebServerInfo.username, WebServerInfo.password);
-			rs.setCommand("SELECT * " + "FROM Users " + "WHERE username = "
-					+ username);
-			rs.execute();
+			PreparedStatement statement = connection.prepareStatement(
+					"SELECT * FROM Users " + "WHERE username = ?",
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+
+			statement.setString(1, username);
+
+			rs = statement.executeQuery();
 
 			while (rs.next()) {
-				rs.setString(WebServerInfo.status, WebServerInfo.inactive);
+				rs.updateString(WebServerInfo.status, WebServerInfo.inactive);
 				rs.updateRow();
 				break;
 			}
@@ -122,9 +189,44 @@ public class WebServer implements IWebServer {
 
 	public static void main(String args[]) {
 		IWebServer webServer = new WebServer();
+		List<String> serviceList;
 
-		webServer.logIn("bitza", "q1w2e3", "buyer");
-		webServer.logIn("bitza", "q1w2e3", "buyer");
+		//verify login
+		webServer.logIn("claudiu", "q1w2e3", "buyer");
+		webServer.logIn("mozzie", "q1w2e3", "seller");
+		webServer.logIn("neal", "q1w2e3", "seller");
+		webServer.logIn("ross", "q1w2e3", "seller");
+		webServer.logIn("claudiu", "q1w2e3", "buyer");
+
+		//verify userServies
+		serviceList = webServer.userServices("rares");
+		System.out.println("----- Services rares -----");
+		System.out.println(serviceList);
+		
+		serviceList = webServer.userServices("rachel");
+		System.out.println("---- Services rachel ----");
+		System.out.println(serviceList);
+		
+		//verify getUsersForService
+		serviceList = webServer.getUsersForService("travelling");
+		System.out.println("----- TRAVELLING --------");
+		System.out.println(serviceList);
+		
+		serviceList = webServer.getUsersForService("opera");
+		System.out.println("---- OPERA -----");
+		System.out.println(serviceList);
+		
+		serviceList = webServer.getUsersForService("books");
+		System.out.println("---- BOOKS -----");
+		System.out.println(serviceList);
+		
+		//verify logout
+		webServer.logOut("claudiu");
+		webServer.logOut("mozzie");
+		webServer.logOut("neal");
+		webServer.logOut("ross");
+		
+		
 	}
 
 }
