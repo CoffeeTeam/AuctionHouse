@@ -26,7 +26,6 @@ import commands.serializableCommands.SerializableTransferFailed;
 import constants.NetworkInfo;
 
 import user.UserPacket;
-import util.DataGenerator;
 import util.FileService;
 
 public class Network extends INetwork {
@@ -109,7 +108,7 @@ public class Network extends INetwork {
 	}
 	
 	@Override
-	public void makeOffer(String seller, String serviceName, String buyer) {
+	public void makeOffer(String seller, String serviceName, String buyer, String price) {
 		loggerNetwork.info("Seller " + seller + " made an offer to " + buyer +
 						" for service " + serviceName);
 		
@@ -121,7 +120,7 @@ public class Network extends INetwork {
 		// in the auxiliary list add the buyer's name first and
 		// the price second
 		makeOffer.commandInfo.add(buyer);
-		makeOffer.commandInfo.add(DataGenerator.getPrice(serviceName, seller).toString());
+		makeOffer.commandInfo.add(price);
 		
 		netClient.sendData(makeOffer);
 	}

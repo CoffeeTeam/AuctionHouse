@@ -243,8 +243,8 @@ public class WebServer implements IWebServer {
 
 			while (rs.next()) {
 				//update status for the services in the list
-					rs.updateString("launch_offer", status);
-					rs.updateRow();
+				rs.updateString("launch_offer", status);
+				rs.updateRow();
 			}
 
 			rs.close();
@@ -254,6 +254,35 @@ public class WebServer implements IWebServer {
 		}
 
 	}
+
+	@Override
+	public String getPrice(String seller, String service) {
+		String price = null;
+		ResultSet rs;
+
+		try {
+			PreparedStatement statement = connection
+					.prepareStatement("SELECT * FROM ServicesSellers WHERE username = ?" +
+							" AND service = ?");
+
+			statement.setString(1, seller);
+			statement.setString(2, service);
+
+			rs = statement.executeQuery();
+
+			if (rs.next()) {
+				price = rs.getString("cost");
+			}
+
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return price;
+	}
+
+
 
 	public static void main(String args[]) {
 		IWebServer webServer = new WebServer();
@@ -299,7 +328,17 @@ public class WebServer implements IWebServer {
 		webServer.logOut("mozzie");
 		webServer.logOut("neal");
 		webServer.logOut("ross");
+		
+		// verify getting price info
+		String price;
+		
+		System.out.println("---------------Verify price--------------------");
+		price = webServer.getPrice("mozzie", "music");
+		System.out.println("Price for mozzie's music (should be 120) => " + price);
+		price = webServer.getPrice("mozzie", "books");
+		System.out.println("Price for mozzie's books (should be null) => " + price);
+		price = webServer.getPrice("ioana", "travelling");
+		System.out.println("Price for ioana's travelling (should be null) => " + price);
 
 	}
-
 }

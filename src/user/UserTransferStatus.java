@@ -17,7 +17,6 @@ public class UserTransferStatus {
 		this.status = status;
 		this.progress = 0;
 
-		// TODO => remove mockup when service transfer will be up to date
 		startMockupTransfer();
 	}
 
@@ -25,23 +24,12 @@ public class UserTransferStatus {
 	 * Mockup method to simulate service transfer
 	 */
 	private void startMockupTransfer() {
-	//	final long period = 1000;
-		//final int inc = 10;
-
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-	//		long time = System.currentTimeMillis();
-
 			@Override
 			protected Void doInBackground() throws Exception {
 				while (progress < 100) {
-					// if (System.currentTimeMillis() - time > period) {
-					// time = System.currentTimeMillis();
-					// progress += inc;
-
 					if (progress > 20) {
 						status = StatusMessages.transferInProgress;
-						// }
-
 						GUI.repaintUserTable();
 					}
 				}

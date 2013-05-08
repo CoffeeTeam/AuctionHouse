@@ -152,7 +152,11 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void makeOfferNet(String seller, String serviceName, String buyer) {
-		network.makeOffer(seller, serviceName, buyer);
+		// Get price from database
+		String price = wsClient.getUserServicePrice(seller, serviceName);
+
+		// Send make offer info to the network module
+		network.makeOffer(seller, serviceName, buyer, price);
 	}
 
 	@Override

@@ -45,5 +45,14 @@ public interface IWebServer {
 	 * @param username the name of the user
 	 */
 	public void changeOfferStatus(String username, String status, String servicename);
-
+	
+	/**
+	 * Searches how much a certain service offered by a seller costs
+	 * 
+	 * @param seller	seller's name
+	 * @param service	provided service's name
+	 * @return			the string representation of the price or null if the
+	 * 					given service or user does not exist in the database
+	 */
+	public String getPrice(String seller, String service);
 }

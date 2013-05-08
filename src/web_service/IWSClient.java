@@ -53,4 +53,20 @@ public abstract class IWSClient {
 	 * @param username the name of the user
 	 */
 	public abstract void callChangeOfferStatus(String username, String status, String servicename);
+	
+	/**
+	 * Given a user name and a service name, gets the service's price from the
+	 * database
+	 * 
+	 * @param username		user that provides a service
+	 * @param serviceName	service to look for
+	 * @return				cost of the service provided by the given user or
+	 * 						null if no entry is found in the database
+	 */
+	/**
+	 * @param username
+	 * @param serviceName
+	 * @return
+	 */
+	public abstract String getUserServicePrice(String seller, String serviceName);
 }

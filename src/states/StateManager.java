@@ -35,10 +35,7 @@ public class StateManager {
 	}
 	
 	public void launchService(String serviceName, String userName, String... auxInfo) {
-		if (0 != auxInfo.length)
-			this.currentState.launchService(serviceName, userName, auxInfo[0]);
-		else
-			this.currentState.launchService(serviceName, userName);
+		this.currentState.launchService(serviceName, userName, auxInfo[0]);
 	}
 
 	public void dropService(String serviceName, String userName, String... auxInfo) {

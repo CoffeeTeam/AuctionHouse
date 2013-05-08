@@ -41,7 +41,7 @@ public abstract class State {
 	 * 
 	 * @param serviceName
 	 *            the name of the service for which the actions are made
-	 * @param auxInfo TODO
+	 * @param auxInfo
 	 */
 	public abstract void dropService(String serviceName, String userName, String... auxInfo);
 
@@ -61,7 +61,7 @@ public abstract class State {
 	 *            the person which provides the service
 	 * @param serviceName
 	 *            name of the service to be dropped
-	 * @param buyer TODO
+	 * @param buyer
 	 */
 	public abstract void refuseOffer(String seller, String serviceName, String buyer);
 }

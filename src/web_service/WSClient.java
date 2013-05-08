@@ -2,6 +2,7 @@ package web_service;
 
 import java.util.List;
 
+import util.DataGenerator;
 import util.FileInfoRetriever;
 
 import mediator.IMediatorWSClient;
@@ -31,9 +32,11 @@ public class WSClient extends IWSClient{
 
 	@Override
 	public boolean callLogIn(String username, String password, String type) {
-		
+	/*	
 		org.apache.axis.client.Service service = new org.apache.axis.client.Service();
 		Call call = (Call)service.createCall();
+		
+	*/	// TODO => communicate with server
 		return false;
 	}
 
@@ -60,6 +63,12 @@ public class WSClient extends IWSClient{
 			String servicename) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getUserServicePrice(String seller, String serviceName) {
+		// TODO => get price from database, not from dummy generator
+		return DataGenerator.getPrice(serviceName, seller).toString();
 	}
 
 }
