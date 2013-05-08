@@ -29,4 +29,37 @@ public class WSClient extends IWSClient{
 		return infoRetriever.userService(userName, userType);
 	}
 
+	@Override
+	public boolean callLogIn(String username, String password, String type) {
+		
+		org.apache.axis.client.Service service = new org.apache.axis.client.Service();
+		Call call = (Call)service.createCall();
+		return false;
+	}
+
+	@Override
+	public void callLogOut(String username) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<String> callUserServices(String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> callGetUsersForService(String serviceName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void callChangeOfferStatus(String username, String status,
+			String servicename) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
