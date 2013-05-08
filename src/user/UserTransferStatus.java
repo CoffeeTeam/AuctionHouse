@@ -17,13 +17,13 @@ public class UserTransferStatus {
 		this.status = status;
 		this.progress = 0;
 
-		startMockupTransfer();
+		startTransfer();
 	}
 
 	/**
 	 * Mockup method to simulate service transfer
 	 */
-	private void startMockupTransfer() {
+	private void startTransfer() {
 		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
