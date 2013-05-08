@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import components.WebServerInfo;
+
 import constants.UserTypes;
-import constants.WebServerInfo;
 
 public class WebServer implements IWebServer {
 	private Connection connection = null;
@@ -87,27 +88,65 @@ public class WebServer implements IWebServer {
 		return userExists;
 	}
 
+	private String userType(String username) {
+		String type = null;
+		ResultSet rs;
+
+		try {
+
+			PreparedStatement statement = connection
+					.prepareStatement("SELECT * FROM Users "
+							+ "WHERE username = ?");
+
+			statement.setString(1, username);
+
+			rs = statement.executeQuery();
+
+			while (rs.next()) {
+				type = rs.getString("type");
+				break;
+			}
+
+			rs.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return type;
+	}
+
+	private String tableName(String userType) {
+		return (userType.equals(UserTypes.seller)) ? WebServerInfo.SELLERS_TABLE
+				: WebServerInfo.BUYERS_TABLE;
+	}
+
 	@Override
 	public List<String> userServices(String username) {
 		List<String> userServicesList = new ArrayList<String>();
-		String serviceName;
+		String serviceName, userType, table;
 		ResultSet rs;
-		
+
 		try {
-			PreparedStatement statement = connection.prepareStatement(
-					"SELECT * FROM Services " + "WHERE username = ?");
-			
+			// get table according to user type
+			userType = userType(username);
+			table = tableName(userType);
+
+			PreparedStatement statement = connection
+					.prepareStatement("SELECT * FROM " + table
+							+ " WHERE username = ?");
+
 			statement.setString(1, username);
-			
+
 			rs = statement.executeQuery();
-			
+
 			while (rs.next()) {
 				serviceName = rs.getString("service");
 				userServicesList.add(serviceName);
 			}
-			
+
 			rs.close();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -117,53 +156,51 @@ public class WebServer implements IWebServer {
 
 	@Override
 	public List<String> getUsersForService(String serviceName) {
-		//TODO for each active user verify if it is interested on that service
 		ResultSet rs, rsSearch;
 		PreparedStatement statement, searchService;
 		List<String> usersList = new ArrayList<String>();
-		
+
 		try {
-			//find active sellers
-			statement = connection.prepareStatement("SELECT * FROM Users " +
-					"WHERE type = ? AND status = ?");
+			// find active sellers
+			statement = connection.prepareStatement("SELECT * FROM Users "
+					+ "WHERE type = ? AND status = ?");
 			statement.setString(1, UserTypes.seller);
 			statement.setString(2, WebServerInfo.active);
-			
+
 			rs = statement.executeQuery();
-			
-			//find if the active seller provides a certain service
+
+			// find if the active seller provides a certain service
 			while (rs.next()) {
-				searchService = connection.prepareStatement("SELECT * " +
-								"FROM Services " +
-								"WHERE username = ? AND service = ?");
+				searchService = connection.prepareStatement("SELECT * "
+						+ "FROM ServicesSellers "
+						+ "WHERE username = ? AND service = ?");
 				System.out.println("Selected user " + rs.getString("username"));
 				searchService.setString(1, rs.getString("username"));
 				searchService.setString(2, serviceName);
-				
+
 				rsSearch = searchService.executeQuery();
-				
-				//get the name of the user that provides the service
+
+				// get the name of the user that provides the service
 				if (rsSearch.next()) {
 					usersList.add(rsSearch.getString("username"));
 				}
-				
+
 				rsSearch.close();
 			}
-			
+
 			rs.close();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
-		
+
 		return usersList;
 	}
 
 	@Override
 	public void logOut(String username) {
 		ResultSet rs;
+
 		try {
 			PreparedStatement statement = connection.prepareStatement(
 					"SELECT * FROM Users " + "WHERE username = ?",
@@ -177,6 +214,7 @@ public class WebServer implements IWebServer {
 			while (rs.next()) {
 				rs.updateString(WebServerInfo.status, WebServerInfo.inactive);
 				rs.updateRow();
+
 				break;
 			}
 
@@ -186,47 +224,82 @@ public class WebServer implements IWebServer {
 			e.printStackTrace();
 		}
 	}
+	
+	@Override
+	public void changeOfferStatus(String username, String status, String servicename) {
+		ResultSet rs;
+
+		try {
+			PreparedStatement statement = connection.prepareStatement(
+					"SELECT * FROM ServicesBuyers " + "WHERE username = ?" +
+					" AND service = ?",
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+
+			statement.setString(1, username);
+			statement.setString(2, servicename);
+
+			rs = statement.executeQuery();
+
+			while (rs.next()) {
+				//update status for the services in the list
+					rs.updateString("launch_offer", status);
+					rs.updateRow();
+			}
+
+			rs.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	public static void main(String args[]) {
 		IWebServer webServer = new WebServer();
 		List<String> serviceList;
 
-		//verify login
+		// verify login
 		webServer.logIn("claudiu", "q1w2e3", "buyer");
 		webServer.logIn("mozzie", "q1w2e3", "seller");
 		webServer.logIn("neal", "q1w2e3", "seller");
 		webServer.logIn("ross", "q1w2e3", "seller");
 		webServer.logIn("claudiu", "q1w2e3", "buyer");
 
-		//verify userServies
+		// verify userServies
 		serviceList = webServer.userServices("rares");
 		System.out.println("----- Services rares -----");
 		System.out.println(serviceList);
-		
+
 		serviceList = webServer.userServices("rachel");
 		System.out.println("---- Services rachel ----");
 		System.out.println(serviceList);
-		
-		//verify getUsersForService
+
+		// verify getUsersForService
 		serviceList = webServer.getUsersForService("travelling");
 		System.out.println("----- TRAVELLING --------");
 		System.out.println(serviceList);
-		
+
 		serviceList = webServer.getUsersForService("opera");
 		System.out.println("---- OPERA -----");
 		System.out.println(serviceList);
-		
+
 		serviceList = webServer.getUsersForService("books");
 		System.out.println("---- BOOKS -----");
 		System.out.println(serviceList);
 		
-		//verify logout
+		//change offer status
+		webServer.changeOfferStatus("claudiu", "no", "books");
+		webServer.changeOfferStatus("claudiu", "no", "travelling");
+		webServer.changeOfferStatus("claudiu", "no", "music");
+		webServer.changeOfferStatus("claudiu", "no", "opera");
+
+		// verify logout
 		webServer.logOut("claudiu");
 		webServer.logOut("mozzie");
 		webServer.logOut("neal");
 		webServer.logOut("ross");
-		
-		
+
 	}
 
 }

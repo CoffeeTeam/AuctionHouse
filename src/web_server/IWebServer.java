@@ -39,5 +39,11 @@ public interface IWebServer {
 	 *            name of the service
 	 */
 	public List<String> getUsersForService(String serviceName);
+	
+	/**
+	 * Used by users to launch an offer or to drop an offer
+	 * @param username the name of the user
+	 */
+	public void changeOfferStatus(String username, String status, String servicename);
 
 }
