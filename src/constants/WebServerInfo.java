@@ -1,4 +1,4 @@
-package components;
+package constants;
 
 public class WebServerInfo {
 

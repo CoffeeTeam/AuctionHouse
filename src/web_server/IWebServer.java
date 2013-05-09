@@ -1,7 +1,5 @@
 package web_server;
 
-import java.util.List;
-
 public interface IWebServer {
 
 	/**
@@ -30,7 +28,7 @@ public interface IWebServer {
 	 *            the name of the user
 	 * @return list of services
 	 */
-	public List<String> userServices(String username);
+	public String[] userServices(String username);
 
 	/**
 	 * Finds all active users that provide a certain service
@@ -38,7 +36,7 @@ public interface IWebServer {
 	 * @param serviceName
 	 *            name of the service
 	 */
-	public List<String> getUsersForService(String serviceName);
+	public String[] getUsersForService(String serviceName);
 	
 	/**
 	 * Used by users to launch an offer or to drop an offer

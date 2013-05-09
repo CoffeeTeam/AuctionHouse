@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import components.WebServerInfo;
+import constants.WebServerInfo;
 
-import constants.UserTypes;
 
 public class WebServer implements IWebServer {
 	private Connection connection = null;
@@ -117,12 +116,12 @@ public class WebServer implements IWebServer {
 	}
 
 	private String tableName(String userType) {
-		return (userType.equals(UserTypes.seller)) ? WebServerInfo.SELLERS_TABLE
+		return (userType.equals("seller")) ? WebServerInfo.SELLERS_TABLE
 				: WebServerInfo.BUYERS_TABLE;
 	}
 
 	@Override
-	public List<String> userServices(String username) {
+	public String[] userServices(String username) {
 		List<String> userServicesList = new ArrayList<String>();
 		String serviceName, userType, table;
 		ResultSet rs;
@@ -151,11 +150,11 @@ public class WebServer implements IWebServer {
 			e.printStackTrace();
 		}
 
-		return userServicesList;
+		return (String[])userServicesList.toArray();
 	}
 
 	@Override
-	public List<String> getUsersForService(String serviceName) {
+	public String[] getUsersForService(String serviceName) {
 		ResultSet rs, rsSearch;
 		PreparedStatement statement, searchService;
 		List<String> usersList = new ArrayList<String>();
@@ -164,7 +163,7 @@ public class WebServer implements IWebServer {
 			// find active sellers
 			statement = connection.prepareStatement("SELECT * FROM Users "
 					+ "WHERE type = ? AND status = ?");
-			statement.setString(1, UserTypes.seller);
+			statement.setString(1, "seller");
 			statement.setString(2, WebServerInfo.active);
 
 			rs = statement.executeQuery();
@@ -194,7 +193,7 @@ public class WebServer implements IWebServer {
 			e.printStackTrace();
 		}
 
-		return usersList;
+		return (String[])usersList.toArray();
 	}
 
 	@Override
@@ -284,7 +283,7 @@ public class WebServer implements IWebServer {
 
 
 
-	public static void main(String args[]) {
+/*	public static void main(String args[]) {
 		IWebServer webServer = new WebServer();
 		List<String> serviceList;
 
@@ -340,5 +339,6 @@ public class WebServer implements IWebServer {
 		price = webServer.getPrice("ioana", "travelling");
 		System.out.println("Price for ioana's travelling (should be null) => " + price);
 
-	}
+	}*/
+
 }
