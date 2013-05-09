@@ -1,6 +1,8 @@
 package web_service;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -36,12 +38,12 @@ public class WSClient extends IWSClient{
 	/**
 	 * Retrieves the users that offer/request a certain service
 	 */
-	@Override
+	@Override // TODO => remove method => no longer needed
 	public List<String> getCurrentUsers(String serviceName, String userType) {
 		return infoRetriever.getUserList(serviceName, userType);
 	}
 
-	@Override
+	@Override // TODO => remove method => no longer needed
 	public List<String> getServiceList(String userName, String userType) {
 		return infoRetriever.userService(userName, userType);
 	}
@@ -54,7 +56,7 @@ public class WSClient extends IWSClient{
 			Service	service = new Service();
 			Call call = (Call)service.createCall();
 			QName string = new QName("http://echo.demo.oracle/", "string");
-			Object[] inParams = new Object[]{username, password, type};
+			Object[] inParams = {username, password, type};
 			
 			call.setTargetEndpointAddress(new URL(SERVICES_URL));
 			call.setOperationName(new QName(LOG_IN));
@@ -80,8 +82,27 @@ public class WSClient extends IWSClient{
 
 	@Override
 	public List<String> callUserServices(String username) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> services = null;
+
+		try {
+			Service	service = new Service();
+			Call call = (Call)service.createCall();
+			QName string = new QName("http://echo.demo.oracle/", "string");
+			Object[] inParams = {username};
+			
+			call.setTargetEndpointAddress(new URL(SERVICES_URL));
+			call.setOperationName(new QName(USER_SERVICES));
+			
+			call.addParameter("username", string, String.class, ParameterMode.IN);
+			call.setReturnClass(String[].class);
+			
+			Object result = call.invoke(inParams);
+			services = Arrays.asList((String[]) result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return services;
 	}
 
 	@Override

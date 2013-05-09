@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -129,6 +130,8 @@ public class WebServer implements IWebServer {
 			// get table according to user type
 			userType = userType(username);
 			table = tableName(userType);
+			
+			System.out.println("user "+username+" has type "+userType+" and is in table "+table);
 
 			PreparedStatement statement = connection
 					.prepareStatement("SELECT * FROM " + table
@@ -149,7 +152,7 @@ public class WebServer implements IWebServer {
 			e.printStackTrace();
 		}
 
-		return (String[])userServicesList.toArray();
+		return Arrays.copyOf(userServicesList.toArray(), userServicesList.size(), String[].class);
 	}
 
 	@Override
@@ -192,7 +195,7 @@ public class WebServer implements IWebServer {
 			e.printStackTrace();
 		}
 
-		return (String[])usersList.toArray();
+		return Arrays.copyOf(usersList.toArray(), usersList.size(), String[].class);
 	}
 
 	@Override
@@ -279,63 +282,4 @@ public class WebServer implements IWebServer {
 
 		return price;
 	}
-
-/*	public static void main(String args[]) {
-		IWebServer webServer = new WebServer();
-		List<String> serviceList;
-
-		// verify login
-		webServer.logIn("claudiu", "q1w2e3", "buyer");
-		webServer.logIn("mozzie", "q1w2e3", "seller");
-		webServer.logIn("neal", "q1w2e3", "seller");
-		webServer.logIn("ross", "q1w2e3", "seller");
-		webServer.logIn("claudiu", "q1w2e3", "buyer");
-
-		// verify userServies
-		serviceList = webServer.userServices("rares");
-		System.out.println("----- Services rares -----");
-		System.out.println(serviceList);
-
-		serviceList = webServer.userServices("rachel");
-		System.out.println("---- Services rachel ----");
-		System.out.println(serviceList);
-
-		// verify getUsersForService
-		serviceList = webServer.getUsersForService("travelling");
-		System.out.println("----- TRAVELLING --------");
-		System.out.println(serviceList);
-
-		serviceList = webServer.getUsersForService("opera");
-		System.out.println("---- OPERA -----");
-		System.out.println(serviceList);
-
-		serviceList = webServer.getUsersForService("books");
-		System.out.println("---- BOOKS -----");
-		System.out.println(serviceList);
-		
-		//change offer status
-		webServer.changeOfferStatus("claudiu", "no", "books");
-		webServer.changeOfferStatus("claudiu", "no", "travelling");
-		webServer.changeOfferStatus("claudiu", "no", "music");
-		webServer.changeOfferStatus("claudiu", "no", "opera");
-
-		// verify logout
-		webServer.logOut("claudiu");
-		webServer.logOut("mozzie");
-		webServer.logOut("neal");
-		webServer.logOut("ross");
-		
-		// verify getting price info
-		String price;
-		
-		System.out.println("---------------Verify price--------------------");
-		price = webServer.getPrice("mozzie", "music");
-		System.out.println("Price for mozzie's music (should be 120) => " + price);
-		price = webServer.getPrice("mozzie", "books");
-		System.out.println("Price for mozzie's books (should be null) => " + price);
-		price = webServer.getPrice("ioana", "travelling");
-		System.out.println("Price for ioana's travelling (should be null) => " + price);
-
-	}*/
-
 }

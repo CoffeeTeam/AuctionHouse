@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IMediatorNetwork {
 
-	public void logInUser(String username, String password, String userType, List<String> services);
+	public boolean logInUser(String username, String password, String userType, List<String> services);
 	
 	public void launchOfferRequestNet(String serviceName, String userName);
 	public void dropOfferRequestNet(String serviceName, String userName);

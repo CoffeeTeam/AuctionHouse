@@ -323,7 +323,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				// Add services table
 				List<String> serviceList = logInUser();
-				if (serviceList.isEmpty()) {
+				if (serviceList == null || serviceList.isEmpty()) {
 					JOptionPane.showMessageDialog(owner,
 							ErrorMessages.logInInvalidOpt);
 					return;
@@ -564,7 +564,9 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				System.exit(1);
 			}
 		}
-		user.setUserServiceList(serviceList);
+		
+		if (serviceList != null)
+			user.setUserServiceList(serviceList);
 
 		return serviceList;
 	}
