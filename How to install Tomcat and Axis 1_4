@@ -1,0 +1,13 @@
+Tomcat version: 7.0.x
+Axis version:	1_4
+
+* Download Tomcat binary file and verify that it works
+* Download Axis binary files and copy webapps/axis directori into tomcat_homefolder/webappas
+	- to download axis: http://apache.xmlcity.org/ws/axis/1_4/
+* for axis installation follow instructions from: http://elf.cs.pub.ro/idp/laboratoare/lab-web#apache-axis
+* the main folder also contains a wsdd file which is a wsdl used for deploying th web_service into Tomcat
+* run init.sh script which exists in AuctionHouse main folder
+	- the name of the user should replaced and the home folder for Tomcat should also be set properly
+	- the script copies some necessary  xml files into the tomcat
+* deploy.sh is used for deploying the web service into tomcat and make the methods accessible
+
