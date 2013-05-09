@@ -39,8 +39,7 @@ public class WebServer implements IWebServer {
 	}
 
 	@Override
-	public boolean logIn(String username, String password, String type) {
-
+	public Boolean logIn(String username, String password, String type) {
 		boolean userExists = false;
 		ResultSet rs;
 		String status;
@@ -280,9 +279,6 @@ public class WebServer implements IWebServer {
 
 		return price;
 	}
-
-<<<<<<< HEAD
-
 
 /*	public static void main(String args[]) {
 		IWebServer webServer = new WebServer();

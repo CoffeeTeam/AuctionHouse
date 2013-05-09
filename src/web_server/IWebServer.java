@@ -12,7 +12,7 @@ public interface IWebServer {
 	 *            specifies if the user is a buyer or a seller
 	 * @return true if introduced data are correct, else false
 	 */
-	public boolean logIn(String username, String password,
+	public Boolean logIn(String username, String password,
 			String type);
 	
 	/**

@@ -138,6 +138,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	@Override
 	public void logInUser(String username, String password, String userType,
 			List<String> services) {
+		// check user (get info from database)
+		if (!wsClient.callLogIn(username, password, userType)) {
+			loggerMediator.error("No such record for " + userType + " " + username);
+			return;
+		}
+		
+		// let the others know of the newly entered user
 		network.logInUser(username, password, userType, services);
 	}
 
