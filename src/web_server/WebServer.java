@@ -281,6 +281,7 @@ public class WebServer implements IWebServer {
 		return price;
 	}
 
+<<<<<<< HEAD
 
 
 /*	public static void main(String args[]) {
