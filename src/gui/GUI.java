@@ -401,6 +401,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				}
 
 				if (canLogout) {
+					med.logOut(user.getUsername());
 					loggerGui.info("[log out] " + user.getUsername());
 					// show the Log In page again
 					cardLayout.show(panelCards, Page.Page1.getName());

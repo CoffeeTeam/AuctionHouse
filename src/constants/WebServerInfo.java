@@ -18,4 +18,6 @@ public class WebServerInfo {
 	public static final String SELLERS_TABLE = "ServicesSellers";
 	public static final String BUYERS_TABLE = "ServicesBuyers";
 	
+	public static final String URL_WS = "http://localhost:8080/axis/services/WS_DBConnect?wsdl";
+	
 }

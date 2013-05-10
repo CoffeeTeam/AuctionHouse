@@ -93,9 +93,16 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public void launchOfferRequestNet(String serviceName, String userName) {
-		List<String> interestedUsers = wsClient.getCurrentUsers(serviceName,
-				UserTypes.buyer);
+		//mark the fact that the user launched an offer request
+		wsClient.callChangeOfferStatus(userName, "yes", serviceName);
+		
+		//get list of users that provide the requested serivce
+		List<String> interestedUsers = wsClient.callGetUsersForService(serviceName);
+		
+		System.out.println("Interested users are " + interestedUsers);
+		
 		gui.updateServiceUsers(serviceName, interestedUsers);
+		
 		network.launchOfferReq(userName, serviceName, interestedUsers);
 	}
 	
@@ -265,7 +272,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 
 	@Override
 	public List<String> getUserList(String serviceName, String userType) {
-		return wsClient.getCurrentUsers(serviceName, userType);
+		return wsClient.callGetUsersForService(serviceName);
 	}
 
 	@Override
@@ -293,6 +300,13 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 					seller + " to buyer " + buyer + " failed");
 		
 		network.transferFailed(seller, serviceName, buyer);
+	}
+
+	@Override
+	public void logOut(String userName) {
+		loggerMediator.info("Log out user " + userName);
+		
+		wsClient.callLogOut(userName);
 	}
 
 }

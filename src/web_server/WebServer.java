@@ -64,7 +64,7 @@ public class WebServer implements IWebServer {
 
 			while (rs.next()) {
 				status = rs.getString(WebServerInfo.status);
-
+				System.out.println("Type is " + rs.getString("type"));
 				// update status if user is inactive
 				if (status.equals(WebServerInfo.inactive)) {
 					userExists = true;
