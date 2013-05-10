@@ -17,12 +17,11 @@ import user.User;
 
 import constants.StatusMessages;
 
-public class MyTableCellEditor extends DefaultCellEditor {
+public class StatusAndOffersCellEditor extends DefaultCellEditor {
 	private static final long serialVersionUID = 1L;
 	private GUI instanceGUI;
 
-	public MyTableCellEditor(GUI instanceGUI) {
-
+	public StatusAndOffersCellEditor(GUI instanceGUI) {
 		super(new JComboBox<Object>());
 		this.instanceGUI = instanceGUI;
 	}
