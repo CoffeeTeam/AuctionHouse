@@ -19,6 +19,8 @@ public interface IMediatorGUI {
 	
 	public void logOut(String userName);
 	
+	public void logOutSeller(String userName, List<String> buyers);
+	
 	public void launchService(String serviceName, String userName, String... auxInfo);
 	public void dropService(String serviceName, String userName, String... auxInfo);
 	

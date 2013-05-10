@@ -10,6 +10,8 @@ public abstract class INetwork {
 
 	public abstract void logInUser(String username, String password,
 			String userType, List<String> services);
+	
+	public abstract void logOutUser(String username, List<String> userToInform);
 
 	/* Methods that handle client actions */
 	
@@ -24,6 +26,8 @@ public abstract class INetwork {
 	public abstract void refuseOffer(String seller, String offer, String buyer);
 
 	/* Methods to handle server feedback */
+	
+	public abstract void recvLogOutUser(String userName);
 	
 	public abstract void recvLaunchOfferReq(String userName, String serviceName);
 	public abstract void recvDropOfferReq(String buyer, String serviceName);

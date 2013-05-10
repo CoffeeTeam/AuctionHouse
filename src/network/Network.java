@@ -19,6 +19,7 @@ import commands.serializableCommands.SerializableAcceptOffer;
 import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
+import commands.serializableCommands.SerializableLogOut;
 import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
@@ -339,6 +340,24 @@ public class Network extends INetwork {
 				"from seller to buyer " + buyer + " failed");
 		
 		med.recvTransferFailed(buyer, serviceName);
+	}
+
+	@Override
+	public void logOutUser(String username, List<String> usersToInform) {
+		loggerNetwork.info("Log out user " + username +
+				"Inform " + usersToInform.toString() );
+		
+		SerializableLogOut logOut = new SerializableLogOut();
+		
+		logOut.userName = username;
+		logOut.commandInfo = usersToInform;
+		
+		netClient.sendData(logOut);
+	}
+
+	@Override
+	public void recvLogOutUser(String userName) {
+		med.recvLogOut(userName);
 	}
 	
 }

@@ -22,6 +22,7 @@ public interface IGUI {
 	public void transferFailed(String seller, String serviceName, String buyer);
 	
 	List<String> recvMakeOffer(String serviceName, String seller, String price);
+	public void recvLogOut(String userName);
 	void recvDropAuction(String userName, String serviceName);
 	void recvLaunchOfferReq(String userName, String serviceName);
 	void recvDropOfferReq(String buyer, String serviceName);	
