@@ -41,7 +41,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import components.ServicesCellEditor;
 import components.ServicesCellRenderer;
-import components.StatatusAndOffersCellEditor;
+import components.StatusAndOffersCellEditor;
 import components.StatusAndOffersCellRenderer;
 import components.PopupActionListener;
 
@@ -371,7 +371,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 				userColumn1 = table.getColumnModel().getColumn(1);
 				userColumn1.setPreferredWidth(300);
-				userColumn1.setCellEditor(new StatatusAndOffersCellEditor(owner));
+				userColumn1.setCellEditor(new StatusAndOffersCellEditor(owner));
 				userColumn1.setCellRenderer(new StatusAndOffersCellRenderer(owner));
 
 				servicesPanel.add(scrollPane);
