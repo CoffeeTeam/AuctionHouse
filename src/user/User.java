@@ -2,6 +2,7 @@ package user;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.List;
@@ -287,6 +288,17 @@ public class User extends UserPacket {
 		}
 		
 		return true;
+	}
+	
+	public List<String> getAllUsers() {
+		List<String> services = getUserServiceList();
+		Set<String> users = new HashSet<String>();
+		
+		for (String service : services) {
+			users.addAll(this.matchingUsers.get(service).keySet());
+		}
+		
+		return new LinkedList<String>(users);
 	}
 	
 	/**

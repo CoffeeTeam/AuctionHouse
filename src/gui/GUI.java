@@ -394,10 +394,16 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 		}
 
 		if (canLogout) {
-			med.logOut(user.getUsername());
+			if (user.getUserType().equals(UserTypes.seller))
+				med.logOutSeller(user.getUsername(), user.getAllUsers());
+			else
+				med.logOut(user.getUsername());
+			
 			loggerGui.info("[log out] " + user.getUsername());
+			
 			// show the Log In page again
 			cardLayout.show(panelCards, Page.Page1.getName());
+			
 			resetUserData();
 			Page.Page2.panel.removeAll();
 		} else {
@@ -840,6 +846,20 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	public void recvTransferFailed(String userName, String serviceName) {
 		user.updateStatus(serviceName, userName, StatusMessages.transferFailed);
 		GUI.repaintUserTable();
+	}
+
+	@Override
+	public void recvLogOut(String userName) {
+		List<String> userServices = user.getUserServiceList();
+		HashMap<String, String> usersForService;
+		
+		//delete from each service any occurrence of the given user
+		for (String service : userServices) {
+			usersForService = user.getMatchingUsers().get(service);
+			
+			usersForService.remove(userName);
+			
+		}
 	}
 
 }

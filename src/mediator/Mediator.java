@@ -306,4 +306,18 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		wsClient.callLogOut(userName);
 	}
 
+	@Override
+	public void recvLogOut(String userName) {
+		gui.recvLogOut(userName);
+	}
+
+	@Override
+	public void logOutSeller(String userName, List<String> buyers) {
+		loggerMediator.info("Log out user " + userName);
+		
+		wsClient.callLogOut(userName);
+		network.logOutUser(userName, buyers);
+		
+	}
+
 }

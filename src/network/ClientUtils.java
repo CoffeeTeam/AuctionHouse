@@ -6,6 +6,7 @@ import commands.serializableCommands.SerializableAcceptOffer;
 import commands.serializableCommands.SerializableDropAuction;
 import commands.serializableCommands.SerializableDropOfferReq;
 import commands.serializableCommands.SerializableLaunchOfferReq;
+import commands.serializableCommands.SerializableLogOut;
 import commands.serializableCommands.SerializableMakeOffer;
 import commands.serializableCommands.SerializableOfferExceeded;
 import commands.serializableCommands.SerializableRefuseOffer;
@@ -73,6 +74,11 @@ public class ClientUtils {
 			handleTransferFailed((SerializableTransferFailed) recvObject);
 			return;
 		}
+		
+		if (recvObject instanceof SerializableLogOut) {
+			handleLogOut((SerializableLogOut) recvObject);
+		}
+		
 	}
 
 	/**
@@ -179,5 +185,9 @@ public class ClientUtils {
 	 */
 	public static void handleTransferFailed(SerializableTransferFailed pack) {
 		NetworkClient.network.recvTransferFailed(pack.userName, pack.serviceName);
+	}
+	
+	public static void handleLogOut(SerializableLogOut pack) {
+		NetworkClient.network.recvLogOutUser(pack.userName);
 	}
 }
