@@ -9,9 +9,6 @@ public abstract class IWSClient {
 	public IMediatorWSClient med;
 	public static final String WS_URL = "http://localhost:8080/axis/services/WebService?wsdl";
 	
-	public abstract List<String> getCurrentUsers(String serviceName, String userType);
-	public abstract List<String> getServiceList(String userName, String userType);
-	
 	/**
 	 * Verify if a user which attempts to login introduced valid information
 	 * 

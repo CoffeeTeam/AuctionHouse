@@ -42,19 +42,6 @@ public class WSClient extends IWSClient{
 		this.med = med;
 		infoRetriever = new FileInfoRetriever(dbName);
 	}
-	
-	/**
-	 * Retrieves the users that offer/request a certain service
-	 */
-	@Override // TODO => remove method => no longer needed
-	public List<String> getCurrentUsers(String serviceName, String userType) {
-		return infoRetriever.getUserList(serviceName, userType);
-	}
-
-	@Override // TODO => remove method => no longer needed
-	public List<String> getServiceList(String userName, String userType) {
-		return infoRetriever.userService(userName, userType);
-	}
 
 	@Override
 	public boolean callLogIn(String username, String password, String type) {
