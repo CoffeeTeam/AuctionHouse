@@ -131,8 +131,6 @@ public class WebServer implements IWebServer {
 			userType = userType(username);
 			table = tableName(userType);
 			
-			System.out.println("user "+username+" has type "+userType+" and is in table "+table);
-
 			PreparedStatement statement = connection
 					.prepareStatement("SELECT * FROM " + table
 							+ " WHERE username = ?");
