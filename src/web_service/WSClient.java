@@ -24,6 +24,8 @@ import mediator.IMediatorWSClient;
 public class WSClient extends IWSClient{
 	
 	private final String dbName = "ClientList";
+
+	@Deprecated // was used instead of database in project's early stages
 	private FileInfoRetriever infoRetriever;
 	
 	private static final String SERVICES_URL =
@@ -225,9 +227,6 @@ public class WSClient extends IWSClient{
 		}
 		
 		return priceValue;
-		
-		// TODO => get price from database, not from dummy generator
-	//	return DataGenerator.getPrice(serviceName, seller).toString();
 	}
 
 }
