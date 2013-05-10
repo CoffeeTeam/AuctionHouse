@@ -99,8 +99,6 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		//get list of users that provide the requested serivce
 		List<String> interestedUsers = wsClient.callGetUsersForService(serviceName);
 		
-		System.out.println("Interested users are " + interestedUsers);
-		
 		gui.updateServiceUsers(serviceName, interestedUsers);
 		
 		network.launchOfferReq(userName, serviceName, interestedUsers);
@@ -158,12 +156,10 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 	}
 
 	@Override
-	public void dropOfferRequestNet(String serviceName, String userName) {
-		// get the list of users matching this service from the database
-		List<String> providers = this.getUserList(serviceName, UserTypes.buyer);
-
+	public void dropOfferRequestNet(String serviceName, String userName, String seller) {
+		wsClient.callChangeOfferStatus(userName, "no", serviceName);
 		// send drop offer to network
-		network.dropOfferReq(userName, serviceName, providers);
+		network.dropOfferReq(userName, serviceName, seller);
 	}
 
 	@Override

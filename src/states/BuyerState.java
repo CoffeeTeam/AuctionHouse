@@ -45,7 +45,7 @@ public class BuyerState extends State {
 
 	@Override
 	public void dropService(String serviceName, String userName, String... auxInfo) {
-		dropOfferReq.execute(serviceName, userName);
+		dropOfferReq.execute(serviceName, userName, auxInfo[0]);
 	}
 
 	@Override

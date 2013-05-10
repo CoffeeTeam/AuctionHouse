@@ -61,7 +61,7 @@ public class Network extends INetwork {
 	}
 	
 	@Override
-	public void dropOfferReq(String buyer, String serviceName, List<String> sellers) {
+	public void dropOfferReq(String buyer, String serviceName, String seller) {
 		loggerNetwork.info("[ " + buyer + "  ] dropped offer request for " +
 				serviceName);
 
@@ -70,7 +70,7 @@ public class Network extends INetwork {
 		
 		dropOffer.userName = buyer;
 		dropOffer.serviceName = serviceName;
-		dropOffer.commandInfo = sellers;
+		dropOffer.commandInfo.add(seller);
 		
 		netClient.sendData(dropOffer);
 	}

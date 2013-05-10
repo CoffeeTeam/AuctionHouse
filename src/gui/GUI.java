@@ -597,9 +597,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 	@Override
 	public void dropOfferRequest(String serviceName) {
+		//get list of users providing the service
+		List<String> users = this.user.getUserListForService(serviceName);
+		
 		loggerGui.info("[ " + user.getUsername() + " ] dropped offer request for serivce " + serviceName);
-		// inform all providers of that service of the annulment
-		this.med.dropService(serviceName, this.user.username, "mockUp");
+		
+		for (String userName : users) {
+			// inform all providers of that service of the annulment
+			this.med.dropService(serviceName, this.user.username, userName);
+		}
 		
 		// update this user's list
 		this.user.emptyUserListForService(serviceName);
