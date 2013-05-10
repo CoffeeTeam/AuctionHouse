@@ -33,7 +33,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
@@ -387,6 +386,10 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 	
 	public boolean logOutActions() {
 		boolean canLogout = true;
+		
+		if (user.username == null)
+			return true;
+		
 		if (user.getUserType().equals(UserTypes.seller)) {
 			canLogout = user.canSellerLogout();
 		} else {
