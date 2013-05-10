@@ -64,7 +64,7 @@ public class WSClient extends IWSClient{
 			
 			result = (Boolean) call.invoke(inParams);
 			
-			System.out.println("Received result is " + result);
+			System.out.println("[WSClient][callLogIn] Received result is " + result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,6 +106,8 @@ public class WSClient extends IWSClient{
 	public List<String> callUserServices(String username) {
 		List<String> services = null;
 
+		System.out.println("[WSClient][callUserServices] Username is "+username);
+		
 		try {
 			Service	service = new Service();
 			Call call = (Call)service.createCall();
@@ -118,7 +120,13 @@ public class WSClient extends IWSClient{
 			call.addParameter("username", string, String.class, ParameterMode.IN);
 			call.setReturnClass(String[].class);
 			
+			System.out.println("Call object is "+call+", in params are "+inParams);
+			
 			Object result = call.invoke(inParams);
+			
+			if (result == null)
+				return null;
+			
 			services = Arrays.asList((String[]) result);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -42,7 +42,7 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		stateMgr.setBuyerState();
 		serviceList = stateMgr.getServiceList(name);
 
-		if (!serviceList.isEmpty())
+		if (serviceList!= null && !serviceList.isEmpty())
 			if (!logInUser(name, passwd, UserTypes.buyer, serviceList))
 				return null;
 
@@ -57,8 +57,9 @@ public class Mediator implements IMediatorGUI, IMediatorNetwork,
 		stateMgr.setSellerState();
 		serviceList = stateMgr.getServiceList(name);
 
-		if (!serviceList.isEmpty())
-			logInUser(name, passwd, UserTypes.seller, serviceList);
+		if (serviceList!= null && !serviceList.isEmpty())
+			if (!logInUser(name, passwd, UserTypes.seller, serviceList))
+				return null;
 
 		return serviceList;
 	}

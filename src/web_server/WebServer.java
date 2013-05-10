@@ -43,9 +43,10 @@ public class WebServer implements IWebServer {
 	public Boolean logIn(String username, String password, String type) {
 		boolean userExists = false;
 		ResultSet rs;
-		String status;
+		String status, actualType;
 
 		System.out.println("Enter log in...");
+
 		try {
 			PreparedStatement statement = connection
 					.prepareStatement(
@@ -64,7 +65,15 @@ public class WebServer implements IWebServer {
 
 			while (rs.next()) {
 				status = rs.getString(WebServerInfo.status);
-				System.out.println("Type is " + rs.getString("type"));
+				actualType = rs.getString("type");
+				
+				System.out.println(username + "'s type is " + actualType);
+				
+				if (!actualType.equals(type)) {
+					System.out.println("Type mismatch");
+					break;
+				}
+				
 				// update status if user is inactive
 				if (status.equals(WebServerInfo.inactive)) {
 					userExists = true;
@@ -72,14 +81,13 @@ public class WebServer implements IWebServer {
 					rs.updateRow();
 				} else {
 					System.out.println("User " + username
-							+ "is already logged in");
+							+ " is already logged in");
 				}
 
 				break;
 			}
-
+			
 			rs.close();
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -129,6 +137,11 @@ public class WebServer implements IWebServer {
 		try {
 			// get table according to user type
 			userType = userType(username);
+			
+			// check if the user actually exists
+			if (userType == null)
+				return null;
+			
 			table = tableName(userType);
 			
 			PreparedStatement statement = connection
