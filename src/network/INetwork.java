@@ -14,7 +14,7 @@ public abstract class INetwork {
 	/* Methods that handle client actions */
 	
 	public abstract void launchOfferReq(String userName, String serviceName, List<String> interestedUsers);
-	public abstract void dropOfferReq(String buyer, String serviceName, List<String> sellers);
+	public abstract void dropOfferReq(String buyer, String serviceName, String seller);
 	
 	public abstract void makeOffer(String seller, String serviceName, String buyer, String price);
 	public abstract void sendOfferExceeded(List<String> sellers, String serviceName, String buyer);

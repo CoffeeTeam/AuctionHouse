@@ -87,6 +87,13 @@ public class User extends UserPacket {
 		}
 
 	}
+	
+	public List<String> getUserListForService(String serviceName) {
+		HashMap<String, String> serviceHashMap = this.matchingUsers
+				.get(serviceName);
+
+		return new LinkedList<String>(serviceHashMap.keySet());
+	}
 
 	/**
 	 * Checks whether this user has any matches for the given service

@@ -13,7 +13,7 @@ public class DropOfferReq extends SerializableDropOfferReq implements Command {
 
 	@Override
 	public void execute(String serviceName, String user, String... auxUserInfo) {
-		this.medNetwork.dropOfferRequestNet(serviceName, user);
+		this.medNetwork.dropOfferRequestNet(serviceName, user, auxUserInfo[0]);
 	}
 
 }

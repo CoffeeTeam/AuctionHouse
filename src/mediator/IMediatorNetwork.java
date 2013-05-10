@@ -7,7 +7,7 @@ public interface IMediatorNetwork {
 	public boolean logInUser(String username, String password, String userType, List<String> services);
 	
 	public void launchOfferRequestNet(String serviceName, String userName);
-	public void dropOfferRequestNet(String serviceName, String userName);
+	public void dropOfferRequestNet(String serviceName, String userName, String seller);
 	public void makeOfferNet(String seller, String serviceName, String buyer);
 	void dropAuctionNet(String serviceName, String buyer, String seller);
 	public void acceptOfferNet(String buyer, String offer, String sellers);

@@ -242,7 +242,8 @@ public class Server extends Thread {
 			}
 			wbuf.add(lengthPacket);
 			wbuf.add(data);
-			key.interestOps(SelectionKey.OP_WRITE);
+			if (key != null)
+				key.interestOps(SelectionKey.OP_WRITE);
 		}
 				
 		selector.wakeup();
