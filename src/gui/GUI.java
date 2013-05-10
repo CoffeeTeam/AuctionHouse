@@ -39,8 +39,10 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import components.MyTableCellEditor;
-import components.MyTableCellRenderer;
+import components.ServicesCellEditor;
+import components.ServicesCellRenderer;
+import components.StatatusAndOffersCellEditor;
+import components.StatusAndOffersCellRenderer;
 import components.PopupActionListener;
 
 import user.User;
@@ -362,17 +364,15 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 				// set the cells to be combo boxes
 				TableColumn userColumn0, userColumn1;
 
-				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
 				userColumn0 = table.getColumnModel().getColumn(0);
 				userColumn0.setPreferredWidth(100);
-				userColumn0.setCellRenderer(centerRenderer);
+				userColumn0.setCellEditor(new ServicesCellEditor());
+				userColumn0.setCellRenderer(new ServicesCellRenderer());
 
 				userColumn1 = table.getColumnModel().getColumn(1);
 				userColumn1.setPreferredWidth(300);
-				userColumn1.setCellEditor(new MyTableCellEditor(owner));
-				userColumn1.setCellRenderer(new MyTableCellRenderer(owner));
+				userColumn1.setCellEditor(new StatatusAndOffersCellEditor(owner));
+				userColumn1.setCellRenderer(new StatusAndOffersCellRenderer(owner));
 
 				servicesPanel.add(scrollPane);
 
