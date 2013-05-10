@@ -60,10 +60,5 @@ public abstract class IWSClient {
 	 * @return				cost of the service provided by the given user or
 	 * 						null if no entry is found in the database
 	 */
-	/**
-	 * @param username
-	 * @param serviceName
-	 * @return
-	 */
 	public abstract String getUserServicePrice(String seller, String serviceName);
 }

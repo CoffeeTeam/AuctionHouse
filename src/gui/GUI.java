@@ -123,7 +123,8 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+				if (logOutActions())
+					System.exit(0);
 			}
 		});
 
@@ -383,6 +384,30 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 		});
 	}
+	
+	public boolean logOutActions() {
+		boolean canLogout = true;
+		if (user.getUserType().equals(UserTypes.seller)) {
+			canLogout = user.canSellerLogout();
+		} else {
+			doBuyerLogoutActions();
+		}
+
+		if (canLogout) {
+			med.logOut(user.getUsername());
+			loggerGui.info("[log out] " + user.getUsername());
+			// show the Log In page again
+			cardLayout.show(panelCards, Page.Page1.getName());
+			resetUserData();
+			Page.Page2.panel.removeAll();
+		} else {
+			loggerGui.info("[log out]" + user.getUsername() + " didn't meet the conditions");
+			JOptionPane.showMessageDialog(Page.Page2.panel,
+					ErrorMessages.logOutDenied);
+		}
+		
+		return canLogout;
+	}
 
 	public void logOutButtonAction(JPanel servicesPanel) {
 		logOutButton = new JButton(ComponentNames.logOutButton);
@@ -393,25 +418,7 @@ public class GUI extends JFrame implements IGUI, ActionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				boolean canLogout = true;
-				if (user.getUserType().equals(UserTypes.seller)) {
-					canLogout = user.canSellerLogout();
-				} else {
-					doBuyerLogoutActions();
-				}
-
-				if (canLogout) {
-					med.logOut(user.getUsername());
-					loggerGui.info("[log out] " + user.getUsername());
-					// show the Log In page again
-					cardLayout.show(panelCards, Page.Page1.getName());
-					resetUserData();
-					Page.Page2.panel.removeAll();
-				} else {
-					loggerGui.info("[log out]" + user.getUsername() + " didn't meet the conditions");
-					JOptionPane.showMessageDialog(Page.Page2.panel,
-							ErrorMessages.logOutDenied);
-				}
+				logOutActions();
 			}
 		});
 		
